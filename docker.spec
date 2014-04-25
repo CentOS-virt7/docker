@@ -81,6 +81,7 @@ rm -rf vendor
 %if 0%{?rhel}
 %patch1 -p1 -b remove-btrfs-for-rhel
 %endif
+cp -R %{_sourcedir}/man1 contrib/man
 
 %build
 mkdir _build
@@ -107,7 +108,7 @@ install -d %{buildroot}%{_libexecdir}/docker
 install -p -m 755 bundles/%{version}-dev/dynbinary/dockerinit-%{version}-dev %{buildroot}%{_libexecdir}/docker/dockerinit
 # install manpages
 install -d %{buildroot}%{_mandir}/man1
-install -p -m 644 %{_sourcedir}/man1/* %{buildroot}%{_mandir}/man1
+install -p -m 644 contrib/man/man1/* %{buildroot}%{_mandir}/man1
 # install bash completion
 install -d %{buildroot}%{_sysconfdir}/bash_completion.d
 install -p -m 644 contrib/completion/bash/docker %{buildroot}%{_sysconfdir}/bash_completion.d/docker.bash
