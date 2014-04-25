@@ -1,0 +1,64 @@
+.TH "DOCKER" "1" "APRIL 2014" "Docker User Manuals" ""
+.SH NAME
+.PP
+docker\-search \- Search the docker index for images
+.SH SYNOPSIS
+.PP
+\f[B]docker search\f[] \f[B]\-\-no\-trunc\f[][=\f[I]false\f[]]
+\f[B]\-t\f[]|\f[B]\-\-trusted\f[][=\f[I]false\f[]]
+\f[B]\-s\f[]|\f[B]\-\-stars\f[][=\f[I]0\f[]] TERM
+.SH DESCRIPTION
+.PP
+Search an index for an image with that matches the term TERM.
+The table of images returned displays the name, description (truncated
+by default), number of stars awarded, whether the image is official, and
+whether it is trusted.
+.SH OPTIONS
+.PP
+\f[B]\-\-no\-trunc\f[]=\f[I]true\f[]|\f[I]false\f[] When true display
+the complete description.
+The default is false.
+.PP
+\f[B]\-s\f[], \f[B]\-\-stars\f[]=NUM Only displays with at least NUM
+(integer) stars.
+I.e.
+only those images ranked >=NUM.
+.PP
+\f[B]\-t\f[], \f[B]\-\-trusted\f[]=\f[I]true\f[]|\f[I]false\f[] When
+true only show trusted builds.
+The default is false.
+.SH EXAMPLE
+.SS Search the registry for ranked images
+.PP
+Search the registry for the term \[aq]fedora\[aq] and only display those
+images ranked 3 or higher:
+.IP
+.nf
+\f[C]
+$\ sudo\ docker\ search\ \-s\ 3\ fedora
+NAME\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ DESCRIPTION\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ STARS\ OFFICIAL\ \ TRUSTED
+mattdm/fedora\ \ \ \ \ \ \ \ \ A\ basic\ Fedora\ image\ corresponding\ roughly...\ \ 50
+fedora\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (Semi)\ Official\ Fedora\ base\ image.\ \ \ \ \ \ \ \ \ \ \ \ \ 38
+mattdm/fedora\-small\ \ \ A\ small\ Fedora\ image\ on\ which\ to\ build.\ Co...\ \ 8
+goldmann/wildfly\ \ \ \ \ \ A\ WildFly\ application\ server\ running\ on\ a\ ...\ \ 3\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ [OK]
+\f[]
+.fi
+.SS Search the registry for trusted images
+.PP
+Search the registry for the term \[aq]fedora\[aq] and only display
+trusted images ranked 1 or higher:
+.IP
+.nf
+\f[C]
+$\ sudo\ docker\ search\ \-s\ 1\ \-t\ fedora
+NAME\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ DESCRIPTION\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ STARS\ OFFICIAL\ \ TRUSTED
+goldmann/wildfly\ \ \ A\ WildFly\ application\ server\ running\ on\ a\ ...\ \ \ 3\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ [OK]
+tutum/fedora\-20\ \ \ \ Fedora\ 20\ image\ with\ SSH\ access.\ For\ the\ r...\ \ \ 1\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ [OK]
+\f[]
+.fi
+.SH HISTORY
+.PP
+April 2014, Originally compiled by William Henry (whenry at redhat dot
+com) based on docker.io source material and internal work.
+.SH AUTHORS
+William Henry.

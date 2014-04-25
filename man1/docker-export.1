@@ -1,0 +1,31 @@
+.TH "DOCKER" "1" "APRIL 2014" "Docker User Manuals" ""
+.SH NAME
+.PP
+docker\-export \- Export the contents of a filesystem as a tar archive
+to STDOUT.
+.SH SYNOPSIS
+.PP
+\f[B]docker export\f[] CONTAINER
+.SH DESCRIPTION
+.PP
+Export the contents of a container\[aq]s filesystem using the full or
+shortened container ID or container name.
+The output is exported to STDOUT and can be redirected to a tar file.
+.SH EXAMPLE
+.PP
+Export the contents of the container called angry_bell to a tar file
+called test.tar:
+.IP
+.nf
+\f[C]
+#\ docker\ export\ angry_bell\ >\ test.tar
+#\ ls\ *.tar
+test.tar
+\f[]
+.fi
+.SH HISTORY
+.PP
+April 2014, Originally compiled by William Henry (whenry at redhat dot
+com) based on docker.io source material and internal work.
+.SH AUTHORS
+William Henry.

@@ -1,0 +1,28 @@
+.TH "DOCKER" "1" "APRIL 2014" "Docker User Manuals" ""
+.SH NAME
+.PP
+docker\-cp \- Copy files/folders from the PATH to the HOSTPATH
+.SH SYNOPSIS
+.PP
+\f[B]docker cp\f[] CONTAINER:PATH HOSTPATH
+.SH DESCRIPTION
+.PP
+Copy files/folders from the containers filesystem to the host path.
+Paths are relative to the root of the filesystem.
+Files can be copied from a running or stopped container.
+.SH EXAMPLE
+.PP
+An important shell script file, created in a bash shell, is copied from
+the exited container to the current dir on the host:
+.IP
+.nf
+\f[C]
+#\ docker\ cp\ c071f3c3ee81:setup.sh\ .
+\f[]
+.fi
+.SH HISTORY
+.PP
+April 2014, Originally compiled by William Henry (whenry at redhat dot
+com) based on docker.io source material and internal work.
+.SH AUTHORS
+William Henry.

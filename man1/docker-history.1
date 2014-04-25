@@ -1,0 +1,37 @@
+.TH "DOCKER" "1" "APRIL 2014" "Docker User Manuals" ""
+.SH NAME
+.PP
+docker\-history \- Show the history of an image
+.SH SYNOPSIS
+.PP
+\f[B]docker history\f[] \f[B]\-\-no\-trunc\f[][=\f[I]false\f[]]
+[\f[B]\-q\f[]|\f[B]\-\-quiet\f[][=\f[I]false\f[]]] IMAGE
+.SH DESCRIPTION
+.PP
+Show the history of when and how an image was created.
+.SH OPTIONS
+.PP
+\f[B]\-\-no\-trunc\f[]=\f[I]true\f[]|\f[I]false\f[] When true don\[aq]t
+truncate output.
+Default is false
+.PP
+\f[B]\-q\f[], **\-\-quiet=\f[I]true\f[]|\f[I]false\f[] When true only
+show numeric IDs.
+Default is false.
+.SH EXAMPLE
+.IP
+.nf
+\f[C]
+$\ sudo\ docker\ history\ fedora
+IMAGE\ \ \ \ \ \ \ \ \ \ CREATED\ \ \ \ \ \ \ \ \ \ CREATED\ BY\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ SIZE
+105182bb5e8b\ \ \ 5\ days\ ago\ \ \ \ \ \ \ /bin/sh\ \-c\ #(nop)\ ADD\ file:71356d2ad59aa3119d\ \ \ 372.7\ MB
+73bd853d2ea5\ \ \ 13\ days\ ago\ \ \ \ \ \ /bin/sh\ \-c\ #(nop)\ MAINTAINER\ Lokesh\ Mandvekar\ \ \ 0\ B
+511136ea3c5a\ \ \ 10\ months\ ago\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0\ B
+\f[]
+.fi
+.SH HISTORY
+.PP
+April 2014, Originally compiled by William Henry (whenry at redhat dot
+com) based on docker.io source material and internal work.
+.SH AUTHORS
+William Henry.

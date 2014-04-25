@@ -1,0 +1,54 @@
+.TH "DOCKER" "1" "APRIL 2014" "Docker User Manuals" ""
+.SH NAME
+.PP
+docker\-events \- Get real time events from the server
+.PP
+\f[B]docker events\f[] \f[B]\-\-since\f[]=""|\f[I]epoch\-time\f[]
+.SH DESCRIPTION
+.PP
+Get event information from the Docker daemon.
+Information can include historical information and real\-time
+information.
+.SH OPTIONS
+.PP
+\f[B]\-\-since\f[]="" Show previously created events and then stream.
+This can be in either seconds since epoch, or date string.
+.SH EXAMPLES
+.SS Listening for Docker events
+.PP
+After running docker events a container 786d698004576 is started and
+stopped (The container name has been shortened in the ouput below):
+.IP
+.nf
+\f[C]
+#\ docker\ events
+[2014\-04\-12\ 18:23:04\ \-0400\ EDT]\ 786d69800457:\ (from\ whenry/testimage:latest)\ start
+[2014\-04\-12\ 18:23:13\ \-0400\ EDT]\ 786d69800457:\ (from\ whenry/testimage:latest)\ die
+[2014\-04\-12\ 18:23:13\ \-0400\ EDT]\ 786d69800457:\ (from\ whenry/testimage:latest)\ stop
+\f[]
+.fi
+.SS Listening for events since a given date
+.PP
+Again the output container IDs have been shortened for the purposes of
+this document:
+.IP
+.nf
+\f[C]
+#\ docker\ events\ \-\-since\ \[aq]2014\-04\-12\[aq]
+[2014\-04\-12\ 18:11:28\ \-0400\ EDT]\ c655dbf640dc:\ (from\ whenry/testimage:latest)\ create
+[2014\-04\-12\ 18:11:28\ \-0400\ EDT]\ c655dbf640dc:\ (from\ whenry/testimage:latest)\ start
+[2014\-04\-12\ 18:14:13\ \-0400\ EDT]\ 786d69800457:\ (from\ whenry/testimage:latest)\ create
+[2014\-04\-12\ 18:14:13\ \-0400\ EDT]\ 786d69800457:\ (from\ whenry/testimage:latest)\ start
+[2014\-04\-12\ 18:22:44\ \-0400\ EDT]\ 786d69800457:\ (from\ whenry/testimage:latest)\ die
+[2014\-04\-12\ 18:22:44\ \-0400\ EDT]\ 786d69800457:\ (from\ whenry/testimage:latest)\ stop
+[2014\-04\-12\ 18:23:04\ \-0400\ EDT]\ 786d69800457:\ (from\ whenry/testimage:latest)\ start
+[2014\-04\-12\ 18:23:13\ \-0400\ EDT]\ 786d69800457:\ (from\ whenry/testimage:latest)\ die
+[2014\-04\-12\ 18:23:13\ \-0400\ EDT]\ 786d69800457:\ (from\ whenry/testimage:latest)\ stop
+\f[]
+.fi
+.SH HISTORY
+.PP
+April 2014, Originally compiled by William Henry (whenry at redhat dot
+com) based on docker.io source material and internal work.
+.SH AUTHORS
+William Henry.

@@ -1,0 +1,23 @@
+.TH "DOCKER" "1" "APRIL 2014" "Docker User Manuals" ""
+.SH NAME
+.PP
+docker\-kill \- Kill a running container (send SIGKILL, or specified
+signal)
+.SH SYNOPSIS
+.PP
+\f[B]docker kill\f[] \f[B]\-\-signal\f[][=\f[I]"KILL"\f[]] CONTAINER
+[CONTAINER...]
+.SH DESCRIPTION
+.PP
+The main process inside each container specified will be sent SIGKILL,
+or any signal specified with option \-\-signal.
+.SH OPTIONS
+.PP
+\f[B]\-s\f[], \f[B]\-\-signal\f[]=\f[I]"KILL"\f[] Signal to send to the
+container
+.SH HISTORY
+.PP
+April 2014, Originally compiled by William Henry (whenry at redhat dot
+com) based on docker.io source material and internal work.
+.SH AUTHORS
+William Henry.

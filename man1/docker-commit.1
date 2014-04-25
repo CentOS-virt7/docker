@@ -1,0 +1,40 @@
+.TH "DOCKER" "1" "APRIL 2014" "Docker User Manuals" ""
+.SH NAME
+.PP
+docker\-commit \- Create a new image from the changes to an existing
+container
+.SH SYNOPSIS
+.PP
+\f[B]docker commit\f[] \f[B]\-a\f[]|\f[B]\-\-author\f[][=""]
+\f[B]\-m\f[]|\f[B]\-\-message\f[][=""] CONTAINER [REPOSITORY[:TAG]]
+.SH DESCRIPTION
+.PP
+Using an existing container\[aq]s name or ID you can create a new image.
+.SH OPTIONS
+.PP
+\f[B]\-a, \-\-author\f[]="" Author name.
+(eg.
+"John Hannibal Smith <hannibal@a-team.com>"
+.PP
+\f[B]\-m, \-\-message\f[]="" Commit message
+.SH EXAMPLES
+.SS Creating a new image from an existing container
+.PP
+An existing Fedora based container has had Apache installed while
+running in interactive mode with the bash shell.
+Apache is also running.
+To create a new image run docker ps to find the container\[aq]s ID and
+then run:
+.IP
+.nf
+\f[C]
+#\ docker\ commit\ \-me=\ "Added\ Apache\ to\ Fedora\ base\ image"\ \\
+\ \ \-\-a="A\ D\ Ministrator"\ 98bd7fc99854\ fedora/fedora_httpd:20
+\f[]
+.fi
+.SH HISTORY
+.PP
+April 2014, Originally compiled by William Henry (whenry at redhat dot
+com) based on docker.io source material and in
+.SH AUTHORS
+William Henry.

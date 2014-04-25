@@ -1,0 +1,78 @@
+.TH "DOCKER" "1" "APRIL 2014" "Docker User Manuals" ""
+.SH NAME
+.PP
+docker\-ps \- List containers
+.SH SYNOPSIS
+.PP
+\f[B]docker ps\f[] [\f[B]\-a\f[]|\f[B]\-\-all\f[]=\f[I]false\f[]]
+[\f[B]\-\-before\f[]=""]
+[\f[B]\-l\f[]|\f[B]\-\-latest\f[]=\f[I]false\f[]]
+[\f[B]\-n\f[]=\f[I]\-1\f[]]
+[\f[B]\-\-no\-trunc\f[]=\f[I]false\f[]][\f[B]\-q\f[]|\f[B]\-\-quiet\f[]=\f[I]false\f[]]
+[\f[B]\-s\f[]|\f[B]\-\-size\f[]=\f[I]false\f[]][\f[B]\-\-since\f[]=""]
+.SH DESCRIPTION
+.PP
+List the containers in the local repository.
+By default this show only the running containers.
+.SH OPTIONS
+.PP
+\f[B]\-a\f[], \f[B]\-\-all\f[]=\f[I]true\f[]|\f[I]false\f[] When true
+show all containers.
+Only running containers are shown by default.
+Default is false.
+.PP
+\f[B]\-\-before\f[]="" Show only container created before Id or Name,
+include non\-running ones.
+.PP
+\f[B]\-l\f[], \f[B]\-\-latest\f[]=\f[I]true\f[]|\f[I]false\f[] When true
+show only the latest created container, include non\-running ones.
+The default is false.
+.PP
+\f[B]\-n\f[]=NUM Show NUM (integer) last created containers, include
+non\-running ones.
+The default is \-1 (none)
+.PP
+\f[B]\-\-no\-trunc\f[]=\f[I]true\f[]|\f[I]false\f[] When true truncate
+output.
+Default is false.
+.PP
+\f[B]\-q\f[], \f[B]\-\-quiet\f[]=\f[I]true\f[]|\f[I]false\f[] When false
+only display numeric IDs.
+Default is false.
+.PP
+\f[B]\-s\f[], \f[B]\-\-size\f[]=\f[I]true\f[]|\f[I]false\f[] When true
+display container sizes.
+Default is false.
+.PP
+\f[B]\-\-since\f[]="" Show only containers created since Id or Name,
+include non\-running ones.
+.SH EXAMPLE
+.SH Display all containers, including non\-running
+.IP
+.nf
+\f[C]
+#\ docker\ ps\ \-a
+CONTAINER\ ID\ \ \ \ \ \ \ \ IMAGE\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ COMMAND\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CREATED\ \ \ \ \ \ \ \ \ \ \ \ \ STATUS\ \ \ \ \ \ PORTS\ \ \ \ NAMES
+a87ecb4f327c\ \ \ \ \ \ \ \ fedora:20\ \ \ \ \ \ \ \ \ \ \ \ \ /bin/sh\ \-c\ #(nop)\ MA\ \ \ 20\ minutes\ ago\ \ \ \ \ \ Exit\ 0\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ desperate_brattain
+01946d9d34d8\ \ \ \ \ \ \ \ vpavlin/rhel7:latest\ \ /bin/sh\ \-c\ #(nop)\ MA\ \ \ 33\ minutes\ ago\ \ \ \ \ \ Exit\ 0\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ thirsty_bell
+c1d3b0166030\ \ \ \ \ \ \ \ acffc0358b9e\ \ \ \ \ \ \ \ \ \ /bin/sh\ \-c\ yum\ \-y\ up\ \ \ 2\ weeks\ ago\ \ \ \ \ \ \ \ \ Exit\ 1\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ determined_torvalds
+41d50ecd2f57\ \ \ \ \ \ \ \ fedora:20\ \ \ \ \ \ \ \ \ \ \ \ \ /bin/sh\ \-c\ #(nop)\ MA\ \ \ 2\ weeks\ ago\ \ \ \ \ \ \ \ \ Exit\ 0\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drunk_pike
+\f[]
+.fi
+.SH Display only IDs of all containers, including non\-running
+.IP
+.nf
+\f[C]
+#\ docker\ ps\ \-a\ \-q
+a87ecb4f327c
+01946d9d34d8
+c1d3b0166030
+41d50ecd2f57
+\f[]
+.fi
+.SH HISTORY
+.PP
+April 2014, Originally compiled by William Henry (whenry at redhat dot
+com) based on docker.io source material and internal work.
+.SH AUTHORS
+William Henry.

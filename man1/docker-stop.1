@@ -1,0 +1,23 @@
+.TH "DOCKER" "1" "APRIL 2014" "Docker User Manuals" ""
+.SH NAME
+.PP
+docker\-stop \- Stop a running container grace period)
+.SH SYNOPSIS
+.PP
+\f[B]docker stop\f[] [\f[B]\-t\f[]|\f[B]\-\-time\f[][=\f[I]10\f[]]]
+CONTAINER [CONTAINER...]
+.SH DESCRIPTION
+.PP
+Stop a running container (Send SIGTERM, and then SIGKILL after grace
+period)
+.SH OPTIONS
+.PP
+\f[B]\-t\f[], \f[B]\-\-time\f[]=NUM Wait NUM number of seconds for the
+container to stop before killing it.
+The default is 10 seconds.
+.SH HISTORY
+.PP
+April 2014, Originally compiled by William Henry (whenry at redhat dot
+com) based on docker.io source material and internal work.
+.SH AUTHORS
+William Henry.

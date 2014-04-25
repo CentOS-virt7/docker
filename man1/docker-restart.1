@@ -1,0 +1,23 @@
+.TH "DOCKER" "1" "APRIL 2014" "Docker User Manuals" ""
+.SH NAME
+.PP
+docker\-restart \- Restart a running container
+.SH SYNOPSIS
+.PP
+\f[B]docker restart\f[] [\f[B]\-t\f[]|\f[B]\-\-time\f[][=\f[I]10\f[]]]
+CONTAINER [CONTAINER...]
+.SH DESCRIPTION
+.PP
+Restart each container listed.
+.SH OPTIONS
+.PP
+\f[B]\-t\f[], \f[B]\-\-time\f[]=NUM Number of seconds to try to stop for
+before killing the container.
+Once killed it will then be restarted.
+Default=10
+.SH HISTORY
+.PP
+April 2014, Originally compiled by William Henry (whenry at redhat dot
+com) based on docker.io source material and internal work.
+.SH AUTHORS
+William Henry.

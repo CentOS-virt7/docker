@@ -1,0 +1,65 @@
+.TH "DOCKER" "1" "APRIL 2014" "Docker User Manuals" ""
+.SH NAME
+.PP
+docker\-attach \- Attach to a running container
+.SH SYNOPSIS
+.PP
+\f[B]docker attach\f[] \f[B]\-\-no\-stdin\f[][=\f[I]false\f[]]
+\f[B]\-\-sig\-proxy\f[][=\f[I]true\f[]] CONTAINER
+.SH DESCRIPTION
+.PP
+If you \f[B]docker run\f[] a container in detached mode (\f[B]\-d\f[]),
+you can reattach to the detached container with \f[B]docker attach\f[]
+using the container\[aq]s ID or name.
+.PP
+You can detach from the container again (and leave it running) with
+\f[C]CTRL\-c\f[] (for a quiet exit) or \f[C]CTRL\-\\\f[] to get a
+stacktrace of the Docker client when it quits.
+When you detach from a container the exit code will be returned to the
+client.
+.SH OPTIONS
+.PP
+\f[B]\-\-no\-stdin\f[]=\f[I]true\f[]|\f[I]false\f[] When set to true, do
+not attach to stdin.
+The default is \f[I]false\f[].
+.PP
+\f[B]\-\-sig\-proxy\f[]=\f[I]true\f[]|\f[I]false\f[]: When set to true,
+proxify all received signal to the process (even in non\-tty mode).
+The default is \f[I]true\f[].
+.SH EXAMPLES
+.SS Attaching to a container
+.PP
+In this example the top command is run inside a container, from an image
+called fedora, in detached mode.
+The ID from the container is passed into the \f[B]docker attach\f[]
+command:
+.IP
+.nf
+\f[C]
+#\ ID=$(sudo\ docker\ run\ \-d\ fedora\ /usr/bin/top\ \-b)
+#\ sudo\ docker\ attach\ $ID
+top\ \-\ 02:05:52\ up\ \ 3:05,\ \ 0\ users,\ \ load\ average:\ 0.01,\ 0.02,\ 0.05
+Tasks:\ \ \ 1\ total,\ \ \ 1\ running,\ \ \ 0\ sleeping,\ \ \ 0\ stopped,\ \ \ 0\ zombie
+Cpu(s):\ \ 0.1%us,\ \ 0.2%sy,\ \ 0.0%ni,\ 99.7%id,\ \ 0.0%wa,\ \ 0.0%hi,\ \ 0.0%si,\ \ 0.0%st
+Mem:\ \ \ \ 373572k\ total,\ \ \ 355560k\ used,\ \ \ \ 18012k\ free,\ \ \ \ 27872k\ buffers
+Swap:\ \ \ 786428k\ total,\ \ \ \ \ \ \ \ 0k\ used,\ \ \ 786428k\ free,\ \ \ 221740k\ cached
+
+PID\ USER\ \ \ \ \ \ PR\ \ NI\ \ VIRT\ \ RES\ \ SHR\ S\ %CPU\ %MEM\ \ \ \ TIME+\ \ COMMAND
+1\ root\ \ \ \ \ \ 20\ \ \ 0\ 17200\ 1116\ \ 912\ R\ \ \ \ 0\ \ 0.3\ \ \ 0:00.03\ top
+
+top\ \-\ 02:05:55\ up\ \ 3:05,\ \ 0\ users,\ \ load\ average:\ 0.01,\ 0.02,\ 0.05
+Tasks:\ \ \ 1\ total,\ \ \ 1\ running,\ \ \ 0\ sleeping,\ \ \ 0\ stopped,\ \ \ 0\ zombie
+Cpu(s):\ \ 0.0%us,\ \ 0.2%sy,\ \ 0.0%ni,\ 99.8%id,\ \ 0.0%wa,\ \ 0.0%hi,\ \ 0.0%si,\ \ 0.0%st
+Mem:\ \ \ \ 373572k\ total,\ \ \ 355244k\ used,\ \ \ \ 18328k\ free,\ \ \ \ 27872k\ buffers
+Swap:\ \ \ 786428k\ total,\ \ \ \ \ \ \ \ 0k\ used,\ \ \ 786428k\ free,\ \ \ 221776k\ cached
+
+PID\ USER\ \ \ \ \ \ PR\ \ NI\ \ VIRT\ \ RES\ \ SHR\ S\ %CPU\ %MEM\ \ \ \ TIME+\ \ COMMAND
+1\ root\ \ \ \ \ \ 20\ \ \ 0\ 17208\ 1144\ \ 932\ R\ \ \ \ 0\ \ 0.3\ \ \ 0:00.03\ top
+\f[]
+.fi
+.SH HISTORY
+.PP
+April 2014, Originally compiled by William Henry (whenry at redhat dot
+com) based on docker.io source material and internal work.
+.SH AUTHORS
+William Henry.
