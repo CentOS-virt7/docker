@@ -28,6 +28,7 @@ Source0:        https://github.com/lsm5/docker/archive/%{commit}/docker-%{shortc
 # though final name for sysconf/sysvinit files is simply 'docker',
 # having .sysvinit and .sysconfig makes things clear
 Source1:        docker.service
+Source2:        docker-man.tar.gz
 BuildRequires:  gcc
 BuildRequires:  glibc-static
 # ensure build uses golang 1.2-7 and above
@@ -81,7 +82,7 @@ rm -rf vendor
 %if 0%{?rhel}
 %patch1 -p1 -b remove-btrfs-for-rhel
 %endif
-cp -R %{_sourcedir}/man1 contrib/man
+tar zxf %{SOURCE2} 
 
 %build
 mkdir _build
@@ -108,7 +109,7 @@ install -d %{buildroot}%{_libexecdir}/docker
 install -p -m 755 bundles/%{version}-dev/dynbinary/dockerinit-%{version}-dev %{buildroot}%{_libexecdir}/docker/dockerinit
 # install manpages
 install -d %{buildroot}%{_mandir}/man1
-install -p -m 644 contrib/man/man1/* %{buildroot}%{_mandir}/man1
+install -p -m 644 man1/* %{buildroot}%{_mandir}/man1
 # install bash completion
 install -d %{buildroot}%{_sysconfdir}/bash_completion.d
 install -p -m 644 contrib/completion/bash/docker %{buildroot}%{_sysconfdir}/bash_completion.d/docker.bash
