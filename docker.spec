@@ -14,7 +14,7 @@
 
 Name:           docker
 Version:        0.10.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -196,6 +196,9 @@ fi
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+* Thu May 01 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.10.0-4
+- enable selinux in unitfile
+
 * Thu May 01 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.10.0-3
 - branch https://github.com/lsm5/docker/commits/2014-05-01-2
 
