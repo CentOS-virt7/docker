@@ -9,12 +9,12 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit      a6e878a916ba2b281a82fe780fc129727b103555
+%global commit      fb3799927e7872264be54cd9f2597ceaca0b97df
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
 Version:        0.10.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -23,7 +23,7 @@ Patch1:     remove-btrfs-for-rhel.patch
 URL:            http://www.docker.io
 # only x86_64 for now: https://github.com/dotcloud/docker/issues/136
 ExclusiveArch:  x86_64
-#Current upstream https://github.com/lsm5/docker/tree/2014-04-25
+#Current upstream https://github.com/lsm5/docker/tree/2014-05-01
 Source0:        https://github.com/lsm5/docker/archive/%{commit}/docker-%{shortcommit}.tar.gz
 # though final name for sysconf/sysvinit files is simply 'docker',
 # having .sysvinit and .sysconfig makes things clear
@@ -196,6 +196,9 @@ fi
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+* Thu May 01 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.10.0-2
+- branch https://github.com/lsm5/docker/tree/2014-05-01
+
 * Fri Apr 25 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.10.0-1
 - renamed (docker-io -> docker)
 - rebased on 0.10.0
