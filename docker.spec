@@ -9,12 +9,12 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit      79993599658b4e8ed6764ffc07b6fc747e98cc1f
+%global commit      5c09f771652c4bda379c14d56ef5ae0bdfbe03f0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
 Version:        0.10.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -196,6 +196,9 @@ fi
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+* Mon May 05 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.10.0-5
+- block push to docker index
+
 * Thu May 01 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.10.0-4
 - enable selinux in unitfile
 
