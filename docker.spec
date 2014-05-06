@@ -9,12 +9,12 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit      5c09f771652c4bda379c14d56ef5ae0bdfbe03f0
+%global commit      3c1cff3b89298ac1dade2ffbdbe262e01f648164
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
 Version:        0.10.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -196,6 +196,9 @@ fi
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+* Tue May 06 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.10.0-6
+- ensure upstream PR #5529 is included
+
 * Mon May 05 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.10.0-5
 - block push to docker index
 
