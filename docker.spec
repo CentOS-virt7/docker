@@ -9,12 +9,12 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit      3c1cff3b89298ac1dade2ffbdbe262e01f648164
+%global commit      038fc3df6cb11363d727b87a8552a2dcf942aa12
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
 Version:        0.10.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -23,7 +23,7 @@ Patch1:     remove-btrfs-for-rhel.patch
 URL:            http://www.docker.io
 # only x86_64 for now: https://github.com/dotcloud/docker/issues/136
 ExclusiveArch:  x86_64
-#Current upstream https://github.com/lsm5/docker/tree/2014-05-01-2
+#use branch: https://github.com/lsm5/docker/tree/2014-05-06
 Source0:        https://github.com/lsm5/docker/archive/%{commit}/docker-%{shortcommit}.tar.gz
 # though final name for sysconf/sysvinit files is simply 'docker',
 # having .sysvinit and .sysconfig makes things clear
@@ -196,6 +196,9 @@ fi
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+* Tue May 06 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.10.0-7
+- set container pid for process in native driver
+
 * Tue May 06 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.10.0-6
 - ensure upstream PR #5529 is included
 
