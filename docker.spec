@@ -196,7 +196,7 @@ fi
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
-* Thu May 06 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.10.0-8
+* Thu May 08 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.10.0-8
 - fix docker top
 
 * Tue May 06 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.10.0-7
