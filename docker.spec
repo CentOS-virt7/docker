@@ -5,12 +5,12 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit      47cc438985e76566c20c8706610d829f04f9891d
+%global commit      5f5d517419819413c5b9571570c35d573cb97802
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
 Version:        0.10.0
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -125,11 +125,12 @@ install -p -m 644 %{SOURCE1} %{buildroot}%{_unitdir}
 install -p -m 644 contrib/init/systemd/socket-activation/docker.socket %{buildroot}%{_unitdir}
 
 # install dockerfiles
-install -d -p -m 755 %{buildroot}%{_datadir}/rhel-dockerfiles/apache
-install -p -m 644 contrib/rhel-dockerfiles/apache/Dockerfile %{buildroot}%{_datadir}/rhel-dockerfiles/apache
-install -p -m 644 contrib/rhel-dockerfiles/apache/run-apache.sh %{buildroot}%{_datadir}/rhel-dockerfiles/apache
-mv contrib/rhel-dockerfiles/apache/LICENSE ./LICENSE-apache
-mv contrib/rhel-dockerfiles/apache/README.md ./README-apache.md
+for d in apache mongodb; do
+    mv contrib/rhel-dockerfiles/$d/LICENSE ./LICENSE-$d
+    mv contrib/rhel-dockerfiles/$d/README.md ./README-$d.md
+    install -d -p -m 755 %{buildroot}%{_datadir}/rhel-dockerfiles/$d
+    install -p -m 644 contrib/rhel-dockerfiles/$d/* %{buildroot}%{_datadir}/rhel-dockerfiles/$d
+done
 
 
 %pre
@@ -147,9 +148,8 @@ exit 0
 
 %files
 %defattr(-,root,root,-)
-%doc AUTHORS CHANGELOG.md CONTRIBUTING.md FIXME LICENSE MAINTAINERS NOTICE README.md 
-%doc LICENSE-vim-syntax README-vim-syntax.md
-%doc LICENSE-apache README-apache.md
+%doc AUTHORS CHANGELOG.md CONTRIBUTING.md FIXME MAINTAINERS NOTICE
+%doc LICENSE* README*.md
 %{_mandir}/man1/*
 %{_bindir}/docker
 %dir %{_libexecdir}/docker
@@ -170,10 +170,14 @@ exit 0
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 %dir %{_datadir}/rhel-dockerfiles
 %dir %{_datadir}/rhel-dockerfiles/apache
-%{_datadir}/rhel-dockerfiles/apache/Dockerfile
-%{_datadir}/rhel-dockerfiles/apache/run-apache.sh
+%{_datadir}/rhel-dockerfiles/apache/*
+%dir %{_datadir}/rhel-dockerfiles/mongodb
+%{_datadir}/rhel-dockerfiles/mongodb/*
 
 %changelog
+* Fri May 09 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.10.0-10
+- add rhel-dockerfile/mongodb
+
 * Fri May 09 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.10.0-9
 - use branch: https://github.com/lsm5/docker/commits/2014-05-09
 - install rhel-dockerfile for apache
