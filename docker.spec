@@ -1,7 +1,3 @@
-%if 0%{?fedora} >= 18 || 0%{?rhel} >= 7
-%bcond_without  systemd
-%endif
-
 # modifying the dockerinit binary breaks the SHA1 sum check by docker
 %global __os_install_post %{_rpmconfigdir}/brp-compress
 
@@ -9,12 +5,12 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit      bcee594654555ca79dbb0613769b2bdfbf925bcb
+%global commit      47cc438985e76566c20c8706610d829f04f9891d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
 Version:        0.10.0
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -23,7 +19,7 @@ Patch1:     remove-btrfs-for-rhel.patch
 URL:            http://www.docker.io
 # only x86_64 for now: https://github.com/dotcloud/docker/issues/136
 ExclusiveArch:  x86_64
-#use branch: https://github.com/lsm5/docker/tree/2014-05-08
+#use branch: https://github.com/lsm5/docker/tree/2014-05-09
 Source0:        https://github.com/lsm5/docker/archive/%{commit}/docker-%{shortcommit}.tar.gz
 # though final name for sysconf/sysvinit files is simply 'docker',
 # having .sysvinit and .sysconfig makes things clear
@@ -46,22 +42,11 @@ BuildRequires:  device-mapper-devel
 %if 0%{?fedora}
 BuildRequires:  btrfs-progs-devel
 %endif
-%if %{with systemd}
 BuildRequires:  pkgconfig(systemd)
 Requires:       systemd-units
-%else
-Requires(post):     chkconfig
-Requires(preun):    chkconfig
-Requires(postun):   initscripts
-%endif
 # need xz to work with ubuntu images
 # https://bugzilla.redhat.com/show_bug.cgi?id=1045220
 Requires:       xz
-# https://bugzilla.redhat.com/show_bug.cgi?id=1035436
-# this won't be needed for rhel7+
-%if 0%{?rhel} >= 6 && 0%{?rhel} < 7
-Requires:       bridge-utils
-%endif
 
 Provides:       lxc-docker = %{version}
 
@@ -104,84 +89,73 @@ cp contrib/syntax/vim/README.md README-vim-syntax.md
 # install binary
 install -d %{buildroot}%{_bindir}
 install -p -m 755 bundles/%{version}-dev/dynbinary/docker-%{version}-dev %{buildroot}%{_bindir}/docker
+
 # install dockerinit
 install -d %{buildroot}%{_libexecdir}/docker
 install -p -m 755 bundles/%{version}-dev/dynbinary/dockerinit-%{version}-dev %{buildroot}%{_libexecdir}/docker/dockerinit
+
 # install manpages
 install -d %{buildroot}%{_mandir}/man1
 install -p -m 644 man1/* %{buildroot}%{_mandir}/man1
+
 # install bash completion
 install -d %{buildroot}%{_sysconfdir}/bash_completion.d
 install -p -m 644 contrib/completion/bash/docker %{buildroot}%{_sysconfdir}/bash_completion.d/docker.bash
+
 # install zsh completion
 install -d %{buildroot}%{_datadir}/zsh/site-functions
 install -p -m 644 contrib/completion/zsh/_docker %{buildroot}%{_datadir}/zsh/site-functions
+
 # install vim syntax highlighting
 install -d %{buildroot}%{_datadir}/vim/vimfiles/{doc,ftdetect,syntax}
 install -p -m 644 contrib/syntax/vim/doc/dockerfile.txt %{buildroot}%{_datadir}/vim/vimfiles/doc
 install -p -m 644 contrib/syntax/vim/ftdetect/dockerfile.vim %{buildroot}%{_datadir}/vim/vimfiles/ftdetect
 install -p -m 644 contrib/syntax/vim/syntax/dockerfile.vim %{buildroot}%{_datadir}/vim/vimfiles/syntax
+
 # install udev rules
 install -d %{buildroot}%{_sysconfdir}/udev/rules.d
 install -p -m 755 contrib/udev/80-docker.rules %{buildroot}%{_sysconfdir}/udev/rules.d
+
 # install storage dir
 install -d -m 700 %{buildroot}%{_sharedstatedir}/docker
+
 # install systemd/init scripts
-%if %{with systemd}
 install -d %{buildroot}%{_unitdir}
 install -p -m 644 %{SOURCE1} %{buildroot}%{_unitdir}
 install -p -m 644 contrib/init/systemd/socket-activation/docker.socket %{buildroot}%{_unitdir}
-%else
-install -d %{buildroot}%{_sysconfdir}/sysconfig/
-install -p -m 644 contrib/init/sysvinit-redhat/docker.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/docker
-install -d %{buildroot}%{_initddir}
-install -p -m 755 contrib/init/sysvinit-redhat/docker %{buildroot}%{_initddir}/docker
-%endif
+
+# install dockerfiles
+install -d -p -m 755 %{buildroot}%{_datadir}/rhel-dockerfiles/apache
+install -p -m 644 contrib/rhel-dockerfiles/apache/Dockerfile %{buildroot}%{_datadir}/rhel-dockerfiles/apache
+install -p -m 644 contrib/rhel-dockerfiles/apache/run-apache.sh %{buildroot}%{_datadir}/rhel-dockerfiles/apache
+mv contrib/rhel-dockerfiles/apache/LICENSE ./LICENSE-apache
+mv contrib/rhel-dockerfiles/apache/README.md ./README-apache.md
+
 
 %pre
 getent group docker > /dev/null || %{_sbindir}/groupadd -r docker
 exit 0
 
 %post
-%if %{with systemd}
 %systemd_post docker
-%else
-# install but don't activate
-/sbin/chkconfig --add docker
-%endif
 
 %preun
-%if %{with systemd}
 %systemd_preun docker
-%else
-/sbin/service docker stop >/dev/null 2>&1
-/sbin/chkconfig --del docker
-%endif
 
 %postun
-%if %{with systemd}
 %systemd_postun_with_restart docker
-%else
-if [ "$1" -ge "1" ] ; then
-        /sbin/service docker condrestart >/dev/null 2>&1 || :
-fi
-%endif
 
 %files
 %defattr(-,root,root,-)
 %doc AUTHORS CHANGELOG.md CONTRIBUTING.md FIXME LICENSE MAINTAINERS NOTICE README.md 
 %doc LICENSE-vim-syntax README-vim-syntax.md
+%doc LICENSE-apache README-apache.md
 %{_mandir}/man1/*
 %{_bindir}/docker
 %dir %{_libexecdir}/docker
 %{_libexecdir}/docker/dockerinit
-%if %{with systemd}
 %{_unitdir}/docker.service
 %{_unitdir}/docker.socket
-%else
-%config(noreplace) %{_sysconfdir}/sysconfig/docker
-%{_initddir}/docker
-%endif
 %dir %{_sysconfdir}/bash_completion.d
 %{_sysconfdir}/bash_completion.d/docker.bash
 %{_datadir}/zsh/site-functions/_docker
@@ -194,8 +168,18 @@ fi
 %{_datadir}/vim/vimfiles/ftdetect/dockerfile.vim
 %dir %{_datadir}/vim/vimfiles/syntax
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
+%dir %{_datadir}/rhel-dockerfiles
+%dir %{_datadir}/rhel-dockerfiles/apache
+%{_datadir}/rhel-dockerfiles/apache/Dockerfile
+%{_datadir}/rhel-dockerfiles/apache/run-apache.sh
 
 %changelog
+* Fri May 09 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.10.0-9
+- use branch: https://github.com/lsm5/docker/commits/2014-05-09
+- install rhel-dockerfile for apache
+- cleanup: get rid of conditionals
+- libcontainer: create dirs/files as needed for bind mounts
+
 * Thu May 08 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.10.0-8
 - fix docker top
 
