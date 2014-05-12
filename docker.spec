@@ -5,12 +5,12 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit      5f5d517419819413c5b9571570c35d573cb97802
+%global commit      b9c40666952850f88e7f65775ab0da4dda018c8d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
 Version:        0.10.0
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -19,7 +19,7 @@ Patch1:     remove-btrfs-for-rhel.patch
 URL:            http://www.docker.io
 # only x86_64 for now: https://github.com/dotcloud/docker/issues/136
 ExclusiveArch:  x86_64
-#use branch: https://github.com/lsm5/docker/tree/2014-05-09
+#use branch: https://github.com/lsm5/docker/tree/2014-05-12
 Source0:        https://github.com/lsm5/docker/archive/%{commit}/docker-%{shortcommit}.tar.gz
 # though final name for sysconf/sysvinit files is simply 'docker',
 # having .sysvinit and .sysconfig makes things clear
@@ -39,9 +39,7 @@ BuildRequires:  golang(github.com/godbus/dbus)
 BuildRequires:  golang(github.com/coreos/go-systemd/activation)
 BuildRequires:  device-mapper-devel
 # btrfs not available for rhel yet
-%if 0%{?fedora}
-BuildRequires:  btrfs-progs-devel
-%endif
+#BuildRequires:  btrfs-progs-devel
 BuildRequires:  pkgconfig(systemd)
 Requires:       systemd-units
 # need xz to work with ubuntu images
@@ -64,9 +62,7 @@ servers, OpenStack clusters, public instances, or combinations of the above.
 %setup -q -n docker-%{commit}
 rm -rf vendor
 %patch0 -p1 -b remove-vendored-tar
-%if 0%{?rhel}
 %patch1 -p1 -b remove-btrfs-for-rhel
-%endif
 tar zxf %{SOURCE2} 
 
 %build
@@ -125,7 +121,7 @@ install -p -m 644 %{SOURCE1} %{buildroot}%{_unitdir}
 install -p -m 644 contrib/init/systemd/socket-activation/docker.socket %{buildroot}%{_unitdir}
 
 # install dockerfiles
-for d in apache mongodb; do
+for d in apache mariadb mongodb; do
     mv contrib/rhel-dockerfiles/$d/LICENSE ./LICENSE-$d
     mv contrib/rhel-dockerfiles/$d/README.md ./README-$d.md
     install -d -p -m 755 %{buildroot}%{_datadir}/rhel-dockerfiles/$d
@@ -171,10 +167,16 @@ exit 0
 %dir %{_datadir}/rhel-dockerfiles
 %dir %{_datadir}/rhel-dockerfiles/apache
 %{_datadir}/rhel-dockerfiles/apache/*
+%dir %{_datadir}/rhel-dockerfiles/mariadb
+%{_datadir}/rhel-dockerfiles/mariadb/*
 %dir %{_datadir}/rhel-dockerfiles/mongodb
 %{_datadir}/rhel-dockerfiles/mongodb/*
 
 %changelog
+* Mon May 12 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.10.0-11
+- add apache, mariadb and mongodb dockerfiles
+- branch 2014-05-12
+
 * Fri May 09 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.10.0-10
 - add rhel-dockerfile/mongodb
 
