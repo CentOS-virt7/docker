@@ -5,12 +5,12 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit      b9c40666952850f88e7f65775ab0da4dda018c8d
+%global commit      234440f3b1fbf1c3fbadf0580037d69c08229ff8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
 Version:        0.10.0
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -121,13 +121,19 @@ install -p -m 644 %{SOURCE1} %{buildroot}%{_unitdir}
 install -p -m 644 contrib/init/systemd/socket-activation/docker.socket %{buildroot}%{_unitdir}
 
 # install dockerfiles
-for d in apache mariadb mongodb; do
+for d in apache mariadb mongodb postgres; do
     mv contrib/rhel-dockerfiles/$d/LICENSE ./LICENSE-$d
     mv contrib/rhel-dockerfiles/$d/README.md ./README-$d.md
     install -d -p -m 755 %{buildroot}%{_datadir}/rhel-dockerfiles/$d
     install -p -m 644 contrib/rhel-dockerfiles/$d/* %{buildroot}%{_datadir}/rhel-dockerfiles/$d
 done
 
+for d in httpd mariadb; do
+    mv contrib/rhel-dockerfiles/systemd/$d/LICENSE ./LICENSE-systemd-$d
+    mv contrib/rhel-dockerfiles/systemd/$d/README.md ./README-systemd-$d.md
+    install -d -p -m 755 %{buildroot}%{_datadir}/rhel-dockerfiles/systemd/$d
+    install -p -m 644 contrib/rhel-dockerfiles/systemd/$d/* %{buildroot}%{_datadir}/rhel-dockerfiles/systemd/$d
+done
 
 %pre
 getent group docker > /dev/null || %{_sbindir}/groupadd -r docker
@@ -171,8 +177,17 @@ exit 0
 %{_datadir}/rhel-dockerfiles/mariadb/*
 %dir %{_datadir}/rhel-dockerfiles/mongodb
 %{_datadir}/rhel-dockerfiles/mongodb/*
+%dir %{_datadir}/rhel-dockerfiles/postgres
+%{_datadir}/rhel-dockerfiles/postgres/*
+%dir %{_datadir}/rhel-dockerfiles/systemd/httpd
+%{_datadir}/rhel-dockerfiles/systemd/httpd/*
+%dir %{_datadir}/rhel-dockerfiles/systemd/mariadb
+%{_datadir}/rhel-dockerfiles/systemd/mariadb/*
 
 %changelog
+* Wed May 14 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.10.0-12
+- include dockerfiles for postgres, systemd/{httpd,mariadb}
+
 * Mon May 12 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.10.0-11
 - add apache, mariadb and mongodb dockerfiles
 - branch 2014-05-12
