@@ -10,12 +10,11 @@
 
 Name:           docker
 Version:        0.11.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
 Patch0:     remove-vendored-tar.patch
-Patch1:     remove-btrfs-for-rhel.patch
 URL:            http://www.docker.io
 # only x86_64 for now: https://github.com/dotcloud/docker/issues/136
 ExclusiveArch:  x86_64
@@ -39,7 +38,7 @@ BuildRequires:  golang(github.com/godbus/dbus)
 BuildRequires:  golang(github.com/coreos/go-systemd/activation)
 BuildRequires:  device-mapper-devel
 # btrfs not available for rhel yet
-#BuildRequires:  btrfs-progs-devel
+BuildRequires:  btrfs-progs-devel
 BuildRequires:  pkgconfig(systemd)
 Requires:       systemd-units
 # need xz to work with ubuntu images
@@ -62,7 +61,6 @@ servers, OpenStack clusters, public instances, or combinations of the above.
 %setup -q -n docker-%{commit}
 rm -rf vendor
 %patch0 -p1 -b remove-vendored-tar
-#%patch1 -p1 -b remove-btrfs-for-rhel
 tar zxf %{SOURCE2} 
 
 %build
@@ -185,6 +183,9 @@ exit 0
 %{_datadir}/rhel-dockerfiles/systemd/mariadb/*
 
 %changelog
+* Mon May 19 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-2
+- add btrfs
+
 * Mon May 19 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-1
 - use latest master
 - branch: https://github.com/lsm5/docker/commits/2014-05-09-2
