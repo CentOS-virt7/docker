@@ -5,12 +5,12 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit      234440f3b1fbf1c3fbadf0580037d69c08229ff8
+%global commit      ddde72e9d5e0104afb3f9279bebaa8c46a23dbbe
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
 Version:        0.10.0
-Release:        12%{?dist}
+Release:        13%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -19,7 +19,7 @@ Patch1:     remove-btrfs-for-rhel.patch
 URL:            http://www.docker.io
 # only x86_64 for now: https://github.com/dotcloud/docker/issues/136
 ExclusiveArch:  x86_64
-#use branch: https://github.com/lsm5/docker/tree/2014-05-12
+#use branch: https://github.com/lsm5/docker/tree/2014-05-19
 Source0:        https://github.com/lsm5/docker/archive/%{commit}/docker-%{shortcommit}.tar.gz
 # though final name for sysconf/sysvinit files is simply 'docker',
 # having .sysvinit and .sysconfig makes things clear
@@ -185,6 +185,9 @@ exit 0
 %{_datadir}/rhel-dockerfiles/systemd/mariadb/*
 
 %changelog
+* Mon May 19 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.10.0-13
+- add registry search list patch
+
 * Wed May 14 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.10.0-12
 - include dockerfiles for postgres, systemd/{httpd,mariadb}
 
