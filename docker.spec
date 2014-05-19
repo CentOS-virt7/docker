@@ -5,12 +5,12 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit      ddde72e9d5e0104afb3f9279bebaa8c46a23dbbe
+%global commit      abf8689d63346df94ccd2afab0ef8b2c285190cd
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
-Version:        0.10.0
-Release:        13%{?dist}
+Version:        0.11.1
+Release:        1%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -19,7 +19,7 @@ Patch1:     remove-btrfs-for-rhel.patch
 URL:            http://www.docker.io
 # only x86_64 for now: https://github.com/dotcloud/docker/issues/136
 ExclusiveArch:  x86_64
-#use branch: https://github.com/lsm5/docker/tree/2014-05-19
+#use branch: https://github.com/lsm5/docker/tree/2014-05-19-2
 Source0:        https://github.com/lsm5/docker/archive/%{commit}/docker-%{shortcommit}.tar.gz
 # though final name for sysconf/sysvinit files is simply 'docker',
 # having .sysvinit and .sysconfig makes things clear
@@ -62,7 +62,7 @@ servers, OpenStack clusters, public instances, or combinations of the above.
 %setup -q -n docker-%{commit}
 rm -rf vendor
 %patch0 -p1 -b remove-vendored-tar
-%patch1 -p1 -b remove-btrfs-for-rhel
+#%patch1 -p1 -b remove-btrfs-for-rhel
 tar zxf %{SOURCE2} 
 
 %build
@@ -185,6 +185,10 @@ exit 0
 %{_datadir}/rhel-dockerfiles/systemd/mariadb/*
 
 %changelog
+* Mon May 19 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-1
+- use latest master
+- branch: https://github.com/lsm5/docker/commits/2014-05-09-2
+
 * Mon May 19 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.10.0-13
 - add registry search list patch
 

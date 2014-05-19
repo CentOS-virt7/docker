@@ -1,18 +1,18 @@
-diff -uNr docker-a6e878a916ba2b281a82fe780fc129727b103555/archive/archive.go docker-1/archive/archive.go
---- docker-a6e878a916ba2b281a82fe780fc129727b103555/archive/archive.go	2014-04-25 13:44:42.000000000 -0400
-+++ docker-1/archive/archive.go	2014-04-25 15:13:23.771456211 -0400
-@@ -8,7 +8,7 @@
- 	"fmt"
+diff -uNr docker-abf8689d63346df94ccd2afab0ef8b2c285190cd/archive/archive.go docker-abf8689d63346df94ccd2afab0ef8b2c285190cd-1/archive/archive.go
+--- docker-abf8689d63346df94ccd2afab0ef8b2c285190cd/archive/archive.go	2014-05-19 14:57:48.000000000 -0400
++++ docker-abf8689d63346df94ccd2afab0ef8b2c285190cd-1/archive/archive.go	2014-05-19 15:07:46.300485802 -0400
+@@ -18,7 +18,7 @@
+ 
  	"github.com/dotcloud/docker/pkg/system"
  	"github.com/dotcloud/docker/utils"
 -	"github.com/dotcloud/docker/vendor/src/code.google.com/p/go/src/pkg/archive/tar"
 +	"archive/tar"
- 	"io"
- 	"io/ioutil"
- 	"os"
-diff -uNr docker-a6e878a916ba2b281a82fe780fc129727b103555/archive/archive_test.go docker-1/archive/archive_test.go
---- docker-a6e878a916ba2b281a82fe780fc129727b103555/archive/archive_test.go	2014-04-25 13:44:42.000000000 -0400
-+++ docker-1/archive/archive_test.go	2014-04-25 15:13:15.716419097 -0400
+ )
+ 
+ type (
+diff -uNr docker-abf8689d63346df94ccd2afab0ef8b2c285190cd/archive/archive_test.go docker-abf8689d63346df94ccd2afab0ef8b2c285190cd-1/archive/archive_test.go
+--- docker-abf8689d63346df94ccd2afab0ef8b2c285190cd/archive/archive_test.go	2014-05-19 14:57:48.000000000 -0400
++++ docker-abf8689d63346df94ccd2afab0ef8b2c285190cd-1/archive/archive_test.go	2014-05-19 15:07:39.279453382 -0400
 @@ -3,7 +3,7 @@
  import (
  	"bytes"
@@ -22,21 +22,21 @@ diff -uNr docker-a6e878a916ba2b281a82fe780fc129727b103555/archive/archive_test.g
  	"io"
  	"io/ioutil"
  	"os"
-diff -uNr docker-a6e878a916ba2b281a82fe780fc129727b103555/archive/changes.go docker-1/archive/changes.go
---- docker-a6e878a916ba2b281a82fe780fc129727b103555/archive/changes.go	2014-04-25 13:44:42.000000000 -0400
-+++ docker-1/archive/changes.go	2014-04-25 15:13:04.199365871 -0400
-@@ -5,7 +5,7 @@
- 	"fmt"
+diff -uNr docker-abf8689d63346df94ccd2afab0ef8b2c285190cd/archive/changes.go docker-abf8689d63346df94ccd2afab0ef8b2c285190cd-1/archive/changes.go
+--- docker-abf8689d63346df94ccd2afab0ef8b2c285190cd/archive/changes.go	2014-05-19 14:57:48.000000000 -0400
++++ docker-abf8689d63346df94ccd2afab0ef8b2c285190cd-1/archive/changes.go	2014-05-19 15:07:30.610413237 -0400
+@@ -12,7 +12,7 @@
+ 
  	"github.com/dotcloud/docker/pkg/system"
  	"github.com/dotcloud/docker/utils"
 -	"github.com/dotcloud/docker/vendor/src/code.google.com/p/go/src/pkg/archive/tar"
 +	"archive/tar"
- 	"io"
- 	"os"
- 	"path/filepath"
-diff -uNr docker-a6e878a916ba2b281a82fe780fc129727b103555/archive/diff.go docker-1/archive/diff.go
---- docker-a6e878a916ba2b281a82fe780fc129727b103555/archive/diff.go	2014-04-25 13:44:42.000000000 -0400
-+++ docker-1/archive/diff.go	2014-04-25 15:12:55.005323418 -0400
+ )
+ 
+ type ChangeType int
+diff -uNr docker-abf8689d63346df94ccd2afab0ef8b2c285190cd/archive/diff.go docker-abf8689d63346df94ccd2afab0ef8b2c285190cd-1/archive/diff.go
+--- docker-abf8689d63346df94ccd2afab0ef8b2c285190cd/archive/diff.go	2014-05-19 14:57:48.000000000 -0400
++++ docker-abf8689d63346df94ccd2afab0ef8b2c285190cd-1/archive/diff.go	2014-05-19 15:07:20.216365318 -0400
 @@ -2,7 +2,7 @@
  
  import (
@@ -46,9 +46,9 @@ diff -uNr docker-a6e878a916ba2b281a82fe780fc129727b103555/archive/diff.go docker
  	"io"
  	"io/ioutil"
  	"os"
-diff -uNr docker-a6e878a916ba2b281a82fe780fc129727b103555/archive/wrap.go docker-1/archive/wrap.go
---- docker-a6e878a916ba2b281a82fe780fc129727b103555/archive/wrap.go	2014-04-25 13:44:42.000000000 -0400
-+++ docker-1/archive/wrap.go	2014-04-25 15:13:40.052531288 -0400
+diff -uNr docker-abf8689d63346df94ccd2afab0ef8b2c285190cd/archive/wrap.go docker-abf8689d63346df94ccd2afab0ef8b2c285190cd-1/archive/wrap.go
+--- docker-abf8689d63346df94ccd2afab0ef8b2c285190cd/archive/wrap.go	2014-05-19 14:57:48.000000000 -0400
++++ docker-abf8689d63346df94ccd2afab0ef8b2c285190cd-1/archive/wrap.go	2014-05-19 15:07:51.820511412 -0400
 @@ -2,7 +2,7 @@
  
  import (
@@ -58,9 +58,9 @@ diff -uNr docker-a6e878a916ba2b281a82fe780fc129727b103555/archive/wrap.go docker
  	"io/ioutil"
  )
  
-diff -uNr docker-a6e878a916ba2b281a82fe780fc129727b103555/graph/tags_unit_test.go docker-1/graph/tags_unit_test.go
---- docker-a6e878a916ba2b281a82fe780fc129727b103555/graph/tags_unit_test.go	2014-04-25 13:44:42.000000000 -0400
-+++ docker-1/graph/tags_unit_test.go	2014-04-25 15:13:58.029614389 -0400
+diff -uNr docker-abf8689d63346df94ccd2afab0ef8b2c285190cd/graph/tags_unit_test.go docker-abf8689d63346df94ccd2afab0ef8b2c285190cd-1/graph/tags_unit_test.go
+--- docker-abf8689d63346df94ccd2afab0ef8b2c285190cd/graph/tags_unit_test.go	2014-05-19 14:57:48.000000000 -0400
++++ docker-abf8689d63346df94ccd2afab0ef8b2c285190cd-1/graph/tags_unit_test.go	2014-05-19 15:08:15.167619379 -0400
 @@ -6,7 +6,7 @@
  	_ "github.com/dotcloud/docker/daemon/graphdriver/vfs" // import the vfs driver so it is used in the tests
  	"github.com/dotcloud/docker/image"
@@ -70,9 +70,9 @@ diff -uNr docker-a6e878a916ba2b281a82fe780fc129727b103555/graph/tags_unit_test.g
  	"io"
  	"os"
  	"path"
-diff -uNr docker-a6e878a916ba2b281a82fe780fc129727b103555/integration/api_test.go docker-1/integration/api_test.go
---- docker-a6e878a916ba2b281a82fe780fc129727b103555/integration/api_test.go	2014-04-25 13:44:42.000000000 -0400
-+++ docker-1/integration/api_test.go	2014-04-25 15:14:20.072716196 -0400
+diff -uNr docker-abf8689d63346df94ccd2afab0ef8b2c285190cd/integration/api_test.go docker-abf8689d63346df94ccd2afab0ef8b2c285190cd-1/integration/api_test.go
+--- docker-abf8689d63346df94ccd2afab0ef8b2c285190cd/integration/api_test.go	2014-05-19 14:57:48.000000000 -0400
++++ docker-abf8689d63346df94ccd2afab0ef8b2c285190cd-1/integration/api_test.go	2014-05-19 15:08:35.129711285 -0400
 @@ -21,7 +21,7 @@
  	"github.com/dotcloud/docker/image"
  	"github.com/dotcloud/docker/runconfig"
@@ -82,21 +82,21 @@ diff -uNr docker-a6e878a916ba2b281a82fe780fc129727b103555/integration/api_test.g
  )
  
  func TestGetEvents(t *testing.T) {
-diff -uNr docker-a6e878a916ba2b281a82fe780fc129727b103555/integration/utils_test.go docker-1/integration/utils_test.go
---- docker-a6e878a916ba2b281a82fe780fc129727b103555/integration/utils_test.go	2014-04-25 13:44:42.000000000 -0400
-+++ docker-1/integration/utils_test.go	2014-04-25 15:14:10.081669969 -0400
-@@ -3,7 +3,7 @@
- import (
- 	"bytes"
- 	"fmt"
+diff -uNr docker-abf8689d63346df94ccd2afab0ef8b2c285190cd/integration/utils_test.go docker-abf8689d63346df94ccd2afab0ef8b2c285190cd-1/integration/utils_test.go
+--- docker-abf8689d63346df94ccd2afab0ef8b2c285190cd/integration/utils_test.go	2014-05-19 14:57:48.000000000 -0400
++++ docker-abf8689d63346df94ccd2afab0ef8b2c285190cd-1/integration/utils_test.go	2014-05-19 15:08:27.797677402 -0400
+@@ -13,7 +13,7 @@
+ 	"testing"
+ 	"time"
+ 
 -	"github.com/dotcloud/docker/vendor/src/code.google.com/p/go/src/pkg/archive/tar"
 +	"archive/tar"
- 	"io"
- 	"io/ioutil"
- 	"net/http"
-diff -uNr docker-a6e878a916ba2b281a82fe780fc129727b103555/utils/tarsum.go docker-1/utils/tarsum.go
---- docker-a6e878a916ba2b281a82fe780fc129727b103555/utils/tarsum.go	2014-04-25 13:44:42.000000000 -0400
-+++ docker-1/utils/tarsum.go	2014-04-25 15:14:27.355749682 -0400
+ 
+ 	"github.com/dotcloud/docker/builtins"
+ 	"github.com/dotcloud/docker/daemon"
+diff -uNr docker-abf8689d63346df94ccd2afab0ef8b2c285190cd/utils/tarsum.go docker-abf8689d63346df94ccd2afab0ef8b2c285190cd-1/utils/tarsum.go
+--- docker-abf8689d63346df94ccd2afab0ef8b2c285190cd/utils/tarsum.go	2014-05-19 14:57:48.000000000 -0400
++++ docker-abf8689d63346df94ccd2afab0ef8b2c285190cd-1/utils/tarsum.go	2014-05-19 15:08:50.751782938 -0400
 @@ -5,7 +5,7 @@
  	"compress/gzip"
  	"crypto/sha256"
@@ -106,3 +106,15 @@ diff -uNr docker-a6e878a916ba2b281a82fe780fc129727b103555/utils/tarsum.go docker
  	"hash"
  	"io"
  	"sort"
+diff -uNr docker-abf8689d63346df94ccd2afab0ef8b2c285190cd/utils/tarsum_test.go docker-abf8689d63346df94ccd2afab0ef8b2c285190cd-1/utils/tarsum_test.go
+--- docker-abf8689d63346df94ccd2afab0ef8b2c285190cd/utils/tarsum_test.go	2014-05-19 14:57:48.000000000 -0400
++++ docker-abf8689d63346df94ccd2afab0ef8b2c285190cd-1/utils/tarsum_test.go	2014-05-19 15:08:42.956747621 -0400
+@@ -4,7 +4,7 @@
+ 	"bytes"
+ 	"crypto/rand"
+ 	"fmt"
+-	"github.com/dotcloud/docker/vendor/src/code.google.com/p/go/src/pkg/archive/tar"
++	"archive/tar"
+ 	"io"
+ 	"io/ioutil"
+ 	"os"
