@@ -5,12 +5,12 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit      abf8689d63346df94ccd2afab0ef8b2c285190cd
+%global commit      c0f706b1a4d9263f4551c1407a707568a835276b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
 Version:        0.11.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -183,6 +183,9 @@ exit 0
 %{_datadir}/rhel-dockerfiles/systemd/mariadb/*
 
 %changelog
+* Wed May 21 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-3
+- mount /run with correct selinux label
+
 * Mon May 19 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-2
 - add btrfs
 
