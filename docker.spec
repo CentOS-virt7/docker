@@ -5,12 +5,12 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit      c0f706b1a4d9263f4551c1407a707568a835276b
+%global commit      faaf6cd738abdce79ee43f9334e8e1d611a26752
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
 Version:        0.11.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -18,7 +18,7 @@ Patch0:     remove-vendored-tar.patch
 URL:            http://www.docker.io
 # only x86_64 for now: https://github.com/dotcloud/docker/issues/136
 ExclusiveArch:  x86_64
-#use branch: https://github.com/lsm5/docker/tree/2014-05-19-2
+#use branch: https://github.com/lsm5/docker/tree/2014-05-22
 Source0:        https://github.com/lsm5/docker/archive/%{commit}/docker-%{shortcommit}.tar.gz
 # though final name for sysconf/sysvinit files is simply 'docker',
 # having .sysvinit and .sysconfig makes things clear
@@ -122,15 +122,15 @@ install -p -m 644 contrib/init/systemd/socket-activation/docker.socket %{buildro
 for d in apache mariadb mongodb postgres; do
     mv contrib/rhel-dockerfiles/$d/LICENSE ./LICENSE-$d
     mv contrib/rhel-dockerfiles/$d/README.md ./README-$d.md
-    install -d -p -m 755 %{buildroot}%{_datadir}/rhel-dockerfiles/$d
-    install -p -m 644 contrib/rhel-dockerfiles/$d/* %{buildroot}%{_datadir}/rhel-dockerfiles/$d
+    install -d -p -m 755 %{buildroot}%{_datadir}/dockerfiles/$d
+    install -p -m 644 contrib/rhel-dockerfiles/$d/* %{buildroot}%{_datadir}/dockerfiles/$d
 done
 
 for d in httpd mariadb; do
     mv contrib/rhel-dockerfiles/systemd/$d/LICENSE ./LICENSE-systemd-$d
     mv contrib/rhel-dockerfiles/systemd/$d/README.md ./README-systemd-$d.md
-    install -d -p -m 755 %{buildroot}%{_datadir}/rhel-dockerfiles/systemd/$d
-    install -p -m 644 contrib/rhel-dockerfiles/systemd/$d/* %{buildroot}%{_datadir}/rhel-dockerfiles/systemd/$d
+    install -d -p -m 755 %{buildroot}%{_datadir}/dockerfiles/systemd/$d
+    install -p -m 644 contrib/rhel-dockerfiles/systemd/$d/* %{buildroot}%{_datadir}/dockerfiles/systemd/$d
 done
 
 %pre
@@ -168,21 +168,25 @@ exit 0
 %{_datadir}/vim/vimfiles/ftdetect/dockerfile.vim
 %dir %{_datadir}/vim/vimfiles/syntax
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
-%dir %{_datadir}/rhel-dockerfiles
-%dir %{_datadir}/rhel-dockerfiles/apache
-%{_datadir}/rhel-dockerfiles/apache/*
-%dir %{_datadir}/rhel-dockerfiles/mariadb
-%{_datadir}/rhel-dockerfiles/mariadb/*
-%dir %{_datadir}/rhel-dockerfiles/mongodb
-%{_datadir}/rhel-dockerfiles/mongodb/*
-%dir %{_datadir}/rhel-dockerfiles/postgres
-%{_datadir}/rhel-dockerfiles/postgres/*
-%dir %{_datadir}/rhel-dockerfiles/systemd/httpd
-%{_datadir}/rhel-dockerfiles/systemd/httpd/*
-%dir %{_datadir}/rhel-dockerfiles/systemd/mariadb
-%{_datadir}/rhel-dockerfiles/systemd/mariadb/*
+%dir %{_datadir}/dockerfiles
+%dir %{_datadir}/dockerfiles/apache
+%{_datadir}/dockerfiles/apache/*
+%dir %{_datadir}/dockerfiles/mariadb
+%{_datadir}/dockerfiles/mariadb/*
+%dir %{_datadir}/dockerfiles/mongodb
+%{_datadir}/dockerfiles/mongodb/*
+%dir %{_datadir}/dockerfiles/postgres
+%{_datadir}/dockerfiles/postgres/*
+%dir %{_datadir}/dockerfiles/systemd/httpd
+%{_datadir}/dockerfiles/systemd/httpd/*
+%dir %{_datadir}/dockerfiles/systemd/mariadb
+%{_datadir}/dockerfiles/systemd/mariadb/*
 
 %changelog
+* Thu May 22 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-4
+- branch 2014-05-22
+- rename rhel-dockerfiles dir to dockerfiles
+
 * Wed May 21 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-3
 - mount /run with correct selinux label
 
