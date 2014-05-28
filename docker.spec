@@ -5,12 +5,12 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit      f46917b4b4fea42acd50dee667b487930a7af44e
+%global commit      98b01f3fcdbcee7a9430c9fbd2e89123347e55b6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
 Version:        0.11.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -18,7 +18,7 @@ Patch0:     remove-vendored-tar.patch
 URL:            http://www.docker.io
 # only x86_64 for now: https://github.com/dotcloud/docker/issues/136
 ExclusiveArch:  x86_64
-#use branch: https://github.com/lsm5/docker/tree/2014-05-22
+#use branch: https://github.com/lsm5/docker/tree/2014-05-28-2
 Source0:        https://github.com/lsm5/docker/archive/%{commit}/docker-%{shortcommit}.tar.gz
 # though final name for sysconf/sysvinit files is simply 'docker',
 # having .sysvinit and .sysconfig makes things clear
@@ -91,6 +91,8 @@ install -p -m 755 bundles/%{version}-dev/dynbinary/dockerinit-%{version}-dev %{b
 # install manpages
 install -d %{buildroot}%{_mandir}/man1
 install -p -m 644 man1/* %{buildroot}%{_mandir}/man1
+install -d %{buildroot}%{_mandir}/man5
+install -p -m 644 man5/* %{buildroot}%{_mandir}/man5
 
 # install bash completion
 install -d %{buildroot}%{_sysconfdir}/bash_completion.d
@@ -151,6 +153,7 @@ exit 0
 %doc AUTHORS CHANGELOG.md CONTRIBUTING.md FIXME MAINTAINERS NOTICE
 %doc LICENSE* README*.md
 %{_mandir}/man1/*
+%{_mandir}/man5/*
 %{_bindir}/docker
 %dir %{_libexecdir}/docker
 %{_libexecdir}/docker/dockerinit
@@ -183,6 +186,9 @@ exit 0
 %{_datadir}/dockerfiles/systemd/mariadb/*
 
 %changelog
+* Thu May 22 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-6
+- secret store patch
+
 * Thu May 22 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-5
 - native driver: add required capabilities (dotcloud issue #5928)
 
