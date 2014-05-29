@@ -5,12 +5,12 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit      3253dbcc06be3b9cfc34b414d22e0e5ab39ebdf2
+%global commit      a46b8b003a152bac31ff9085bd4f0a5a53d5a376
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
 Version:        0.11.1
-Release:        7%{?dist}
+Release:        9%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -24,6 +24,7 @@ Source0:        https://github.com/lsm5/docker/archive/%{commit}/docker-%{shortc
 # having .sysvinit and .sysconfig makes things clear
 Source1:        docker.service
 Source2:        docker-man.tar.gz
+Source3:        docker.sysconfig
 BuildRequires:  gcc
 BuildRequires:  glibc-static
 # ensure build uses golang 1.2-7 and above
@@ -46,6 +47,7 @@ Requires:       systemd-units
 Requires:       xz
 
 Provides:       lxc-docker = %{version}
+Provides:       docker
 
 %description
 Docker is an open-source engine that automates the deployment of any
@@ -121,7 +123,7 @@ install -p -m 644 %{SOURCE1} %{buildroot}%{_unitdir}
 install -p -m 644 contrib/init/systemd/socket-activation/docker.socket %{buildroot}%{_unitdir}
 # for additional args
 install -d %{buildroot}%{_sysconfdir}/sysconfig/
-install -p -m 644 contrib/init/sysvinit-redhat/docker.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/docker
+install -p -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/sysconfig/docker
 
 # install dockerfiles
 for d in apache mariadb mongodb postgres; do
@@ -137,6 +139,9 @@ for d in httpd mariadb; do
     install -d -p -m 755 %{buildroot}%{_datadir}/dockerfiles/systemd/$d
     install -p -m 644 contrib/rhel-dockerfiles/systemd/$d/* %{buildroot}%{_datadir}/dockerfiles/systemd/$d
 done
+
+# install secrets dir
+install -d -p -m 640 %{buildroot}/%{_sysconfdir}/docker/secrets
 
 %pre
 getent group docker > /dev/null || %{_sbindir}/groupadd -r docker
@@ -158,6 +163,8 @@ exit 0
 %{_mandir}/man1/*
 %{_mandir}/man5/*
 %{_bindir}/docker
+%dir %{_sysconfdir}/docker
+%dir %{_sysconfdir}/docker/secrets
 %dir %{_libexecdir}/docker
 %{_libexecdir}/docker/dockerinit
 %{_unitdir}/docker.service
@@ -190,6 +197,12 @@ exit 0
 %{_datadir}/dockerfiles/systemd/mariadb/*
 
 %changelog
+* Thu May 29 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-9
+- create and own /etc/docker/secrets
+
+* Thu May 29 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-8
+- don't use docker.sysconfig meant for sysvinit (just to avoid confusion)
+
 * Thu May 29 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-7
 - install /etc/sysconfig/docker for additional args
 - use branch 2014-05-29 with modified secrets dir path

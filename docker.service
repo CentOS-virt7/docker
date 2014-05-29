@@ -5,6 +5,7 @@ After=network.target
 Requires=docker.socket
 
 [Service]
+Type=notify
 EnvironmentFile=-/etc/sysconfig/docker
 ExecStart=/usr/bin/docker -d --selinux-enabled --registry-append=registry.access.redhat.com/redhat/ -H fd://
 Restart=on-failure
