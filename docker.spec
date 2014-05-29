@@ -10,7 +10,7 @@
 
 Name:           docker
 Version:        0.11.1
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -141,7 +141,7 @@ for d in httpd mariadb; do
 done
 
 # install secrets dir
-install -d -p -m 640 %{buildroot}/%{_sysconfdir}/docker/secrets
+install -d -p -m 750 %{buildroot}/%{_sysconfdir}/docker/secrets
 
 %pre
 getent group docker > /dev/null || %{_sbindir}/groupadd -r docker
@@ -197,6 +197,9 @@ exit 0
 %{_datadir}/dockerfiles/systemd/mariadb/*
 
 %changelog
+* Thu May 29 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-10
+- /etc/docker/secrets has permissions 750
+
 * Thu May 29 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-9
 - create and own /etc/docker/secrets
 
