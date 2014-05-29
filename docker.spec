@@ -5,12 +5,12 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit      98b01f3fcdbcee7a9430c9fbd2e89123347e55b6
+%global commit      3253dbcc06be3b9cfc34b414d22e0e5ab39ebdf2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
 Version:        0.11.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -18,7 +18,7 @@ Patch0:     remove-vendored-tar.patch
 URL:            http://www.docker.io
 # only x86_64 for now: https://github.com/dotcloud/docker/issues/136
 ExclusiveArch:  x86_64
-#use branch: https://github.com/lsm5/docker/tree/2014-05-28-2
+#use branch: https://github.com/lsm5/docker/tree/2014-05-29
 Source0:        https://github.com/lsm5/docker/archive/%{commit}/docker-%{shortcommit}.tar.gz
 # though final name for sysconf/sysvinit files is simply 'docker',
 # having .sysvinit and .sysconfig makes things clear
@@ -119,6 +119,9 @@ install -d -m 700 %{buildroot}%{_sharedstatedir}/docker
 install -d %{buildroot}%{_unitdir}
 install -p -m 644 %{SOURCE1} %{buildroot}%{_unitdir}
 install -p -m 644 contrib/init/systemd/socket-activation/docker.socket %{buildroot}%{_unitdir}
+# for additional args
+install -d %{buildroot}%{_sysconfdir}/sysconfig/
+install -p -m 644 contrib/init/sysvinit-redhat/docker.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/docker
 
 # install dockerfiles
 for d in apache mariadb mongodb postgres; do
@@ -159,6 +162,7 @@ exit 0
 %{_libexecdir}/docker/dockerinit
 %{_unitdir}/docker.service
 %{_unitdir}/docker.socket
+%{_sysconfdir}/sysconfig/docker
 %dir %{_sysconfdir}/bash_completion.d
 %{_sysconfdir}/bash_completion.d/docker.bash
 %{_datadir}/zsh/site-functions/_docker
@@ -186,7 +190,11 @@ exit 0
 %{_datadir}/dockerfiles/systemd/mariadb/*
 
 %changelog
-* Thu May 22 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-6
+* Thu May 29 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-7
+- install /etc/sysconfig/docker for additional args
+- use branch 2014-05-29 with modified secrets dir path
+
+* Thu May 29 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-6
 - secret store patch
 
 * Thu May 22 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-5
