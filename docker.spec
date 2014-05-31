@@ -10,7 +10,7 @@
 
 Name:           docker
 Version:        0.11.1
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -142,14 +142,14 @@ done
 
 # install secrets dir
 install -d -p -m 750 %{buildroot}/%{_sysconfdir}/docker/secrets
+ln -s %{_sysconfdir}/pki/entitlement %{buildroot}%{_sysconfdir}/docker/secrets/etc-pki-entitlement
+ln -s %{_sysconfdir}/yum.repos.d/redhat.repo %{buildroot}%{_sysconfdir}/docker/secrets/rhel7.repo
 
 %pre
 getent group docker > /dev/null || %{_sbindir}/groupadd -r docker
 exit 0
 
 %post
-ln -s /etc/pki/entitlement /etc/docker/secrets/etc-pki-entitlement
-ln -s /etc/yum.repos.d/redhat.repo /etc/docker/secrets/rhel7.repo
 %systemd_post docker
 
 %preun
@@ -167,6 +167,8 @@ ln -s /etc/yum.repos.d/redhat.repo /etc/docker/secrets/rhel7.repo
 %{_bindir}/docker
 %dir %{_sysconfdir}/docker
 %dir %{_sysconfdir}/docker/secrets
+%{_sysconfdir}/docker/secrets/etc-pki-entitlement
+%{_sysconfdir}/docker/secrets/rhel7.repo
 %dir %{_libexecdir}/docker
 %{_libexecdir}/docker/dockerinit
 %{_unitdir}/docker.service
@@ -199,6 +201,10 @@ ln -s /etc/yum.repos.d/redhat.repo /etc/docker/secrets/rhel7.repo
 %{_datadir}/dockerfiles/systemd/mariadb/*
 
 %changelog
+* Sat May 31 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-12
+- create symlinks at install time and not in scriptlets
+- own symlinks in /etc/docker/secrets
+
 * Sat May 31 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-11
 - add symlinks for sharing host entitlements
 
