@@ -10,7 +10,7 @@
 
 Name:           docker
 Version:        0.11.1
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -148,6 +148,8 @@ getent group docker > /dev/null || %{_sbindir}/groupadd -r docker
 exit 0
 
 %post
+ln -s /etc/pki/entitlement /etc/docker/secrets/etc-pki-entitlement
+ln -s /etc/yum.repos.d/redhat.repo /etc/docker/secrets/rhel7.repo
 %systemd_post docker
 
 %preun
@@ -197,6 +199,9 @@ exit 0
 %{_datadir}/dockerfiles/systemd/mariadb/*
 
 %changelog
+* Sat May 31 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-11
+- add symlinks for sharing host entitlements
+
 * Thu May 29 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-10
 - /etc/docker/secrets has permissions 750
 
