@@ -10,7 +10,7 @@
 
 Name:           docker
 Version:        0.11.1
-Release:        13%{?dist}
+Release:        14%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -143,7 +143,8 @@ done
 # install secrets dir
 install -d -p -m 750 %{buildroot}/%{_sysconfdir}/docker/secrets
 ln -s %{_sysconfdir}/pki/entitlement %{buildroot}%{_sysconfdir}/docker/secrets/etc-pki-entitlement
-ln -s %{_sysconfdir}/yum.repos.d %{buildroot}%{_sysconfdir}/docker/secrets/etc-yum-repos-d
+install -d -p -m 750 %{buildroot}/%{_sysconfdir}/docker/secrets/etc-yum-repos-d
+ln -s %{_sysconfdir}/yum.repos.d/rhel7.repo %{buildroot}%{_sysconfdir}/docker/secrets/etc-yum-repos-d/rhel7.repo
 
 %pre
 getent group docker > /dev/null || %{_sbindir}/groupadd -r docker
@@ -168,7 +169,8 @@ exit 0
 %dir %{_sysconfdir}/docker
 %dir %{_sysconfdir}/docker/secrets
 %{_sysconfdir}/docker/secrets/etc-pki-entitlement
-%{_sysconfdir}/docker/secrets/etc-yum-repos-d
+%dir %{_sysconfdir}/docker/secrets/etc-yum-repos-d
+%{_sysconfdir}/docker/secrets/etc-yum-repos-d/rhel7.repo
 %dir %{_libexecdir}/docker
 %{_libexecdir}/docker/dockerinit
 %{_unitdir}/docker.service
@@ -201,6 +203,9 @@ exit 0
 %{_datadir}/dockerfiles/systemd/mariadb/*
 
 %changelog
+* Mon Jun 02 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-14
+- only symlink the repo itself, not the dir
+
 * Sun Jun 01 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-13
 - use the repo dir itself and not repo for second symlink
 
