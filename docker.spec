@@ -5,12 +5,12 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit      9eb45fb089ccf1b609e16a99f5c392099ff0a3ab
+%global commit      83ccab0b6b9b07fd05f66f1cff565e1ed6a7497c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
 Version:        0.11.1
-Release:        16%{?dist}
+Release:        17%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -18,7 +18,7 @@ Patch0:     remove-vendored-tar.patch
 URL:            http://www.docker.io
 # only x86_64 for now: https://github.com/dotcloud/docker/issues/136
 ExclusiveArch:  x86_64
-#use branch: https://github.com/lsm5/docker/tree/2014-06-05-5
+#use branch: https://github.com/lsm5/docker/commits/2014-06-05-final2
 Source0:        https://github.com/lsm5/docker/archive/%{commit}/docker-%{shortcommit}.tar.gz
 # though final name for sysconf/sysvinit files is simply 'docker',
 # having .sysvinit and .sysconfig makes things clear
@@ -201,6 +201,9 @@ exit 0
 %{_datadir}/dockerfiles/systemd/mariadb/*
 
 %changelog
+* Thu Jun 05 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-17
+- use branch: https://github.com/lsm5/docker/commits/2014-06-05-final2
+
 * Thu Jun 05 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-16
 - latest repo: https://github.com/lsm5/docker/commits/2014-06-05-5
 - update secrets symlinks
