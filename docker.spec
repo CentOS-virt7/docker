@@ -5,12 +5,12 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit      a46b8b003a152bac31ff9085bd4f0a5a53d5a376
+%global commit      9eb45fb089ccf1b609e16a99f5c392099ff0a3ab
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
 Version:        0.11.1
-Release:        15%{?dist}
+Release:        16%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -18,7 +18,7 @@ Patch0:     remove-vendored-tar.patch
 URL:            http://www.docker.io
 # only x86_64 for now: https://github.com/dotcloud/docker/issues/136
 ExclusiveArch:  x86_64
-#use branch: https://github.com/lsm5/docker/tree/2014-05-29
+#use branch: https://github.com/lsm5/docker/tree/2014-06-05-5
 Source0:        https://github.com/lsm5/docker/archive/%{commit}/docker-%{shortcommit}.tar.gz
 # though final name for sysconf/sysvinit files is simply 'docker',
 # having .sysvinit and .sysconfig makes things clear
@@ -141,9 +141,9 @@ for d in httpd mariadb; do
 done
 
 # install secrets dir
-install -d -p -m 750 %{buildroot}/%{_sysconfdir}/docker/secrets
-ln -s %{_sysconfdir}/pki/entitlement %{buildroot}%{_sysconfdir}/docker/secrets/etc-pki-entitlement
-ln -s %{_sysconfdir}/yum.repos.d/redhat.repo %{buildroot}%{_sysconfdir}/docker/secrets/rhel7.repo
+install -d -p -m 750 %{buildroot}/%{_datadir}/rhel/secrets
+ln -s %{_sysconfdir}/pki/entitlement %{buildroot}%{_datadir}/rhel/secrets/etc-pki-entitlement
+ln -s %{_sysconfdir}/yum.repos.d/redhat.repo %{buildroot}%{_datadir}/rhel/secrets/rhel7.repo
 
 %pre
 getent group docker > /dev/null || %{_sbindir}/groupadd -r docker
@@ -165,10 +165,10 @@ exit 0
 %{_mandir}/man1/*
 %{_mandir}/man5/*
 %{_bindir}/docker
-%dir %{_sysconfdir}/docker
-%dir %{_sysconfdir}/docker/secrets
-%{_sysconfdir}/docker/secrets/etc-pki-entitlement
-%{_sysconfdir}/docker/secrets/rhel7.repo
+%dir %{_datadir}/rhel
+%dir %{_datadir}/rhel/secrets
+%{_datadir}/rhel/secrets/etc-pki-entitlement
+%{_datadir}/rhel/secrets/rhel7.repo
 %dir %{_libexecdir}/docker
 %{_libexecdir}/docker/dockerinit
 %{_unitdir}/docker.service
@@ -201,6 +201,10 @@ exit 0
 %{_datadir}/dockerfiles/systemd/mariadb/*
 
 %changelog
+* Thu Jun 05 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-16
+- latest repo: https://github.com/lsm5/docker/commits/2014-06-05-5
+- update secrets symlinks
+
 * Mon Jun 02 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-15
 - correct the rhel7.repo symlink
 
