@@ -10,7 +10,7 @@
 
 Name:           docker
 Version:        0.11.1
-Release:        18%{?dist}
+Release:        19%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -173,6 +173,9 @@ exit 0
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+* Fri Jun 06 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-19
+- build with golang-github-kr-pty-0-0.19.git98c7b80.el7
+
 * Fri Jun 06 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-18
 - update manpages
 - use branch: https://github.com/lsm5/docker/commits/2014-06-06-2
