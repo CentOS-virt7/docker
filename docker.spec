@@ -5,12 +5,12 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit      83ccab0b6b9b07fd05f66f1cff565e1ed6a7497c
+%global commit      02d20af7db1e154290eb5128525dd6831bd4c014
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
 Version:        0.11.1
-Release:        17%{?dist}
+Release:        18%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -18,7 +18,7 @@ Patch0:     remove-vendored-tar.patch
 URL:            http://www.docker.io
 # only x86_64 for now: https://github.com/dotcloud/docker/issues/136
 ExclusiveArch:  x86_64
-#use branch: https://github.com/lsm5/docker/commits/2014-06-05-final2
+#use branch: https://github.com/lsm5/docker/commits/2014-06-06-2
 Source0:        https://github.com/lsm5/docker/archive/%{commit}/docker-%{shortcommit}.tar.gz
 # though final name for sysconf/sysvinit files is simply 'docker',
 # having .sysvinit and .sysconfig makes things clear
@@ -125,21 +125,6 @@ install -p -m 644 contrib/init/systemd/socket-activation/docker.socket %{buildro
 install -d %{buildroot}%{_sysconfdir}/sysconfig/
 install -p -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/sysconfig/docker
 
-# install dockerfiles
-for d in apache mariadb mongodb postgres; do
-    mv contrib/rhel-dockerfiles/$d/LICENSE ./LICENSE-$d
-    mv contrib/rhel-dockerfiles/$d/README.md ./README-$d.md
-    install -d -p -m 755 %{buildroot}%{_datadir}/dockerfiles/$d
-    install -p -m 644 contrib/rhel-dockerfiles/$d/* %{buildroot}%{_datadir}/dockerfiles/$d
-done
-
-for d in httpd mariadb; do
-    mv contrib/rhel-dockerfiles/systemd/$d/LICENSE ./LICENSE-systemd-$d
-    mv contrib/rhel-dockerfiles/systemd/$d/README.md ./README-systemd-$d.md
-    install -d -p -m 755 %{buildroot}%{_datadir}/dockerfiles/systemd/$d
-    install -p -m 644 contrib/rhel-dockerfiles/systemd/$d/* %{buildroot}%{_datadir}/dockerfiles/systemd/$d
-done
-
 # install secrets dir
 install -d -p -m 750 %{buildroot}/%{_datadir}/rhel/secrets
 ln -s %{_sysconfdir}/pki/entitlement %{buildroot}%{_datadir}/rhel/secrets/etc-pki-entitlement
@@ -186,21 +171,12 @@ exit 0
 %{_datadir}/vim/vimfiles/ftdetect/dockerfile.vim
 %dir %{_datadir}/vim/vimfiles/syntax
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
-%dir %{_datadir}/dockerfiles
-%dir %{_datadir}/dockerfiles/apache
-%{_datadir}/dockerfiles/apache/*
-%dir %{_datadir}/dockerfiles/mariadb
-%{_datadir}/dockerfiles/mariadb/*
-%dir %{_datadir}/dockerfiles/mongodb
-%{_datadir}/dockerfiles/mongodb/*
-%dir %{_datadir}/dockerfiles/postgres
-%{_datadir}/dockerfiles/postgres/*
-%dir %{_datadir}/dockerfiles/systemd/httpd
-%{_datadir}/dockerfiles/systemd/httpd/*
-%dir %{_datadir}/dockerfiles/systemd/mariadb
-%{_datadir}/dockerfiles/systemd/mariadb/*
 
 %changelog
+* Fri Jun 06 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-18
+- update manpages
+- use branch: https://github.com/lsm5/docker/commits/2014-06-06-2
+
 * Thu Jun 05 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-17
 - use branch: https://github.com/lsm5/docker/commits/2014-06-05-final2
 
