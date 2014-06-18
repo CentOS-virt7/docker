@@ -5,7 +5,7 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit      7cd693d41c091da73f7d443db8f5bce027d4bdb4
+%global commit      d6a796d96d7edbafc3e9bc54fcc8cd8c1836d65e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
