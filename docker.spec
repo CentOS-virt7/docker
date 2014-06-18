@@ -5,12 +5,13 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit      02d20af7db1e154290eb5128525dd6831bd4c014
+%global commit      b5778fe679e27a31341da7865eeee167aea96f74
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
-Version:        0.11.1
-Release:        19%{?dist}
+# rhbz#1109938 - update to 1.0.0
+Version:        1.0.0
+Release:        1%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -18,27 +19,30 @@ Patch0:     remove-vendored-tar.patch
 URL:            http://www.docker.io
 # only x86_64 for now: https://github.com/dotcloud/docker/issues/136
 ExclusiveArch:  x86_64
-#use branch: https://github.com/lsm5/docker/commits/2014-06-06-2
+#use repo: https://github.com/lsm5/docker/commits/2014-06-18-htb2
 Source0:        https://github.com/lsm5/docker/archive/%{commit}/docker-%{shortcommit}.tar.gz
 # though final name for sysconf/sysvinit files is simply 'docker',
 # having .sysvinit and .sysconfig makes things clear
 Source1:        docker.service
-Source2:        docker-man.tar.gz
+Source2:        docker-man-1.tar.gz
 Source3:        docker.sysconfig
 BuildRequires:  gcc
 BuildRequires:  glibc-static
 # ensure build uses golang 1.2-7 and above
 # http://code.google.com/p/go/source/detail?r=a15f344a9efa35ef168c8feaa92a15a1cdc93db5
 BuildRequires:  golang >= 1.2-7
-BuildRequires:  golang(github.com/gorilla/mux)
-BuildRequires:  golang(github.com/kr/pty)
+# rhbz#1108720, rhbz#1110512 - update for gorilla/mux
+BuildRequires:  golang(github.com/gorilla/mux) >= 0-0.12
+# rhbz#1108713 - update for kr/pty
+BuildRequires:  golang(github.com/kr/pty) >= 0-0.20
 BuildRequires:  golang(code.google.com/p/go.net/websocket)
 BuildRequires:  golang(code.google.com/p/gosqlite/sqlite3)
-BuildRequires:  golang(github.com/syndtr/gocapability/capability)
+# rhbz#1110514 - update for syndtr/gocapability
+BuildRequires:  golang(github.com/syndtr/gocapability/capability) >= 0-0.6
 BuildRequires:  golang(github.com/godbus/dbus)
-BuildRequires:  golang(github.com/coreos/go-systemd/activation)
+# rhbz#1108766, rhbz#1110511 - update for coreos/go-systemd
+BuildRequires:  golang(github.com/coreos/go-systemd/activation) >= 2-2
 BuildRequires:  device-mapper-devel
-# btrfs not available for rhel yet
 BuildRequires:  btrfs-progs-devel
 BuildRequires:  pkgconfig(systemd)
 Requires:       systemd-units
@@ -84,11 +88,11 @@ cp contrib/syntax/vim/README.md README-vim-syntax.md
 %install
 # install binary
 install -d %{buildroot}%{_bindir}
-install -p -m 755 bundles/%{version}-dev/dynbinary/docker-%{version}-dev %{buildroot}%{_bindir}/docker
+install -p -m 755 bundles/%{version}/dynbinary/docker-%{version} %{buildroot}%{_bindir}/docker
 
 # install dockerinit
 install -d %{buildroot}%{_libexecdir}/docker
-install -p -m 755 bundles/%{version}-dev/dynbinary/dockerinit-%{version}-dev %{buildroot}%{_libexecdir}/docker/dockerinit
+install -p -m 755 bundles/%{version}/dynbinary/dockerinit-%{version} %{buildroot}%{_libexecdir}/docker/dockerinit
 
 # install manpages
 install -d %{buildroot}%{_mandir}/man1
@@ -127,8 +131,9 @@ install -p -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/sysconfig/docker
 
 # install secrets dir
 install -d -p -m 750 %{buildroot}/%{_datadir}/rhel/secrets
+# rhbz#1110876 - update symlinks for subscription management
 ln -s %{_sysconfdir}/pki/entitlement %{buildroot}%{_datadir}/rhel/secrets/etc-pki-entitlement
-ln -s %{_sysconfdir}/yum.repos.d/redhat.repo %{buildroot}%{_datadir}/rhel/secrets/rhel7.repo
+ln -s %{_sysconfdir}/rhsm %{buildroot}%{_datadir}/rhel/secrets/rhsm
 
 %pre
 getent group docker > /dev/null || %{_sbindir}/groupadd -r docker
@@ -153,7 +158,7 @@ exit 0
 %dir %{_datadir}/rhel
 %dir %{_datadir}/rhel/secrets
 %{_datadir}/rhel/secrets/etc-pki-entitlement
-%{_datadir}/rhel/secrets/rhel7.repo
+%{_datadir}/rhel/secrets/rhsm
 %dir %{_libexecdir}/docker
 %{_libexecdir}/docker/dockerinit
 %{_unitdir}/docker.service
@@ -173,6 +178,13 @@ exit 0
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+* Wed Jun 18 2014 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.0.0-1
+- Resolves: rhbz#1109938 - upgrade to upstream version 1.0.0 + patches
+  use repo: https://github.com/lsm5/docker/commits/2014-06-18-htb2
+- Resolves: rhbz#1110876 - secrets changes required for subscription
+management
+- btrfs now available (remove old comment)
+
 * Fri Jun 06 2014 Lokesh Mandvekar <lsm5@redhat.com> - 0.11.1-19
 - build with golang-github-kr-pty-0-0.19.git98c7b80.el7
 
