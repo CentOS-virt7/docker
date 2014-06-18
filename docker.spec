@@ -5,7 +5,7 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit      fc3cf94c07d835ecfddc5faecbe39c1bc8254699
+%global commit      b1791c0d6f9c80d9536b2b07b83c7a81203bc141
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
@@ -19,7 +19,7 @@ Patch0:     remove-vendored-tar.patch
 URL:            http://www.docker.io
 # only x86_64 for now: https://github.com/dotcloud/docker/issues/136
 ExclusiveArch:  x86_64
-#use repo: https://github.com/lsm5/docker/commits/htb2
+#use repo: https://github.com/lsm5/docker/commits/htb2-1
 Source0:        https://github.com/lsm5/docker/archive/%{commit}/docker-%{shortcommit}.tar.gz
 # though final name for sysconf/sysvinit files is simply 'docker',
 # having .sysvinit and .sysconfig makes things clear
