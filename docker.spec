@@ -5,13 +5,13 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit      b5778fe679e27a31341da7865eeee167aea96f74
+%global commit      6ec7fa850bbfb0d976a7b4475ee87fca8428841c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
 # rhbz#1109938 - update to 1.0.0
 Version:        1.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -178,6 +178,11 @@ exit 0
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+* Wed Jun 18 2014 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.0.0-2
+- Resolves: rhbz#1109938 - upgrade to upstream version 1.0.0 + patches
+  use repo: https://github.com/lsm5/docker/commits/2014-06-18-htb2
+- add secrets patch to above repo
+
 * Wed Jun 18 2014 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.0.0-1
 - Resolves: rhbz#1109938 - upgrade to upstream version 1.0.0 + patches
   use repo: https://github.com/lsm5/docker/commits/2014-06-18-htb2
