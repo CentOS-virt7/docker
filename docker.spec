@@ -5,7 +5,7 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit      b1791c0d6f9c80d9536b2b07b83c7a81203bc141
+%global commit      563664e7bc9e3611068c4b5632c166668185c8ce
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
@@ -19,7 +19,7 @@ Patch0:     remove-vendored-tar.patch
 URL:            http://www.docker.io
 # only x86_64 for now: https://github.com/dotcloud/docker/issues/136
 ExclusiveArch:  x86_64
-#use repo: https://github.com/lsm5/docker/commits/htb2-1
+#use repo: https://github.com/lsm5/docker/commits/htb2
 Source0:        https://github.com/lsm5/docker/archive/%{commit}/docker-%{shortcommit}.tar.gz
 # though final name for sysconf/sysvinit files is simply 'docker',
 # having .sysvinit and .sysconfig makes things clear
@@ -178,10 +178,12 @@ exit 0
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
-* Wed Jun 18 2014 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.0.0-2
+* Thu Jun 19 2014 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.0.0-2
 - Resolves: rhbz#1109938 - upgrade to upstream version 1.0.0 + patches
-  use repo: https://github.com/lsm5/docker/commits/2014-06-18-htb2
-- add secrets patch to above repo
+  use repo: https://github.com/lsm5/docker/commits/htb2
+- Resolves: rhbz#1109858 - fix race condition with secrets
+- add machine-id patch:
+https://github.com/vbatts/docker/commit/4f51757a50349bbbd2282953aaa3fc0e9a989741
 
 * Wed Jun 18 2014 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.0.0-1
 - Resolves: rhbz#1109938 - upgrade to upstream version 1.0.0 + patches
