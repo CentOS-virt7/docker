@@ -11,7 +11,7 @@
 Name:           docker
 # rhbz#1109938 - update to 1.0.0
 Version:        1.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -26,6 +26,9 @@ Source0:        https://github.com/lsm5/docker/archive/%{commit}/docker-%{shortc
 Source1:        docker.service
 Source2:        docker-man-1.tar.gz
 Source3:        docker.sysconfig
+# Resolves: rhbz#1111760, rhbz#1111769 - CVE-2014-3499
+# docker: systemd socket activation results in privilege escalation
+Source4:        docker.socket
 BuildRequires:  gcc
 BuildRequires:  glibc-static
 # ensure build uses golang 1.2-7 and above
@@ -124,7 +127,7 @@ install -d -m 700 %{buildroot}%{_sharedstatedir}/docker
 # install systemd/init scripts
 install -d %{buildroot}%{_unitdir}
 install -p -m 644 %{SOURCE1} %{buildroot}%{_unitdir}
-install -p -m 644 contrib/init/systemd/socket-activation/docker.socket %{buildroot}%{_unitdir}
+install -p -m 644 %{SOURCE4} %{buildroot}%{_unitdir}
 # for additional args
 install -d %{buildroot}%{_sysconfdir}/sysconfig/
 install -p -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/sysconfig/docker
@@ -178,6 +181,10 @@ exit 0
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+* Mon Jun 23 2014 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.0.0-3
+- Resolves: rhbz#1111687, rhbz#1111760, rhbz#1111769 - systemd socket activation results in
+privilege escalation
+
 * Thu Jun 19 2014 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.0.0-2
 - Resolves: rhbz#1109938 - upgrade to upstream version 1.0.0 + patches
   use repo: https://github.com/lsm5/docker/commits/htb2
