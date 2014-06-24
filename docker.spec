@@ -5,13 +5,13 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit      563664e7bc9e3611068c4b5632c166668185c8ce
+%global commit      0770b47c77efef21ce53aee84d991bc0b1b38b66
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
 # rhbz#1109938 - update to 1.0.0
 Version:        1.0.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -24,7 +24,7 @@ Source0:        https://github.com/lsm5/docker/archive/%{commit}/docker-%{shortc
 # though final name for sysconf/sysvinit files is simply 'docker',
 # having .sysvinit and .sysconfig makes things clear
 Source1:        docker.service
-Source2:        docker-man-1.tar.gz
+Source2:        docker-man-2.tar.gz
 Source3:        docker.sysconfig
 # Resolves: rhbz#1111769 - CVE-2014-3499
 # docker: systemd socket activation results in privilege escalation
@@ -181,6 +181,11 @@ exit 0
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+* Tue Jun 24 2014 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.0.0-4
+- Documentation update for --sig-proxy
+- increase size of buffer for signals
+- escape control and nonprintable characters in docker ps
+
 * Tue Jun 24 2014 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.0.0-3
 - Resolves: rhbz#1111769 - CVE-2014-3499
 
