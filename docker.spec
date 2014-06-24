@@ -26,7 +26,7 @@ Source0:        https://github.com/lsm5/docker/archive/%{commit}/docker-%{shortc
 Source1:        docker.service
 Source2:        docker-man-1.tar.gz
 Source3:        docker.sysconfig
-# Resolves: rhbz#1111760, rhbz#1111769 - CVE-2014-3499
+# Resolves: rhbz#1111769 - CVE-2014-3499
 # docker: systemd socket activation results in privilege escalation
 Source4:        docker.socket
 BuildRequires:  gcc
@@ -181,9 +181,8 @@ exit 0
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
-* Mon Jun 23 2014 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.0.0-3
-- Resolves: rhbz#1111687, rhbz#1111760, rhbz#1111769 - systemd socket activation results in
-privilege escalation
+* Tue Jun 24 2014 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.0.0-3
+- Resolves: rhbz#1111769 - CVE-2014-3499
 
 * Thu Jun 19 2014 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.0.0-2
 - Resolves: rhbz#1109938 - upgrade to upstream version 1.0.0 + patches
