@@ -5,13 +5,13 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit      0770b47c77efef21ce53aee84d991bc0b1b38b66
+%global commit   f39a5b14ca5e6801efa29e7a41c7f256d0306c88
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
 # rhbz#1109938 - update to 1.0.0
 Version:        1.0.0
-Release:        4%{?dist}
+Release:        7%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
