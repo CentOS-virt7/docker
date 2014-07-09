@@ -181,6 +181,9 @@ exit 0
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+* Wed Jul 9 2014 Dan Walsh <dwalsh@redhat.com> - 1.0.0-7
+- Fix registry-append patch
+
 * Tue Jun 24 2014 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.0.0-4
 - Documentation update for --sig-proxy
 - increase size of buffer for signals
