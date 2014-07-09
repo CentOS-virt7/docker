@@ -182,7 +182,24 @@ exit 0
 
 %changelog
 * Wed Jul 9 2014 Dan Walsh <dwalsh@redhat.com> - 1.0.0-7
-- Fix registry-append patch
+- Patch: Save "COMMENT" field in Dockerfile into image content.
+- Patch: Update documentation noting that SIGCHLD is not proxied.
+- Patch: Escape control and nonprintable characters in docker ps
+- Patch: machine-id: add container id access
+- Patch: Report child error better (and later)
+- Patch: Fix invalid fd race
+- Patch: Super minimal host based secrets
+- Patch: libcontainer: Mount cgroups in the container
+- Patch: pkg/cgroups Add GetMounts() and GetAllSubsystems()
+- Patch: New implementation of /run support
+- Patch: Error if Docker daemon starts with BTRFS graph driver and SELinux enabled
+- Patch: Updated CLI documentation for docker pull with notes on specifying URL
+- Patch: Updated docker pull manpage to reflect ability to specify URL of registry.
+- Patch: Docker should use /var/tmp for large temporary files.
+- Patch: Add --registry-append and --registry-replace qualifier to docker daemon
+- Patch: Increase size of buffer for signals
+- Patch: Update documentation noting that SIGCHLD is not proxied.
+- Patch: Escape control and nonprintable characters in docker ps
 
 * Tue Jun 24 2014 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.0.0-4
 - Documentation update for --sig-proxy
