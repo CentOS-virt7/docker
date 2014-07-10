@@ -1,0 +1,109 @@
+diff -up docker-20fdb42c41441eada996c1c4d5a0051b08854b99/docker/docker.godocker-registry docker-20fdb42c41441eada996c1c4d5a0051b08854b99/docker/docker.go
+--- docker-20fdb42c41441eada996c1c4d5a0051b08854b99/docker/docker.godocker-registry	2014-07-09 14:47:24.000000000 -0400
++++ docker-20fdb42c41441eada996c1c4d5a0051b08854b99/docker/docker.go	2014-07-10 14:21:36.581928300 -0400
+@@ -17,7 +17,7 @@ import (
+ 	"github.com/dotcloud/docker/engine"
+ 	"github.com/dotcloud/docker/opts"
+ 	flag "github.com/dotcloud/docker/pkg/mflag"
+-	"github.com/dotcloud/docker/server"
++	"github.com/dotcloud/docker/registry"
+ 	"github.com/dotcloud/docker/sysinit"
+ 	"github.com/dotcloud/docker/utils"
+ )
+@@ -86,23 +86,14 @@ func main() {
+ 		flag.SetOutput(os.Stdout)
+ 		flag.Usage()
+ 		return
+-    }
++	}
+ 	if *flDefaultRegistry != "" {
+-		regs := strings.Split(*flAppendRegistry, ",")
+-		for r := range regs {
+-			if regs[r] != "" && !strings.HasSuffix(regs[r], "/") {
+-				regs[r] = fmt.Sprintf("%s/", regs[r])
+-			}
+-		}
+-		server.RegistryList = regs
++		registry.RegistryList = strings.Split(*flDefaultRegistry, ",")
+ 	}
+ 	if *flAppendRegistry != "" {
+ 		regs := strings.Split(*flAppendRegistry, ",")
+ 		for r := range regs {
+-			if regs[r] != "" && !strings.HasSuffix(regs[r], "/") {
+-				regs[r] = fmt.Sprintf("%s/", regs[r])
+-			}
+-			server.RegistryList = append(server.RegistryList, regs[r])
++			registry.RegistryList = append(registry.RegistryList, regs[r])
+ 		}
+ 	}
+ 	if flHosts.Len() == 0 {
+diff -up docker-20fdb42c41441eada996c1c4d5a0051b08854b99/registry/registry.godocker-registry docker-20fdb42c41441eada996c1c4d5a0051b08854b99/registry/registry.go
+--- docker-20fdb42c41441eada996c1c4d5a0051b08854b99/registry/registry.godocker-registry	2014-07-09 14:47:24.000000000 -0400
++++ docker-20fdb42c41441eada996c1c4d5a0051b08854b99/registry/registry.go	2014-07-10 14:21:36.581928300 -0400
+@@ -128,9 +128,6 @@ func ResolveRepositoryName(reposName str
+ 	}
+ 	hostname := nameParts[0]
+ 	reposName = nameParts[1]
+-	if strings.Contains(hostname, "index.docker.io") {
+-		return "", "", fmt.Errorf("Invalid repository name, try \"%s\" instead", reposName)
+-	}
+ 	if err := validateRepositoryName(reposName); err != nil {
+ 		return "", "", err
+ 	}
+diff -up docker-20fdb42c41441eada996c1c4d5a0051b08854b99/registry/service.godocker-registry docker-20fdb42c41441eada996c1c4d5a0051b08854b99/registry/service.go
+--- docker-20fdb42c41441eada996c1c4d5a0051b08854b99/registry/service.godocker-registry	2014-07-09 14:47:24.000000000 -0400
++++ docker-20fdb42c41441eada996c1c4d5a0051b08854b99/registry/service.go	2014-07-10 14:21:36.582928300 -0400
+@@ -4,6 +4,8 @@ import (
+ 	"github.com/dotcloud/docker/engine"
+ )
+ 
++var RegistryList = []string{"index.docker.io"}
++
+ // Service exposes registry capabilities in the standard Engine
+ // interface. Once installed, it extends the engine with the
+ // following calls:
+@@ -78,11 +80,20 @@ func (s *Service) Search(job *engine.Job
+ 		term        = job.Args[0]
+ 		metaHeaders = map[string][]string{}
+ 		authConfig  = &AuthConfig{}
++		r           *Registry
++		err         error
+ 	)
+ 	job.GetenvJson("authConfig", authConfig)
+ 	job.GetenvJson("metaHeaders", metaHeaders)
+ 
+-	r, err := NewRegistry(authConfig, HTTPRequestFactory(metaHeaders), IndexServerAddress(), true)
++	for reg := len(RegistryList) - 1; reg >= 0; reg-- {
++		if endpoint, err := ExpandAndVerifyRegistryUrl(RegistryList[reg]); err == nil {
++			r, err = NewRegistry(authConfig, HTTPRequestFactory(metaHeaders), endpoint, true)
++			if err == nil {
++				break
++			}
++		}
++	}
+ 	if err != nil {
+ 		return job.Error(err)
+ 	}
+diff -up docker-20fdb42c41441eada996c1c4d5a0051b08854b99/server/server.godocker-registry docker-20fdb42c41441eada996c1c4d5a0051b08854b99/server/server.go
+--- docker-20fdb42c41441eada996c1c4d5a0051b08854b99/server/server.godocker-registry	2014-07-09 14:47:24.000000000 -0400
++++ docker-20fdb42c41441eada996c1c4d5a0051b08854b99/server/server.go	2014-07-10 14:21:39.435926968 -0400
+@@ -69,8 +69,6 @@ func (srv *Server) handlerWrap(h engine.
+ 	}
+ }
+ 
+-var RegistryList = []string{""}
+-
+ // jobInitApi runs the remote api server `srv` as a daemon,
+ // Only one api server can run at the same time - this is enforced by a pidfile.
+ // The signals SIGINT, SIGQUIT and SIGTERM are intercepted for cleanup.
+@@ -1411,8 +1409,8 @@ func (srv *Server) RegistryPull(job *eng
+ 		tmp    = job.Args[0]
+ 		status = engine.StatusErr
+ 	)
+-	for r := len(RegistryList) - 1; r >= 0; r-- {
+-		job.Args[0] = fmt.Sprintf("%s%s", RegistryList[r], tmp)
++	for r := len(registry.RegistryList) - 1; r >= 0; r-- {
++		job.Args[0] = fmt.Sprintf("%s/%s", registry.RegistryList[r], tmp)
+ 		status := srv.ImagePull(job)
+ 		if status == engine.StatusOK {
+ 			job.Args[1] = tmp

@@ -11,11 +11,12 @@
 Name:           docker
 # rhbz#1109938 - update to 1.0.0
 Version:        1.0.0
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
 Patch0:     remove-vendored-tar.patch
+Patch1:     docker-registry.patch
 URL:            http://www.docker.io
 # only x86_64 for now: https://github.com/dotcloud/docker/issues/136
 ExclusiveArch:  x86_64
@@ -70,6 +71,7 @@ servers, OpenStack clusters, public instances, or combinations of the above.
 %setup -q -n docker-%{commit}
 rm -rf vendor
 %patch0 -p1 -b remove-vendored-tar
+%patch1 -p1 -b docker-registry
 tar zxf %{SOURCE2} 
 
 %build
@@ -183,6 +185,9 @@ exit 0
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+* Thu Jul 10 2014 Dan Walsh <dwalsh@redhat.com> - 1.0.0-9
+- Fix docker-registry patch to handle search
+
 * Thu Jul 10 2014 Dan Walsh <dwalsh@redhat.com> - 1.0.0-8
 - Re-add %{_datadir}/rhel/secrets/rhel7.repo
 
