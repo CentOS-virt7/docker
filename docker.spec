@@ -11,7 +11,7 @@
 Name:           docker
 # rhbz#1109938 - update to 1.0.0
 Version:        1.0.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -137,6 +137,7 @@ install -d -p -m 750 %{buildroot}/%{_datadir}/rhel/secrets
 # rhbz#1110876 - update symlinks for subscription management
 ln -s %{_sysconfdir}/pki/entitlement %{buildroot}%{_datadir}/rhel/secrets/etc-pki-entitlement
 ln -s %{_sysconfdir}/rhsm %{buildroot}%{_datadir}/rhel/secrets/rhsm
+ln -s %{_sysconfdir}/yum.repos.d/redhat.repo %{buildroot}%{_datadir}/rhel/secrets/rhel7.repo
 
 %pre
 getent group docker > /dev/null || %{_sbindir}/groupadd -r docker
@@ -161,6 +162,7 @@ exit 0
 %dir %{_datadir}/rhel
 %dir %{_datadir}/rhel/secrets
 %{_datadir}/rhel/secrets/etc-pki-entitlement
+%{_datadir}/rhel/secrets/rhel7.repo
 %{_datadir}/rhel/secrets/rhsm
 %dir %{_libexecdir}/docker
 %{_libexecdir}/docker/dockerinit
@@ -181,6 +183,9 @@ exit 0
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+* Thu Jul 10 2014 Dan Walsh <dwalsh@redhat.com> - 1.0.0-8
+- Re-add %{_datadir}/rhel/secrets/rhel7.repo
+
 * Wed Jul 9 2014 Dan Walsh <dwalsh@redhat.com> - 1.0.0-7
 - Patch: Save "COMMENT" field in Dockerfile into image content.
 - Patch: Update documentation noting that SIGCHLD is not proxied.
