@@ -11,7 +11,7 @@
 Name:           docker
 # rhbz#1109938 - update to 1.0.0
 Version:        1.0.0
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -170,7 +170,7 @@ exit 0
 %{_libexecdir}/docker/dockerinit
 %{_unitdir}/docker.service
 %{_unitdir}/docker.socket
-%{_sysconfdir}/sysconfig/docker
+%config(noreplace) %{_sysconfdir}/sysconfig/docker
 %dir %{_sysconfdir}/bash_completion.d
 %{_sysconfdir}/bash_completion.d/docker.bash
 %{_datadir}/zsh/site-functions/_docker
@@ -185,6 +185,9 @@ exit 0
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+* Mon Jul 14 2014 Dan Walsh <dwalsh@redhat.com> - 1.0.0-10
+- Pass otions from /etc/sysconfig/docker into docker.service unit file
+
 * Thu Jul 10 2014 Dan Walsh <dwalsh@redhat.com> - 1.0.0-9
 - Fix docker-registry patch to handle search
 
