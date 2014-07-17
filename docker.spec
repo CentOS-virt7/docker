@@ -11,12 +11,13 @@
 Name:           docker
 # rhbz#1109938 - update to 1.0.0
 Version:        1.0.0
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
 Patch0:     remove-vendored-tar.patch
 Patch1:     docker-registry.patch
+Patch2:     docker-entitlement.patch
 URL:            http://www.docker.io
 # only x86_64 for now: https://github.com/dotcloud/docker/issues/136
 ExclusiveArch:  x86_64
@@ -72,6 +73,7 @@ servers, OpenStack clusters, public instances, or combinations of the above.
 rm -rf vendor
 %patch0 -p1 -b remove-vendored-tar
 %patch1 -p1 -b docker-registry
+%patch2 -p1 -b docker-entitlement
 tar zxf %{SOURCE2} 
 
 %build
