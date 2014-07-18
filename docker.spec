@@ -69,7 +69,7 @@ servers, OpenStack clusters, public instances, or combinations of the above.
 
 %prep
 %setup -q -n docker-%{commit}
-rm -rf vendor
+#rm -rf vendor
 %patch0 -p1 -b .remove-vendored-tar
 %patch1 -p1 -b .docker-registry
 %patch2 -p1 -b .docker-entitlement
@@ -85,7 +85,7 @@ popd
 
 export DOCKER_GITCOMMIT="%{shortcommit}/%{version}"
 export DOCKER_BUILDTAGS='selinux'
-export GOPATH=$(pwd)/_build:%{gopath}
+export GOPATH=$(pwd)/_build:$(pwd)/vendor
 
 hack/make.sh dynbinary
 cp contrib/syntax/vim/LICENSE LICENSE-vim-syntax
