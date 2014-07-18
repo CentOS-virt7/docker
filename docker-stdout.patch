@@ -1,0 +1,86 @@
+From 1476f295aca20e1c35383c133219d54a5373183f Mon Sep 17 00:00:00 2001
+From: Matthew Heon <mheon@redhat.com>
+Date: Wed, 16 Jul 2014 13:47:12 -0400
+Subject: [PATCH] Bugfix: only use io.Copy in hijack if attaching both stdout
+ and stderr
+
+Add regression tests to ensure issue is fixed.
+
+Docker-DCO-1.1-Signed-off-by: Matt Heon <mheon@redhat.com> (github: mheon)
+---
+ api/client/hijack.go                   |  2 +-
+ integration-cli/docker_cli_run_test.go | 48 ++++++++++++++++++++++++++++++++++
+ 2 files changed, 49 insertions(+), 1 deletion(-)
+
+diff --git a/api/client/hijack.go b/api/client/hijack.go
+index 0a9d5d8..1cb7ebf 100644
+--- a/api/client/hijack.go
++++ b/api/client/hijack.go
+@@ -88,7 +88,7 @@ func (cli *DockerCli) hijack(method, path string, setRawTerminal bool, in io.Rea
+ 			}()
+ 
+ 			// When TTY is ON, use regular copy
+-			if setRawTerminal {
++			if setRawTerminal && stdout != nil {
+ 				_, err = io.Copy(stdout, br)
+ 			} else {
+ 				_, err = utils.StdCopy(stdout, stderr, br)
+diff --git a/integration-cli/docker_cli_run_test.go b/integration-cli/docker_cli_run_test.go
+index dba8e7f..2c349a9 100644
+--- a/integration-cli/docker_cli_run_test.go
++++ b/integration-cli/docker_cli_run_test.go
+@@ -1218,3 +1218,51 @@ func TestDnsOptionsBasedOnHostResolvConf(t *testing.T) {
+ 
+ 	logDone("run - dns options based on host resolv.conf")
+ }
++
++// Regression test for #6983
++func TestAttachStdErrOnlyTTYMode(t *testing.T) {
++	cmd := exec.Command(dockerBinary, "run", "-t", "-a", "stderr", "busybox", "true")
++
++	exitCode, err := runCommand(cmd)
++	if err != nil {
++		t.Fatal(err)
++	} else if exitCode != 0 {
++		t.Fatalf("Container should have exited with error code 0")
++	}
++
++	deleteAllContainers()
++
++	logDone("run - Attach stderr only with -t")
++}
++
++// Regression test for #6983
++func TestAttachStdOutOnlyTTYMode(t *testing.T) {
++	cmd := exec.Command(dockerBinary, "run", "-t", "-a", "stdout", "busybox", "true")
++
++	exitCode, err := runCommand(cmd)
++	if err != nil {
++		t.Fatal(err)
++	} else if exitCode != 0 {
++		t.Fatalf("Container should have exited with error code 0")
++	}
++
++	deleteAllContainers()
++
++	logDone("run - Attach stdout only with -t")
++}
++
++// Regression test for #6983
++func TestAttachStdOutAndErrTTYMode(t *testing.T) {
++	cmd := exec.Command(dockerBinary, "run", "-t", "-a", "stdout", "-a", "stderr", "busybox", "true")
++
++	exitCode, err := runCommand(cmd)
++	if err != nil {
++		t.Fatal(err)
++	} else if exitCode != 0 {
++		t.Fatalf("Container should have exited with error code 0")
++	}
++
++	deleteAllContainers()
++
++	logDone("run - Attach stderr and stdout with -t")
++}
+-- 
+1.9.3
+
