@@ -1,7 +1,7 @@
-diff -up docker-20fdb42c41441eada996c1c4d5a0051b08854b99/docker/docker.godocker-registry docker-20fdb42c41441eada996c1c4d5a0051b08854b99/docker/docker.go
---- docker-20fdb42c41441eada996c1c4d5a0051b08854b99/docker/docker.godocker-registry	2014-07-09 14:47:24.000000000 -0400
-+++ docker-20fdb42c41441eada996c1c4d5a0051b08854b99/docker/docker.go	2014-07-10 14:21:36.581928300 -0400
-@@ -17,7 +17,7 @@ import (
+diff -up docker-2abf9ee3340c831b17e9df16b8650ee6c8788f6c/docker/docker.go.docker-registry docker-2abf9ee3340c831b17e9df16b8650ee6c8788f6c/docker/docker.go
+--- docker-2abf9ee3340c831b17e9df16b8650ee6c8788f6c/docker/docker.go.docker-registry	2014-07-18 14:59:08.000000000 -0400
++++ docker-2abf9ee3340c831b17e9df16b8650ee6c8788f6c/docker/docker.go	2014-07-18 15:42:31.992439196 -0400
+@@ -18,7 +18,7 @@ import (
  	"github.com/dotcloud/docker/engine"
  	"github.com/dotcloud/docker/opts"
  	flag "github.com/dotcloud/docker/pkg/mflag"
@@ -10,7 +10,7 @@ diff -up docker-20fdb42c41441eada996c1c4d5a0051b08854b99/docker/docker.godocker-
  	"github.com/dotcloud/docker/sysinit"
  	"github.com/dotcloud/docker/utils"
  )
-@@ -86,23 +86,14 @@ func main() {
+@@ -87,23 +87,14 @@ func main() {
  		flag.SetOutput(os.Stdout)
  		flag.Usage()
  		return
@@ -37,9 +37,9 @@ diff -up docker-20fdb42c41441eada996c1c4d5a0051b08854b99/docker/docker.godocker-
  		}
  	}
  	if flHosts.Len() == 0 {
-diff -up docker-20fdb42c41441eada996c1c4d5a0051b08854b99/registry/registry.godocker-registry docker-20fdb42c41441eada996c1c4d5a0051b08854b99/registry/registry.go
---- docker-20fdb42c41441eada996c1c4d5a0051b08854b99/registry/registry.godocker-registry	2014-07-09 14:47:24.000000000 -0400
-+++ docker-20fdb42c41441eada996c1c4d5a0051b08854b99/registry/registry.go	2014-07-10 14:21:36.581928300 -0400
+diff -up docker-2abf9ee3340c831b17e9df16b8650ee6c8788f6c/registry/registry.go.docker-registry docker-2abf9ee3340c831b17e9df16b8650ee6c8788f6c/registry/registry.go
+--- docker-2abf9ee3340c831b17e9df16b8650ee6c8788f6c/registry/registry.go.docker-registry	2014-07-18 14:59:08.000000000 -0400
++++ docker-2abf9ee3340c831b17e9df16b8650ee6c8788f6c/registry/registry.go	2014-07-18 15:42:31.993439198 -0400
 @@ -128,9 +128,6 @@ func ResolveRepositoryName(reposName str
  	}
  	hostname := nameParts[0]
@@ -50,9 +50,9 @@ diff -up docker-20fdb42c41441eada996c1c4d5a0051b08854b99/registry/registry.godoc
  	if err := validateRepositoryName(reposName); err != nil {
  		return "", "", err
  	}
-diff -up docker-20fdb42c41441eada996c1c4d5a0051b08854b99/registry/service.godocker-registry docker-20fdb42c41441eada996c1c4d5a0051b08854b99/registry/service.go
---- docker-20fdb42c41441eada996c1c4d5a0051b08854b99/registry/service.godocker-registry	2014-07-09 14:47:24.000000000 -0400
-+++ docker-20fdb42c41441eada996c1c4d5a0051b08854b99/registry/service.go	2014-07-10 14:21:36.582928300 -0400
+diff -up docker-2abf9ee3340c831b17e9df16b8650ee6c8788f6c/registry/service.go.docker-registry docker-2abf9ee3340c831b17e9df16b8650ee6c8788f6c/registry/service.go
+--- docker-2abf9ee3340c831b17e9df16b8650ee6c8788f6c/registry/service.go.docker-registry	2014-07-18 14:59:08.000000000 -0400
++++ docker-2abf9ee3340c831b17e9df16b8650ee6c8788f6c/registry/service.go	2014-07-18 15:42:31.993439198 -0400
 @@ -4,6 +4,8 @@ import (
  	"github.com/dotcloud/docker/engine"
  )
@@ -84,10 +84,10 @@ diff -up docker-20fdb42c41441eada996c1c4d5a0051b08854b99/registry/service.godock
  	if err != nil {
  		return job.Error(err)
  	}
-diff -up docker-20fdb42c41441eada996c1c4d5a0051b08854b99/server/server.godocker-registry docker-20fdb42c41441eada996c1c4d5a0051b08854b99/server/server.go
---- docker-20fdb42c41441eada996c1c4d5a0051b08854b99/server/server.godocker-registry	2014-07-09 14:47:24.000000000 -0400
-+++ docker-20fdb42c41441eada996c1c4d5a0051b08854b99/server/server.go	2014-07-10 14:21:39.435926968 -0400
-@@ -69,8 +69,6 @@ func (srv *Server) handlerWrap(h engine.
+diff -up docker-2abf9ee3340c831b17e9df16b8650ee6c8788f6c/server/server.go.docker-registry docker-2abf9ee3340c831b17e9df16b8650ee6c8788f6c/server/server.go
+--- docker-2abf9ee3340c831b17e9df16b8650ee6c8788f6c/server/server.go.docker-registry	2014-07-18 14:59:08.000000000 -0400
++++ docker-2abf9ee3340c831b17e9df16b8650ee6c8788f6c/server/server.go	2014-07-18 15:42:31.993439198 -0400
+@@ -71,8 +71,6 @@ func (srv *Server) handlerWrap(h engine.
  	}
  }
  
@@ -96,7 +96,7 @@ diff -up docker-20fdb42c41441eada996c1c4d5a0051b08854b99/server/server.godocker-
  // jobInitApi runs the remote api server `srv` as a daemon,
  // Only one api server can run at the same time - this is enforced by a pidfile.
  // The signals SIGINT, SIGQUIT and SIGTERM are intercepted for cleanup.
-@@ -1411,8 +1409,8 @@ func (srv *Server) RegistryPull(job *eng
+@@ -1392,8 +1390,8 @@ func (srv *Server) RegistryPull(job *eng
  		tmp    = job.Args[0]
  		status = engine.StatusErr
  	)

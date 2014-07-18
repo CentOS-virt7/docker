@@ -5,13 +5,12 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit   20fdb42c41441eada996c1c4d5a0051b08854b99
+%global commit   2abf9ee3340c831b17e9df16b8650ee6c8788f6c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
-# rhbz#1109938 - update to 1.0.0
-Version:        1.0.0
-Release:        11%{?dist}
+Version:        1.1.1
+Release:        1%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -71,9 +70,9 @@ servers, OpenStack clusters, public instances, or combinations of the above.
 %prep
 %setup -q -n docker-%{commit}
 rm -rf vendor
-%patch0 -p1 -b remove-vendored-tar
-%patch1 -p1 -b docker-registry
-%patch2 -p1 -b docker-entitlement
+%patch0 -p1 -b .remove-vendored-tar
+%patch1 -p1 -b .docker-registry
+%patch2 -p1 -b .docker-entitlement
 tar zxf %{SOURCE2} 
 
 %build
@@ -187,6 +186,9 @@ exit 0
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+* Fri Jul 18 2014 Dan Walsh <dwalsh@redhat.com> - 1.1.1-1
+- Update to latest from upstream
+
 * Mon Jul 14 2014 Dan Walsh <dwalsh@redhat.com> - 1.0.0-10
 - Pass otions from /etc/sysconfig/docker into docker.service unit file
 
