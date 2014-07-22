@@ -5,17 +5,15 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit   67b9343fd2c2e461068a3f400f91eed7443bb782
+%global commit   a0c340cc1573ec9de828b92ce60a34df72c90c1a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
 Version:        1.1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
-Patch0:     remove-vendored-tar.patch
-Patch1:     docker-registry.patch
 Patch2:     docker-entitlement.patch
 URL:            http://www.docker.io
 # only x86_64 for now: https://github.com/dotcloud/docker/issues/136
@@ -25,9 +23,8 @@ Source0:        https://github.com/lsm5/docker/archive/%{commit}/docker-%{shortc
 # though final name for sysconf/sysvinit files is simply 'docker',
 # having .sysvinit and .sysconfig makes things clear
 Source1:        docker.service
-Source2:        docker-man-2.tar.gz
+Source2:        docker-man-3.tar.gz
 Source3:        docker.sysconfig
-# Resolves: rhbz#1111769 - CVE-2014-3499
 # docker: systemd socket activation results in privilege escalation
 Source4:        docker.socket
 BuildRequires:  gcc
@@ -35,23 +32,18 @@ BuildRequires:  glibc-static
 # ensure build uses golang 1.2-7 and above
 # http://code.google.com/p/go/source/detail?r=a15f344a9efa35ef168c8feaa92a15a1cdc93db5
 BuildRequires:  golang >= 1.2-7
-# rhbz#1108720, rhbz#1110512 - update for gorilla/mux
 BuildRequires:  golang(github.com/gorilla/mux) >= 0-0.12
-# rhbz#1108713 - update for kr/pty
 BuildRequires:  golang(github.com/kr/pty) >= 0-0.20
 BuildRequires:  golang(code.google.com/p/go.net/websocket)
 BuildRequires:  golang(code.google.com/p/gosqlite/sqlite3)
-# rhbz#1110514 - update for syndtr/gocapability
 BuildRequires:  golang(github.com/syndtr/gocapability/capability) >= 0-0.6
 BuildRequires:  golang(github.com/godbus/dbus)
-# rhbz#1108766, rhbz#1110511 - update for coreos/go-systemd
 BuildRequires:  golang(github.com/coreos/go-systemd/activation) >= 2-2
 BuildRequires:  device-mapper-devel
 BuildRequires:  btrfs-progs-devel
 BuildRequires:  pkgconfig(systemd)
 Requires:       systemd-units
 # need xz to work with ubuntu images
-# https://bugzilla.redhat.com/show_bug.cgi?id=1045220
 Requires:       xz
 
 Provides:       lxc-docker = %{version}
@@ -69,9 +61,6 @@ servers, OpenStack clusters, public instances, or combinations of the above.
 
 %prep
 %setup -q -n docker-%{commit}
-#rm -rf vendor
-%patch0 -p1 -b .remove-vendored-tar
-%patch1 -p1 -b .docker-registry
 %patch2 -p1 -b .docker-entitlement
 tar zxf %{SOURCE2} 
 
@@ -186,6 +175,10 @@ exit 0
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+* Tue Jul 22 2014 Dan Walsh <dwalsh@redhat.com> - 1.1.1-2
+- Update man pages
+- Fix docker pull registry/repo
+
 * Fri Jul 18 2014 Dan Walsh <dwalsh@redhat.com> - 1.1.1-1
 - Update to latest from upstream
 
