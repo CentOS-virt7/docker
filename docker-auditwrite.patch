@@ -1,0 +1,11 @@
+diff -up docker-a0c340cc1573ec9de828b92ce60a34df72c90c1a/daemon/execdriver/native/template/default_template.go~ docker-a0c340cc1573ec9de828b92ce60a34df72c90c1a/daemon/execdriver/native/template/default_template.go
+--- docker-a0c340cc1573ec9de828b92ce60a34df72c90c1a/daemon/execdriver/native/template/default_template.go~	2014-07-22 11:00:49.000000000 -0400
++++ docker-a0c340cc1573ec9de828b92ce60a34df72c90c1a/daemon/execdriver/native/template/default_template.go	2014-07-23 10:43:49.476018681 -0400
+@@ -10,6 +10,7 @@ import (
+ func New() *libcontainer.Config {
+ 	container := &libcontainer.Config{
+ 		Capabilities: []string{
++			"AUDIT_WRITE",
+ 			"CHOWN",
+ 			"DAC_OVERRIDE",
+ 			"FOWNER",
