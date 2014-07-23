@@ -164,7 +164,7 @@ exit 0
 %{_unitdir}/docker.socket
 %config(noreplace) %{_sysconfdir}/sysconfig/docker
 %{_datadir}/bash-completion/completions/docker
-{_datadir}/zsh/site-functions/_docker
+%{_datadir}/zsh/site-functions/_docker
 %dir %{_sharedstatedir}/docker
 %dir %{_sysconfdir}/udev/rules.d
 %{_sysconfdir}/udev/rules.d/80-docker.rules
