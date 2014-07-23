@@ -163,8 +163,7 @@ exit 0
 %{_unitdir}/docker.service
 %{_unitdir}/docker.socket
 %config(noreplace) %{_sysconfdir}/sysconfig/docker
-%dir %{_sysconfdir}/bash_completion.d
-%{_datadir}/bash-completion/completions/docker%
+%{_datadir}/bash-completion/completions/docker
 {_datadir}/zsh/site-functions/_docker
 %dir %{_sharedstatedir}/docker
 %dir %{_sysconfdir}/udev/rules.d
