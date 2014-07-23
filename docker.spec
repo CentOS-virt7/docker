@@ -10,10 +10,11 @@
 
 Name:           docker
 Version:        1.1.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
+Patch1:     docker-auditwrite.patch
 Patch2:     docker-entitlement.patch
 URL:            http://www.docker.io
 # only x86_64 for now: https://github.com/dotcloud/docker/issues/136
@@ -61,6 +62,7 @@ servers, OpenStack clusters, public instances, or combinations of the above.
 
 %prep
 %setup -q -n docker-%{commit}
+%patch1 -p1 -b .auditwrite
 %patch2 -p1 -b .docker-entitlement
 tar zxf %{SOURCE2} 
 
@@ -96,8 +98,8 @@ install -d %{buildroot}%{_mandir}/man5
 install -p -m 644 man5/* %{buildroot}%{_mandir}/man5
 
 # install bash completion
-install -d %{buildroot}%{_sysconfdir}/bash_completion.d
-install -p -m 644 contrib/completion/bash/docker %{buildroot}%{_sysconfdir}/bash_completion.d/docker.bash
+install -d %{buildroot}%{_datadir}/bash-completion/completions/
+install -p -m 644 contrib/completion/bash/docker %{buildroot}%{_datadir}/bash-completion/completions/
 
 # install zsh completion
 install -d %{buildroot}%{_datadir}/zsh/site-functions
@@ -162,8 +164,8 @@ exit 0
 %{_unitdir}/docker.socket
 %config(noreplace) %{_sysconfdir}/sysconfig/docker
 %dir %{_sysconfdir}/bash_completion.d
-%{_sysconfdir}/bash_completion.d/docker.bash
-%{_datadir}/zsh/site-functions/_docker
+%{_datadir}/bash-completion/completions/docker%
+{_datadir}/zsh/site-functions/_docker
 %dir %{_sharedstatedir}/docker
 %dir %{_sysconfdir}/udev/rules.d
 %{_sysconfdir}/udev/rules.d/80-docker.rules
@@ -175,6 +177,10 @@ exit 0
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+* Wed Jul 23 2014 Dan Walsh <dwalsh@redhat.com> - 1.1.1-3
+- Install docker bash completions in proper location
+- Add audit_write as a default capability
+
 * Tue Jul 22 2014 Dan Walsh <dwalsh@redhat.com> - 1.1.1-2
 - Update man pages
 - Fix docker pull registry/repo
