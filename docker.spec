@@ -5,22 +5,20 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit   a0c340cc1573ec9de828b92ce60a34df72c90c1a
+%global commit   01a740df926b4ae021f775c6c3dae7e7d6c66fa0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
-Version:        1.1.1
-Release:        3%{?dist}
+Version:        1.1.2
+Release:        1%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
-Patch1:     docker-auditwrite.patch
-Patch2:     docker-entitlement.patch
 URL:            http://www.docker.io
 # only x86_64 for now: https://github.com/dotcloud/docker/issues/136
 ExclusiveArch:  x86_64
-#use repo: https://github.com/lsm5/docker/commits/htb2
-Source0:        https://github.com/lsm5/docker/archive/%{commit}/docker-%{shortcommit}.tar.gz
+#use repo: https://github.com/rhatdan/docker/commits/htb2
+Source0:        https://github.com/rhatdan/docker/archive/%{commit}/docker-%{shortcommit}.tar.gz
 # though final name for sysconf/sysvinit files is simply 'docker',
 # having .sysvinit and .sysconfig makes things clear
 Source1:        docker.service
@@ -62,8 +60,6 @@ servers, OpenStack clusters, public instances, or combinations of the above.
 
 %prep
 %setup -q -n docker-%{commit}
-%patch1 -p1 -b .auditwrite
-%patch2 -p1 -b .docker-entitlement
 tar zxf %{SOURCE2} 
 
 %build
