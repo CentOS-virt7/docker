@@ -18,6 +18,7 @@ URL:            http://www.docker.io
 # only x86_64 for now: https://github.com/docker/docker/issues/136
 ExclusiveArch:  x86_64
 Source0:        https://github.com/rhatdan/docker/archive/%{commit}/docker-%{shortcommit}.tar.gz
+Patch1: docker-version.patch
 # though final name for sysconf/sysvinit files is simply 'docker',
 # having .sysvinit and .sysconfig makes things clear
 Source1:        docker.service
@@ -59,6 +60,7 @@ servers, OpenStack clusters, public instances, or combinations of the above.
 
 %prep
 %setup -q -n docker-%{commit}
+%patch1 -p1 -b .version
 tar zxf %{SOURCE2} 
 
 %build
