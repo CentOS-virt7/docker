@@ -15,7 +15,7 @@ Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
 URL:            http://www.docker.io
-# only x86_64 for now: https://github.com/dotcloud/docker/issues/136
+# only x86_64 for now: https://github.com/docker/docker/issues/136
 ExclusiveArch:  x86_64
 Source0:        https://github.com/rhatdan/docker/archive/%{commit}/docker-%{shortcommit}.tar.gz
 # though final name for sysconf/sysvinit files is simply 'docker',
@@ -65,8 +65,8 @@ tar zxf %{SOURCE2}
 mkdir _build
 
 pushd _build
-  mkdir -p src/github.com/dotcloud
-  ln -s $(dirs +1 -l) src/github.com/dotcloud/docker
+  mkdir -p src/github.com/docker
+  ln -s $(dirs +1 -l) src/github.com/docker/docker
 popd
 
 export DOCKER_GITCOMMIT="%{shortcommit}/%{version}"
