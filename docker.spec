@@ -10,7 +10,7 @@
 
 Name:           docker
 Version:        1.1.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -175,8 +175,8 @@ exit 0
 %changelog
 * Fri Jul 25 2014 Dan Walsh <dwalsh@redhat.com> - 1.1.2-2
 - Update to the latest from upstream
-- Add comment and envoroment patches to allow setting of comments and enviroment variables
-from docker import
+- Add comment and envoroment patches to allow setting of comments and 
+- enviroment variables from docker import
 
 * Wed Jul 23 2014 Dan Walsh <dwalsh@redhat.com> - 1.1.1-3
 - Install docker bash completions in proper location
