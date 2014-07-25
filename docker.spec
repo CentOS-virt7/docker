@@ -5,7 +5,7 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit   5da185a4c78580a5cced479ca04f796bc22fd9a5
+%global commit   44a649b4e03feb5d1b362aa3dbc52bcb6f64fce2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
@@ -17,8 +17,8 @@ License:        ASL 2.0
 URL:            http://www.docker.io
 # only x86_64 for now: https://github.com/dotcloud/docker/issues/136
 ExclusiveArch:  x86_64
-#use repo: https://github.com/rhatdan/docker/commits/htb2
-Source0:        https://github.com/rhatdan/docker/archive/%{commit}/docker-%{shortcommit}.tar.gz
+Source0:        https://github.com/lsm5/docker/archive/%{commit}/docker-%{shortcommit}.tar.gz
+Patch1:         0001-Allow-setting-of-environment-variables-when-importin.patch 
 # though final name for sysconf/sysvinit files is simply 'docker',
 # having .sysvinit and .sysconfig makes things clear
 Source1:        docker.service
@@ -60,6 +60,7 @@ servers, OpenStack clusters, public instances, or combinations of the above.
 
 %prep
 %setup -q -n docker-%{commit}
+%patch1 -p1 -b .env
 tar zxf %{SOURCE2} 
 
 %build
@@ -172,6 +173,11 @@ exit 0
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+* Fri Jul 25 2014 Dan Walsh <dwalsh@redhat.com> - 1.1.2-2
+- Update to the latest from upstream
+- Add comment and envoroment patches to allow setting of comments and enviroment variables
+from docker import
+
 * Wed Jul 23 2014 Dan Walsh <dwalsh@redhat.com> - 1.1.1-3
 - Install docker bash completions in proper location
 - Add audit_write as a default capability

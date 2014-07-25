@@ -1,0 +1,85 @@
+diff -up docker-44a649b4e03feb5d1b362aa3dbc52bcb6f64fce2/api/client/commands.go.env docker-44a649b4e03feb5d1b362aa3dbc52bcb6f64fce2/api/client/commands.go
+--- docker-44a649b4e03feb5d1b362aa3dbc52bcb6f64fce2/api/client/commands.go.env	2014-07-25 15:00:01.964750838 -0400
++++ docker-44a649b4e03feb5d1b362aa3dbc52bcb6f64fce2/api/client/commands.go	2014-07-25 15:00:59.616883415 -0400
+@@ -1128,8 +1128,15 @@ func (cli *DockerCli) CmdKill(args ...st
+ }
+ 
+ func (cli *DockerCli) CmdImport(args ...string) error {
++	var (
++		flEnv     = opts.NewListOpts(opts.ValidateEnv)
++		flEnvFile opts.ListOpts
++	)
+ 	cmd := cli.Subcmd("import", "URL|- [OPTIONS] [REPOSITORY[:TAG]]", "Create an empty filesystem image and import the contents of the tarball (.tar, .tar.gz, .tgz, .bzip, .tar.xz, .txz) into it, then optionally tag it.")
+ 	help := cmd.Bool([]string{"#help", "-help"}, false, "Print usage")
++	cmd.Var(&flEnv, []string{"e", "-env"}, "Set environment variables")
++	cmd.Var(&flEnvFile, []string{"-env-file"}, "Read in a line delimited file of environment variables")
++
+ 	flComment := cmd.String([]string{"m", "-message"}, "", "Commit message")
+ 
+ 	if err := cmd.Parse(args); err != nil {
+@@ -1151,6 +1158,18 @@ func (cli *DockerCli) CmdImport(args ...
+ 		repository = cmd.Arg(1)
+ 	)
+ 
++	// collect all the environment variables for the container
++	envVariables := []string{}
++	for _, ef := range flEnvFile.GetAll() {
++		parsedVars, err := opts.ParseEnvFile(ef)
++		if err != nil {
++			return err
++		}
++		envVariables = append(envVariables, parsedVars...)
++	}
++	// parse the '-e' and '--env' after, to allow override
++	envVariables = append(envVariables, flEnv.GetAll()...)
++	v.Set("env", strings.Join(envVariables, " "))
+ 	v.Set("fromSrc", src)
+ 	v.Set("repo", repository)
+ 	v.Set("comment", *flComment)
+diff -up docker-44a649b4e03feb5d1b362aa3dbc52bcb6f64fce2/api/server/server.go.env docker-44a649b4e03feb5d1b362aa3dbc52bcb6f64fce2/api/server/server.go
+--- docker-44a649b4e03feb5d1b362aa3dbc52bcb6f64fce2/api/server/server.go.env	2014-07-25 15:00:01.964750838 -0400
++++ docker-44a649b4e03feb5d1b362aa3dbc52bcb6f64fce2/api/server/server.go	2014-07-25 15:00:52.904867979 -0400
+@@ -468,7 +468,7 @@ func postImagesCreate(eng *engine.Engine
+ 
+ 	var (
+ 		image = r.Form.Get("fromImage")
+-        repo  = r.Form.Get("repo")
++		repo  = r.Form.Get("repo")
+ 		tag   = r.Form.Get("tag")
+ 		job   *engine.Job
+ 	)
+@@ -499,6 +499,7 @@ func postImagesCreate(eng *engine.Engine
+ 		}
+ 		job = eng.Job("import", r.Form.Get("fromSrc"), repo, tag)
+ 		job.Setenv("comment", r.Form.Get("comment"))
++		job.SetenvList("env", strings.Split(r.Form.Get("env"), " "))
+ 		job.Stdin.Add(r.Body)
+ 	}
+ 
+diff -up docker-44a649b4e03feb5d1b362aa3dbc52bcb6f64fce2/docs/man/docker-import.1.md.env docker-44a649b4e03feb5d1b362aa3dbc52bcb6f64fce2/docs/man/docker-import.1.md
+--- docker-44a649b4e03feb5d1b362aa3dbc52bcb6f64fce2/docs/man/docker-import.1.md.env	2014-07-25 15:00:01.964750838 -0400
++++ docker-44a649b4e03feb5d1b362aa3dbc52bcb6f64fce2/docs/man/docker-import.1.md	2014-07-25 15:02:00.009022291 -0400
+@@ -6,6 +6,8 @@ docker-import - Create an empty filesyst
+ 
+ # SYNOPSIS
+ **docker import**
++[**-e**|**--env**[=*[]*]]
++[**--env-file**[=*[]*]]
+ [**--help]
+ [**-m**|**--message**[=*MESSAGE*]]
+ URL|- [REPOSITORY[:TAG]]
+@@ -15,6 +17,13 @@ Create a new filesystem image from the c
+ `.tar.gz`, `.tgz`, `.bzip`, `.tar.xz`, `.txz`) into it, then optionally tag it.
+ 
+ # OPTIONS
++**-e**, **--env**=*environment*
++   Set environment variables. This option allows you to specify arbitrary
++environment variables that are available for the process that will be launched
++inside of the container.
++
++**--env-file**=[]
++   Read in a line delimited file of environment variables
+ 
+ **--help  Print Usage statement
+ 
+diff -up docker-44a649b4e03feb5d1b362aa3dbc52bcb6f64fce2/server/server.go.env docker-44a649b4e03feb5d1b362aa3dbc52bcb6f64fce2/server/server.go
