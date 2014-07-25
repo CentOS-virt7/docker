@@ -5,19 +5,19 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit   44a649b4e03feb5d1b362aa3dbc52bcb6f64fce2
+%global commit   e4ecea9419fa5055eafdcf8e95526f3f255b78b6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
 Version:        1.1.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
 URL:            http://www.docker.io
 # only x86_64 for now: https://github.com/dotcloud/docker/issues/136
 ExclusiveArch:  x86_64
-Source0:        https://github.com/lsm5/docker/archive/%{commit}/docker-%{shortcommit}.tar.gz
+Source0:        https://github.com/rhatdan/docker/archive/%{commit}/docker-%{shortcommit}.tar.gz
 Patch1:         0001-Allow-setting-of-environment-variables-when-importin.patch 
 # though final name for sysconf/sysvinit files is simply 'docker',
 # having .sysvinit and .sysconfig makes things clear
@@ -173,6 +173,9 @@ exit 0
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+* Fri Jul 25 2014 Dan Walsh <dwalsh@redhat.com> - 1.1.2-3
+- Pull in latest docker-1.1.2 code
+
 * Fri Jul 25 2014 Dan Walsh <dwalsh@redhat.com> - 1.1.2-2
 - Update to the latest from upstream
 - Add comment and envoroment patches to allow setting of comments and 
