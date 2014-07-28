@@ -5,12 +5,12 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit   53635ac877131aa970010270957c073113644c0f
+%global commit   d2a3071ffc0ea4fd6c10136703c7c5b6ac161c4b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
 Version:        1.1.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -173,6 +173,10 @@ exit 0
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+* Mon Jul 28 2014 Dan Walsh <dwalsh@redhat.com> - 1.1.2-5
+- Fix environment patch
+- Add /etc/machine-id patch
+
 * Fri Jul 25 2014 Dan Walsh <dwalsh@redhat.com> - 1.1.2-4
 - Add Secrets Patch back in
 
