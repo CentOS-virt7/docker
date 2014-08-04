@@ -10,7 +10,7 @@
 
 Name:           docker
 Version:        1.1.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -173,6 +173,9 @@ exit 0
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+* Mon Aug 4 2014 Dan Walsh <dwalsh@redhat.com> - 1.1.2-6
+- Update man pages
+
 * Mon Jul 28 2014 Dan Walsh <dwalsh@redhat.com> - 1.1.2-5
 - Fix environment patch
 - Add /etc/machine-id patch
