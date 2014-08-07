@@ -5,12 +5,12 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit   91f8d16cf06d0633e6a50ed1b739566c34f605d4
+%global commit   8a14cca2b8d0cc37008a7957a3621d54ec882e46
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
 Version:        1.1.2
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -173,7 +173,7 @@ exit 0
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
-* Thu Aug 7 2014 Dan Walsh <dwalsh@redhat.com> - 1.1.2-7
+* Thu Aug 7 2014 Dan Walsh <dwalsh@redhat.com> - 1.1.2-8
 - Fix handing of rhel repos
 
 * Mon Aug 4 2014 Dan Walsh <dwalsh@redhat.com> - 1.1.2-6
