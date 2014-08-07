@@ -5,12 +5,12 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit   2a31a87fad062cbcf18a3696f7b49fa1a68ed43a
+%global commit   91f8d16cf06d0633e6a50ed1b739566c34f605d4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
 Version:        1.1.2
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -19,6 +19,7 @@ URL:            http://www.docker.io
 ExclusiveArch:  x86_64
 Source0:        https://github.com/rhatdan/docker/archive/%{commit}/docker-%{shortcommit}.tar.gz
 Patch1: docker-version.patch
+Patch2: docker-run.patch
 # though final name for sysconf/sysvinit files is simply 'docker',
 # having .sysvinit and .sysconfig makes things clear
 Source1:        docker.service
@@ -61,6 +62,7 @@ servers, OpenStack clusters, public instances, or combinations of the above.
 %prep
 %setup -q -n docker-%{commit}
 %patch1 -p1 -b .version
+%patch2 -p1 -b .run
 tar zxf %{SOURCE2} 
 
 %build
@@ -173,6 +175,9 @@ exit 0
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+* Thu Aug 7 2014 Dan Walsh <dwalsh@redhat.com> - 1.1.2-7
+- Fix handing of rhel repos
+
 * Mon Aug 4 2014 Dan Walsh <dwalsh@redhat.com> - 1.1.2-6
 - Update man pages
 
