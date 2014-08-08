@@ -5,12 +5,12 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit   8a14cca2b8d0cc37008a7957a3621d54ec882e46
+%global commit   8aa40e84c2377858263e5eafea082b7eda3635a9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
 Version:        1.1.2
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -173,6 +173,9 @@ exit 0
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+* Fri Aug 8 2014 Dan Walsh <dwalsh@redhat.com> - 1.1.2-9
+- Add Matt Heon patch to allow containers to work if machine is not entitled
+
 * Thu Aug 7 2014 Dan Walsh <dwalsh@redhat.com> - 1.1.2-8
 - Fix handing of rhel repos
 
