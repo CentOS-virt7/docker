@@ -10,7 +10,7 @@
 
 Name:           docker
 Version:        1.1.2
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -130,6 +130,10 @@ ln -s %{_sysconfdir}/pki/entitlement %{buildroot}%{_datadir}/rhel/secrets/etc-pk
 ln -s %{_sysconfdir}/rhsm %{buildroot}%{_datadir}/rhel/secrets/rhsm
 ln -s %{_sysconfdir}/yum.repos.d/redhat.repo %{buildroot}%{_datadir}/rhel/secrets/rhel7.repo
 
+mkdir -p %{buildroot}/etc/docker/certs.d
+ln -s /etc/pki/entitlement %{buildroot}/etc/docker/certs.d/redhat.com
+ln -s /etc/rhsm/ca/redhat-uep.pem %{buildroot}/etc/docker/certs.d/redhat.com/redhat-uep.pem
+
 %pre
 getent group docker > /dev/null || %{_sbindir}/groupadd -r docker
 exit 0
@@ -160,6 +164,9 @@ exit 0
 %{_unitdir}/docker.service
 %{_unitdir}/docker.socket
 %config(noreplace) %{_sysconfdir}/sysconfig/docker
+%{_sysconfdir}/docker/certs.d
+%{_sysconfdir}/docker/certs.d/redhat.com
+%{_sysconfdir}/docker/certs.d/redhat.com/redhat-uep.pem
 %{_datadir}/bash-completion/completions/docker
 %{_datadir}/zsh/site-functions/_docker
 %dir %{_sharedstatedir}/docker
@@ -173,6 +180,9 @@ exit 0
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+* Tue Sep 2 2014 Dan Walsh <dwalsh@redhat.com> - 1.1.2-10
+- Add  docker client entitlement certs
+
 * Fri Aug 8 2014 Dan Walsh <dwalsh@redhat.com> - 1.1.2-9
 - Add Matt Heon patch to allow containers to work if machine is not entitled
 
