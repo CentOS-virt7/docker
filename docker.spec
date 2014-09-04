@@ -5,12 +5,12 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit   8aa40e84c2377858263e5eafea082b7eda3635a9
+%global commit   402ba0f4fa7bf102429e2a0b5b1b997282ce34cc
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
-Version:        1.1.2
-Release:        10%{?dist}
+Version:        1.2.0
+Release:        1%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -38,6 +38,7 @@ BuildRequires:  golang(code.google.com/p/gosqlite/sqlite3)
 BuildRequires:  golang(github.com/syndtr/gocapability/capability) >= 0-0.6
 BuildRequires:  golang(github.com/godbus/dbus)
 BuildRequires:  golang(github.com/coreos/go-systemd/activation) >= 2-2
+BuildRequires:  golang(github.com/codegangsta/cli)
 BuildRequires:  device-mapper-devel
 BuildRequires:  btrfs-progs-devel
 BuildRequires:  pkgconfig(systemd)
@@ -47,6 +48,7 @@ Requires:       xz
 
 Provides:       lxc-docker = %{version}
 Provides:       docker
+Provides:       nsinit
 
 %description
 Docker is an open-source engine that automates the deployment of any
@@ -57,6 +59,12 @@ Docker containers can encapsulate any payload, and will run consistently on
 and between virtually any server. The same container that a developer builds
 and tests on a laptop will run at scale, in production*, on VMs, bare-metal
 servers, OpenStack clusters, public instances, or combinations of the above.
+
+%package lib
+Summary: Package that provides docker associated libraries.
+
+%description lib
+Package that provides docker associated libraries.
 
 %prep
 %setup -q -n docker-%{commit}
@@ -73,11 +81,16 @@ popd
 
 export DOCKER_GITCOMMIT="%{shortcommit}/%{version}"
 export DOCKER_BUILDTAGS='selinux'
-export GOPATH=$(pwd)/_build:$(pwd)/vendor
+export GOPATH=$(pwd)/_build:$(pwd)/vendor:%{gopath}
 
 hack/make.sh dynbinary
 cp contrib/syntax/vim/LICENSE LICENSE-vim-syntax
 cp contrib/syntax/vim/README.md README-vim-syntax.md
+
+#build nsinit
+pushd $(pwd)/_build/src
+go build github.com/docker/libcontainer/nsinit
+popd
 
 %install
 # install binary
@@ -130,9 +143,18 @@ ln -s %{_sysconfdir}/pki/entitlement %{buildroot}%{_datadir}/rhel/secrets/etc-pk
 ln -s %{_sysconfdir}/rhsm %{buildroot}%{_datadir}/rhel/secrets/rhsm
 ln -s %{_sysconfdir}/yum.repos.d/redhat.repo %{buildroot}%{_datadir}/rhel/secrets/rhel7.repo
 
-mkdir -p %{buildroot}/etc/docker/certs.d
-ln -s /etc/pki/entitlement %{buildroot}/etc/docker/certs.d/redhat.com
-ln -s /etc/rhsm/ca/redhat-uep.pem %{buildroot}/etc/docker/certs.d/redhat.com/redhat-uep.pem
+mkdir -p %{buildroot}/etc/docker/certs.d/redhat.com
+ln -s /etc/rhsm/ca/redhat-uep.pem %{buildroot}/etc/docker/certs.d/redhat.com/redhat-ca.crt
+
+# Install nsinit
+install -d -p %{buildroot}%{gopath}/src/github.com/docker/libcontainer/nsinit
+cp -pav vendor/src/github.com/docker/libcontainer/nsinit/*.go %{buildroot}%{gopath}/src/github.com/docker/libcontainer/nsinit
+install -d %{buildroot}%{_bindir}
+install -p -m 755 ./_build/src/nsinit %{buildroot}%{_bindir}/nsinit
+
+# Install libcontainer
+install -d -p %{buildroot}%{gopath}/src/github.com/docker/libcontainer
+cp -pav vendor/src/github.com/docker/libcontainer/*.go %{buildroot}%{gopath}/src/github.com/docker/libcontainer
 
 %pre
 getent group docker > /dev/null || %{_sbindir}/groupadd -r docker
@@ -149,7 +171,7 @@ exit 0
 
 %files
 %defattr(-,root,root,-)
-%doc AUTHORS CHANGELOG.md CONTRIBUTING.md FIXME MAINTAINERS NOTICE
+%doc AUTHORS CHANGELOG.md CONTRIBUTING.md MAINTAINERS NOTICE
 %doc LICENSE* README*.md
 %{_mandir}/man1/*
 %{_mandir}/man5/*
@@ -165,8 +187,8 @@ exit 0
 %{_unitdir}/docker.socket
 %config(noreplace) %{_sysconfdir}/sysconfig/docker
 %{_sysconfdir}/docker/certs.d
-%{_sysconfdir}/docker/certs.d/redhat.com
-%{_sysconfdir}/docker/certs.d/redhat.com/redhat-uep.pem
+#%{_sysconfdir}/docker/certs.d/redhat.com
+#%{_sysconfdir}/docker/certs.d/redhat.com/redhat-ca.crt
 %{_datadir}/bash-completion/completions/docker
 %{_datadir}/zsh/site-functions/_docker
 %dir %{_sharedstatedir}/docker
@@ -178,8 +200,21 @@ exit 0
 %{_datadir}/vim/vimfiles/ftdetect/dockerfile.vim
 %dir %{_datadir}/vim/vimfiles/syntax
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
+%{_bindir}/nsinit
+%dir %{gopath}/src/github.com/docker/libcontainer/nsinit
+%{gopath}/src/github.com/docker/libcontainer/nsinit/*.go
+
+%files lib
+%dir %{gopath}/src/github.com/docker/libcontainer
+%{gopath}/src/github.com/docker/libcontainer/*.go
 
 %changelog
+* Thu Sep 04 2014 Tomas Hrcka <thrcka@redhat.com> - 1.2.0-1
+- Bump release to 1.2.0
+- Change docker client certs links
+- Add nsinit
+- Add docker-lib subpackage which provides libcontainer sources
+
 * Tue Sep 2 2014 Dan Walsh <dwalsh@redhat.com> - 1.1.2-10
 - Add  docker client entitlement certs
 
