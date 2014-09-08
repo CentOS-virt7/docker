@@ -38,7 +38,7 @@ BuildRequires:  golang(code.google.com/p/gosqlite/sqlite3)
 BuildRequires:  golang(github.com/syndtr/gocapability/capability) >= 0-0.6
 BuildRequires:  golang(github.com/godbus/dbus)
 BuildRequires:  golang(github.com/coreos/go-systemd/activation) >= 2-2
-BuildRequires:  golang(github.com/codegangsta/cli)
+#BuildRequires:  golang(github.com/codegangsta/cli)
 BuildRequires:  device-mapper-devel
 BuildRequires:  btrfs-progs-devel
 BuildRequires:  pkgconfig(systemd)
@@ -88,9 +88,9 @@ cp contrib/syntax/vim/LICENSE LICENSE-vim-syntax
 cp contrib/syntax/vim/README.md README-vim-syntax.md
 
 #build nsinit
-pushd $(pwd)/_build/src
-go build github.com/docker/libcontainer/nsinit
-popd
+#pushd $(pwd)/_build/src
+#  go build github.com/docker/libcontainer/nsinit
+#popd
 
 %install
 # install binary
@@ -147,10 +147,10 @@ mkdir -p %{buildroot}/etc/docker/certs.d/redhat.com
 ln -s /etc/rhsm/ca/redhat-uep.pem %{buildroot}/etc/docker/certs.d/redhat.com/redhat-ca.crt
 
 # Install nsinit
-install -d -p %{buildroot}%{gopath}/src/github.com/docker/libcontainer/nsinit
-cp -pav vendor/src/github.com/docker/libcontainer/nsinit/*.go %{buildroot}%{gopath}/src/github.com/docker/libcontainer/nsinit
-install -d %{buildroot}%{_bindir}
-install -p -m 755 ./_build/src/nsinit %{buildroot}%{_bindir}/nsinit
+#install -d -p %{buildroot}%{gopath}/src/github.com/docker/libcontainer/nsinit
+#cp -pav vendor/src/github.com/docker/libcontainer/nsinit/*.go %{buildroot}%{gopath}/src/github.com/docker/libcontainer/nsinit
+#install -d %{buildroot}%{_bindir}
+#install -p -m 755 ./_build/src/nsinit %{buildroot}%{_bindir}/nsinit
 
 # Install libcontainer
 install -d -p %{buildroot}%{gopath}/src/github.com/docker/libcontainer
@@ -200,9 +200,9 @@ exit 0
 %{_datadir}/vim/vimfiles/ftdetect/dockerfile.vim
 %dir %{_datadir}/vim/vimfiles/syntax
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
-%{_bindir}/nsinit
-%dir %{gopath}/src/github.com/docker/libcontainer/nsinit
-%{gopath}/src/github.com/docker/libcontainer/nsinit/*.go
+#%{_bindir}/nsinit
+#%dir %{gopath}/src/github.com/docker/libcontainer/nsinit
+#%{gopath}/src/github.com/docker/libcontainer/nsinit/*.go
 
 %files lib
 %dir %{gopath}/src/github.com/docker/libcontainer
