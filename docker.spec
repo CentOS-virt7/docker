@@ -5,12 +5,12 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit   c87fe3dc3321527a127bee43940106a925a2666d
+%global commit   c6067a5a2622c46530656a74ee29d5c765e0d755
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
 Version:        1.2.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -209,6 +209,9 @@ exit 0
 %{gopath}/src/github.com/docker/libcontainer/*.go
 
 %changelog
+* Mon Sep 08 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-3
+- Allow docker to use /etc/pki/entitlement for certs
+
 * Mon Sep 08 2014 Tomas Hrcka <thrcka@redhat.com> - 1.2.0-2
 - Enable nsinit again
 - New sources that satisfy nsinit deps
