@@ -5,12 +5,12 @@
 %global debug_package %{nil}
 %global gopath  %{_datadir}/gocode
 
-%global commit   300a5fd5cffeae5afbbd2a75a55a3733fbc1c459
+%global commit   c87fe3dc3321527a127bee43940106a925a2666d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
 Version:        1.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -88,9 +88,9 @@ cp contrib/syntax/vim/LICENSE LICENSE-vim-syntax
 cp contrib/syntax/vim/README.md README-vim-syntax.md
 
 #build nsinit
-#pushd $(pwd)/_build/src
-#  go build github.com/docker/libcontainer/nsinit
-#popd
+pushd $(pwd)/_build/src
+  go build github.com/docker/libcontainer/nsinit
+popd
 
 %install
 # install binary
@@ -147,10 +147,10 @@ mkdir -p %{buildroot}/etc/docker/certs.d/redhat.com
 ln -s /etc/rhsm/ca/redhat-uep.pem %{buildroot}/etc/docker/certs.d/redhat.com/redhat-ca.crt
 
 # Install nsinit
-#install -d -p %{buildroot}%{gopath}/src/github.com/docker/libcontainer/nsinit
-#cp -pav vendor/src/github.com/docker/libcontainer/nsinit/*.go %{buildroot}%{gopath}/src/github.com/docker/libcontainer/nsinit
-#install -d %{buildroot}%{_bindir}
-#install -p -m 755 ./_build/src/nsinit %{buildroot}%{_bindir}/nsinit
+install -d -p %{buildroot}%{gopath}/src/github.com/docker/libcontainer/nsinit
+cp -pav vendor/src/github.com/docker/libcontainer/nsinit/*.go %{buildroot}%{gopath}/src/github.com/docker/libcontainer/nsinit
+install -d %{buildroot}%{_bindir}
+install -p -m 755 ./_build/src/nsinit %{buildroot}%{_bindir}/nsinit
 
 # Install libcontainer
 install -d -p %{buildroot}%{gopath}/src/github.com/docker/libcontainer
@@ -200,15 +200,19 @@ exit 0
 %{_datadir}/vim/vimfiles/ftdetect/dockerfile.vim
 %dir %{_datadir}/vim/vimfiles/syntax
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
-#%{_bindir}/nsinit
-#%dir %{gopath}/src/github.com/docker/libcontainer/nsinit
-#%{gopath}/src/github.com/docker/libcontainer/nsinit/*.go
+%{_bindir}/nsinit
+%dir %{gopath}/src/github.com/docker/libcontainer/nsinit
+%{gopath}/src/github.com/docker/libcontainer/nsinit/*.go
 
 %files lib
 %dir %{gopath}/src/github.com/docker/libcontainer
 %{gopath}/src/github.com/docker/libcontainer/*.go
 
 %changelog
+* Mon Sep 08 2014 Tomas Hrcka <thrcka@redhat.com> - 1.2.0-2
+- Enable nsinit again
+- New sources that satisfy nsinit deps
+
 * Thu Sep 04 2014 Tomas Hrcka <thrcka@redhat.com> - 1.2.0-1
 - Bump release to 1.2.0
 - Change docker client certs links
