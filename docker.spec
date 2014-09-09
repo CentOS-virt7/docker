@@ -6,7 +6,7 @@
 %global gopath  %{_datadir}/gocode
 
 %global import_path github.com/docker/docker
-%global commit   393b0f1630f0a82188271aba2e0468b5c05e878d
+%global commit   f9666b8880c4ab6c2f32fd14ff293f10aec4ce20
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
@@ -479,7 +479,7 @@ exit 0
 %{gopath}/src/%{import_path}/pkg/pools/*.go
 
 %changelog
-* Tue Sep 09 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-6
+* Tue Sep 09 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-7
 - Fix secrets patch
 
 * Tue Sep 09 2014 Tomas Hrcka <thrcka@redhat.com> - 1.2.0-4
