@@ -64,8 +64,8 @@ servers, OpenStack clusters, public instances, or combinations of the above.
 %package devel
 BuildRequires:  golang
 Requires:       golang
-Requires:       docker-pkg-devel
 Summary:        A golang registry for global request variables (source libraries)
+Privides:       docker-pkg-devel docker-io-pkg-devel
 Provides:       golang(%{import_path}) = %{version}-%{release}
 Provides:       golang(%{import_path}/api) = %{version}-%{release}
 Provides:       golang(%{import_path}/api/client) = %{version}-%{release}
@@ -106,14 +106,6 @@ Provides:       golang(%{import_path}/registry) = %{version}-%{release}
 Provides:       golang(%{import_path}/runconfig) = %{version}-%{release}
 Provides:       golang(%{import_path}/utils) = %{version}-%{release}
 Provides:       golang(%{import_path}/utils/broadcastwriter) = %{version}-%{release}
-
-%description devel
-This is the source libraries for docker.
-
-%package pkg-devel
-BuildRequires:  golang
-Requires:       golang
-Summary:        A golang registry for global request variables (source libraries)
 Provides:       golang(%{import_path}/pkg/graphdb) = %{version}-%{release}
 Provides:       golang(%{import_path}/pkg/iptables) = %{version}-%{release}
 Provides:       golang(%{import_path}/pkg/listenbuffer) = %{version}-%{release}
@@ -137,10 +129,8 @@ Provides:       golang(%{import_path}/pkg/units) = %{version}-%{release}
 Provides:       golang(%{import_path}/pkg/user) = %{version}-%{release}
 Provides:       golang(%{import_path}/pkg/version) = %{version}-%{release}
 
-%description pkg-devel
-These source librariees are provided by docker, but are independent of docker specific logic.
-The import paths of %{import_path}/pkg/...
-
+%description devel
+This is the source libraries for docker.
 
 %prep
 %setup -q -n docker-%{commit}
@@ -382,8 +372,6 @@ exit 0
 #libcontainer
 %dir %{gopath}/src/github.com/docker/libcontainer
 %{gopath}/src/github.com/docker/libcontainer/*.go
- 
-%files pkg-devel
 %dir %{gopath}/src/%{import_path}
 %dir %{gopath}/src/%{import_path}/pkg
 %{gopath}/src/%{import_path}/pkg/README.md
