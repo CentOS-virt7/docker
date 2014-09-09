@@ -6,12 +6,12 @@
 %global gopath  %{_datadir}/gocode
 
 %global import_path github.com/docker/docker
-%global commit   c6067a5a2622c46530656a74ee29d5c765e0d755
+%global commit   393b0f1630f0a82188271aba2e0468b5c05e878d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
 Version:        1.2.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -487,6 +487,9 @@ exit 0
 %{gopath}/src/%{import_path}/pkg/version/*.go
 
 %changelog
+* Tue Sep 09 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-5
+- Fix secrets patch
+
 * Tue Sep 09 2014 Tomas Hrcka <thrcka@redhat.com> - 1.2.0-4
 - Add -devel -pkg-devel subpackages
 - Move libcontainer from -lib to -devel subpackage
