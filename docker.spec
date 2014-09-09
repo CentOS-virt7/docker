@@ -485,6 +485,10 @@ exit 0
 %{gopath}/src/%{import_path}/pkg/units/*.go
 %dir %{gopath}/src/%{import_path}/pkg/version
 %{gopath}/src/%{import_path}/pkg/version/*.go
+%dir %{gopath}/src/%{import_path}/pkg/ioutils
+%{gopath}/src/%{import_path}/pkg/ioutils/*.go
+%dir %{gopath}/src/%{import_path}/pkg/pools
+%{gopath}/src/%{import_path}/pkg/pools/*.go
 
 %changelog
 * Tue Sep 09 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-5
