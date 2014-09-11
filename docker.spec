@@ -6,7 +6,7 @@
 %global gopath  %{_datadir}/gocode
 
 %global import_path github.com/docker/docker
-%global commit   709d559c6a369f8cbac445b039a50e58af57bfc1
+%global commit   d4fb8f846e5c076c0ac3578d287d4f2857f1acec
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
@@ -32,7 +32,7 @@ BuildRequires:  gcc
 BuildRequires:  glibc-static
 # ensure build uses golang 1.2-7 and above
 # http://code.google.com/p/go/source/detail?r=a15f344a9efa35ef168c8feaa92a15a1cdc93db5
-BuildRequires:  golang >= 1.2-7
+BuildRequires:  golang >= 1.3.1
 BuildRequires:  golang(github.com/gorilla/mux) >= 0-0.12
 BuildRequires:  golang(github.com/kr/pty) >= 0-0.20
 BuildRequires:  golang(code.google.com/p/go.net/websocket)
