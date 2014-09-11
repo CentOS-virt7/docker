@@ -11,7 +11,7 @@
 
 Name:           docker
 Version:        1.2.0
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -480,6 +480,9 @@ exit 0
 %{gopath}/src/%{import_path}/pkg/pools/*.go
 
 %changelog
+* Thu Sep 11 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-10
+- Re-add all of the patches
+
 * Thu Sep 11 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-9
 - Remove runtime dependency on golang
 
