@@ -6,7 +6,7 @@
 %global gopath  %{_datadir}/gocode
 
 %global import_path github.com/docker/docker
-%global commit   f9666b8880c4ab6c2f32fd14ff293f10aec4ce20
+%global commit   97ff6236e9c84345b9c77c1fc3ecdbb593ac5cbc
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
