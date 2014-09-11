@@ -11,7 +11,7 @@
 
 Name:           docker
 Version:        1.2.0
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -27,6 +27,7 @@ Source2:        docker-man-3.tar.gz
 Source3:        docker.sysconfig
 # docker: systemd socket activation results in privilege escalation
 Source4:        docker.socket
+Source5:        codegansta.tgz
 BuildRequires:  gcc
 BuildRequires:  glibc-static
 # ensure build uses golang 1.2-7 and above
@@ -135,6 +136,7 @@ This is the source libraries for docker.
 %setup -q -n docker-%{commit}
 %patch1 -p1 -b .version
 tar zxf %{SOURCE2} 
+tar zxf %{SOURCE5} 
 
 %build
 mkdir _build
@@ -478,6 +480,9 @@ exit 0
 %{gopath}/src/%{import_path}/pkg/pools/*.go
 
 %changelog
+* Thu Sep 11 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-9
+- Remove runtime dependency on golang
+
 * Thu Sep 11 2014 Tomas Hrcka <thrcka@redhat.com> - 1.2.0-8
 - Remove runtime dependency on golang
 
