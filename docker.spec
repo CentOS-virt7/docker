@@ -11,7 +11,7 @@
 
 Name:           docker
 Version:        1.2.0
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -532,6 +532,10 @@ exit 0
 %{gopath}/src/%{import_path}/pkg/pools/*.go
 
 %changelog
+* Fri Sep 12 2014 Tomas Hrcka <thrcka@redhat.com> - 1.2.0-11
+- Add missing pieces of libcontainer
+- Devel now obsoletes golang-github-docker-libcontainer-devel
+
 * Thu Sep 11 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-10
 - Re-add all of the patches
 
