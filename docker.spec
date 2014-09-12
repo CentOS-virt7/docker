@@ -106,6 +106,7 @@ Provides:       golang(%{import_path}/registry) = %{version}-%{release}
 Provides:       golang(%{import_path}/runconfig) = %{version}-%{release}
 Provides:       golang(%{import_path}/utils) = %{version}-%{release}
 Provides:       golang(%{import_path}/utils/broadcastwriter) = %{version}-%{release}
+Provides:       golang(%{import_path}/pkg) = %{version}-%{release}
 Provides:       golang(%{import_path}/pkg/graphdb) = %{version}-%{release}
 Provides:       golang(%{import_path}/pkg/iptables) = %{version}-%{release}
 Provides:       golang(%{import_path}/pkg/listenbuffer) = %{version}-%{release}
@@ -128,6 +129,8 @@ Provides:       golang(%{import_path}/pkg/truncindex) = %{version}-%{release}
 Provides:       golang(%{import_path}/pkg/units) = %{version}-%{release}
 Provides:       golang(%{import_path}/pkg/user) = %{version}-%{release}
 Provides:       golang(%{import_path}/pkg/version) = %{version}-%{release}
+
+Obsoletes:	golang-github-docker-libcontainer-devel
 
 %description devel
 This is the source libraries for docker.
@@ -220,8 +223,14 @@ install -d %{buildroot}%{_bindir}
 install -p -m 755 ./_build/src/nsinit %{buildroot}%{_bindir}/nsinit
 
 # Install libcontainer
-install -d -p %{buildroot}%{gopath}/src/github.com/docker/libcontainer
-cp -pav vendor/src/github.com/docker/libcontainer/*.go %{buildroot}%{gopath}/src/github.com/docker/libcontainer
+for dir in . apparmor cgroups cgroups/fs cgroups/systemd \
+	console devices label mount mount/nodes namespaces \
+	netlink network nsinit security/capabilities \
+	security/restrict selinux syncpipe system user utils
+do
+    install -d -p %{buildroot}%{gopath}/src/github.com/docker/libcontainer/$dir
+    cp -pav vendor/src/github.com/docker/libcontainer/$dir/*.go %{buildroot}%{gopath}/src/github.com/docker/libcontainer/$dir
+done
 
 # sources
 install -d -p %{buildroot}/%{gopath}/src/%{import_path}
@@ -373,6 +382,49 @@ exit 0
 #libcontainer
 %dir %{gopath}/src/github.com/docker/libcontainer
 %{gopath}/src/github.com/docker/libcontainer/*.go
+%dir %{gopath}/src/github.com/docker/libcontainer/apparmor
+%dir %{gopath}/src/github.com/docker/libcontainer/cgroups
+%dir %{gopath}/src/github.com/docker/libcontainer/cgroups/fs
+%dir %{gopath}/src/github.com/docker/libcontainer/cgroups/systemd
+%dir %{gopath}/src/github.com/docker/libcontainer/console
+%dir %{gopath}/src/github.com/docker/libcontainer/devices
+%dir %{gopath}/src/github.com/docker/libcontainer/label
+%dir %{gopath}/src/github.com/docker/libcontainer/mount
+%dir %{gopath}/src/github.com/docker/libcontainer/mount/nodes
+%dir %{gopath}/src/github.com/docker/libcontainer/namespaces
+%dir %{gopath}/src/github.com/docker/libcontainer/netlink
+%dir %{gopath}/src/github.com/docker/libcontainer/network
+%dir %{gopath}/src/github.com/docker/libcontainer/nsinit
+%dir %{gopath}/src/github.com/docker/libcontainer/security
+%dir %{gopath}/src/github.com/docker/libcontainer/security/capabilities
+%dir %{gopath}/src/github.com/docker/libcontainer/security/restrict
+%dir %{gopath}/src/github.com/docker/libcontainer/selinux
+%dir %{gopath}/src/github.com/docker/libcontainer/syncpipe
+%dir %{gopath}/src/github.com/docker/libcontainer/system
+%dir %{gopath}/src/github.com/docker/libcontainer/user
+%dir %{gopath}/src/github.com/docker/libcontainer/utils
+%{gopath}/src/github.com/docker/libcontainer/*.go
+%{gopath}/src/github.com/docker/libcontainer/apparmor/*.go
+%{gopath}/src/github.com/docker/libcontainer/cgroups/*.go
+%{gopath}/src/github.com/docker/libcontainer/cgroups/fs/*.go
+%{gopath}/src/github.com/docker/libcontainer/cgroups/systemd/*.go
+%{gopath}/src/github.com/docker/libcontainer/console/*.go
+%{gopath}/src/github.com/docker/libcontainer/devices/*.go
+%{gopath}/src/github.com/docker/libcontainer/label/*.go
+%{gopath}/src/github.com/docker/libcontainer/mount/*.go
+%{gopath}/src/github.com/docker/libcontainer/mount/nodes/*.go
+%{gopath}/src/github.com/docker/libcontainer/namespaces/*.go
+%{gopath}/src/github.com/docker/libcontainer/netlink/*.go
+%{gopath}/src/github.com/docker/libcontainer/network/*.go
+%{gopath}/src/github.com/docker/libcontainer/nsinit/*.go
+%{gopath}/src/github.com/docker/libcontainer/security/capabilities/*.go
+%{gopath}/src/github.com/docker/libcontainer/security/restrict/*.go
+%{gopath}/src/github.com/docker/libcontainer/selinux/*.go
+%{gopath}/src/github.com/docker/libcontainer/syncpipe/*.go
+%{gopath}/src/github.com/docker/libcontainer/system/*.go
+%{gopath}/src/github.com/docker/libcontainer/user/*.go
+%{gopath}/src/github.com/docker/libcontainer/utils/*.go
+
 %dir %{gopath}/src/%{import_path}
 %dir %{gopath}/src/%{import_path}/pkg
 %{gopath}/src/%{import_path}/pkg/README.md
