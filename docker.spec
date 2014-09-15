@@ -6,12 +6,12 @@
 %global gopath  %{_datadir}/gocode
 
 %global import_path github.com/docker/docker
-%global commit   d4fb8f846e5c076c0ac3578d287d4f2857f1acec
+%global commit   dc45aa10f1033f7a0f1a995a78b8f92540c34fc2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
 Version:        1.2.0
-Release:        12%{?dist}
+Release:        13%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -532,6 +532,9 @@ exit 0
 %{gopath}/src/%{import_path}/pkg/pools/*.go
 
 %changelog
+* Mon Sep 15 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-13
+- Fix Comment and META patch to work in Dockerfile
+
 * Fri Sep 12 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-12
 - Update man pages
 
