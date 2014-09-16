@@ -243,6 +243,7 @@ do
        echo $dir
         cp -pav $dir %{buildroot}/%{gopath}/src/%{import_path}/
 done
+find %{buildroot}/%{gopath}/src/%{import_path}/ -name \*.registry -delete
 
 %pre
 getent group docker > /dev/null || %{_sbindir}/groupadd -r docker
@@ -383,7 +384,6 @@ exit 0
 %{gopath}/src/%{import_path}/utils/*.go
 #libcontainer
 %dir %{gopath}/src/github.com/docker/libcontainer
-%{gopath}/src/github.com/docker/libcontainer/*.go
 %dir %{gopath}/src/github.com/docker/libcontainer/apparmor
 %dir %{gopath}/src/github.com/docker/libcontainer/cgroups
 %dir %{gopath}/src/github.com/docker/libcontainer/cgroups/fs
