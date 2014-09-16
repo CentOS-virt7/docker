@@ -66,8 +66,8 @@ index 901ac44..ed36b23 100644
 +	flTls             = flag.Bool([]string{"-tls"}, false, "Use TLS; implied by tls-verify flags")
 +	flTlsVerify       = flag.Bool([]string{"-tlsverify"}, false, "Use TLS and verify the remote (daemon: verify client, client: verify daemon)")
 +	flHelp            = flag.Bool([]string{"h", "-help"}, false, "Print usage")
-+	flAppendRegisty   = flag.String([]string{"#registry-append", "-registry-append"}, "Comma separated list of registries to append to default registry. Registries will be searched in reverse order")
-+	flDefaultRegistry = flag.String([]string{"#registry-replace", "-registry-replace"}, "Comma separated list of registries to replace the default registry. Registries will be searched in reverse order")
++	flAppendRegistry   = flag.String([]string{"#registry-append", "-registry-append"}, "", "Comma separated list of registries to append to default registry. Registries will be searched in reverse order")
++	flDefaultRegistry = flag.String([]string{"#registry-replace", "-registry-replace"}, "", "Comma separated list of registries to replace the default registry. Registries will be searched in reverse order")
  
  	// these are initialized in init() below since their default values depend on dockerCertPath which isn't fully initialized until init() runs
  	flCa    *string
