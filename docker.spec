@@ -11,7 +11,7 @@
 
 Name:           docker
 Version:        1.2.0
-Release:        13%{?dist}
+Release:        14%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -20,6 +20,7 @@ URL:            http://www.docker.io
 ExclusiveArch:  x86_64
 Source0:        https://github.com/rhatdan/docker/archive/%{commit}/docker-%{shortcommit}.tar.gz
 Patch1: docker-version.patch
+Patch2: Add-registry-append-and-registry-replace-qualifier-t.patch
 # though final name for sysconf/sysvinit files is simply 'docker',
 # having .sysvinit and .sysconfig makes things clear
 Source1:        docker.service
@@ -138,6 +139,7 @@ This is the source libraries for docker.
 %prep
 %setup -q -n docker-%{commit}
 %patch1 -p1 -b .version
+%patch2 -p1 -b .registry
 tar zxf %{SOURCE2} 
 tar zxf %{SOURCE5} 
 
@@ -532,6 +534,9 @@ exit 0
 %{gopath}/src/%{import_path}/pkg/pools/*.go
 
 %changelog
+* Tue Sep 16 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-14
+- Add registry-append and registry-replace patch
+
 * Mon Sep 15 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-13
 - Fix Comment and META patch to work in Dockerfile
 
