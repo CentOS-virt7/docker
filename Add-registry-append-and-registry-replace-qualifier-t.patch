@@ -1,0 +1,136 @@
+diff -up docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/docker/docker.go.registry docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/docker/docker.go
+--- docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/docker/docker.go.registry	2014-09-15 08:04:44.000000000 -0400
++++ docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/docker/docker.go	2014-09-16 09:42:42.935415182 -0400
+@@ -14,6 +14,7 @@ import (
+ 	"github.com/docker/docker/dockerversion"
+ 	flag "github.com/docker/docker/pkg/mflag"
+ 	"github.com/docker/docker/reexec"
++	"github.com/docker/docker/registry"
+ 	"github.com/docker/docker/utils"
+ )
+ 
+@@ -34,6 +35,15 @@ func main() {
+ 		showVersion()
+ 		return
+ 	}
++	if *flDefaultRegistry != "" {
++		registry.RegistryList = strings.Split(*flDefaultRegistry, ",")
++	}
++	if *flAppendRegistry != "" {
++		regs := strings.Split(*flAppendRegistry, ",")
++		for r := range regs {
++			registry.RegistryList = append(registry.RegistryList, regs[r])
++		}
++	}
+ 	if *flDebug {
+ 		os.Setenv("DEBUG", "1")
+ 	}
+diff -up docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/docs/man/docker.1.md.registry docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/docs/man/docker.1.md
+--- docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/docs/man/docker.1.md.registry	2014-09-15 08:04:44.000000000 -0400
++++ docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/docs/man/docker.1.md	2014-09-16 09:42:42.935415182 -0400
+@@ -73,6 +73,12 @@ unix://[/path/to/socket] to use.
+ **-v**=*true*|*false*
+   Print version information and quit. Default is false.
+ 
++**--registry-append**=""
++  Comma separated list of registries to append to default registry. Registries will be searched in reverse order.
++
++**--registry-replace**=""
++Comma separated list of registries to replace the default registry. Registries will be searched in reverse order
++
+ **--selinux-enabled**=*true*|*false*
+   Enable selinux support. Default is false. SELinux does not presently support the BTRFS storage driver.
+ 
+diff -up docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/graph/pull.go.registry docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/graph/pull.go
+--- docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/graph/pull.go.registry	2014-09-15 08:04:44.000000000 -0400
++++ docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/graph/pull.go	2014-09-16 09:42:42.935415182 -0400
+@@ -15,6 +15,27 @@ import (
+ 	"github.com/docker/docker/utils"
+ )
+ 
++func (s *TagStore) CmdRegistryPull(job *engine.Job) engine.Status {
++	var (
++		tmp    = job.Args[0]
++		status = engine.StatusErr
++	)
++	for r := len(registry.RegistryList) - 1; r >= 0; r-- {
++		if registry.RegistryList[r] != "index.docker.io" {
++			job.Args[0] = fmt.Sprintf("%s/%s", registry.RegistryList[r], tmp)
++		} else {
++			job.Args[0] = tmp
++		}
++		status := s.CmdPull(job)
++		if status == engine.StatusOK {
++			job.Args[1] = tmp
++			s.CmdTag(job)
++			return status
++		}
++	}
++	return status
++}
++
+ func (s *TagStore) CmdPull(job *engine.Job) engine.Status {
+ 	if n := len(job.Args); n != 1 && n != 2 {
+ 		return job.Errorf("Usage: %s IMAGE [TAG]", job.Name)
+diff -up docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/graph/service.go.registry docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/graph/service.go
+--- docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/graph/service.go.registry	2014-09-15 08:04:44.000000000 -0400
++++ docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/graph/service.go	2014-09-16 09:42:42.936415185 -0400
+@@ -23,7 +23,7 @@ func (s *TagStore) Install(eng *engine.E
+ 		"viz":            s.CmdViz,
+ 		"load":           s.CmdLoad,
+ 		"import":         s.CmdImport,
+-		"pull":           s.CmdPull,
++		"pull":           s.CmdRegistryPull,
+ 		"push":           s.CmdPush,
+ 	} {
+ 		if err := eng.Register(name, handler); err != nil {
+diff -up docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/registry/registry.go.registry docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/registry/registry.go
+--- docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/registry/registry.go.registry	2014-09-15 08:04:44.000000000 -0400
++++ docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/registry/registry.go	2014-09-16 09:42:42.936415185 -0400
+@@ -268,9 +268,6 @@ func ResolveRepositoryName(reposName str
+ 	}
+ 	hostname := nameParts[0]
+ 	reposName = nameParts[1]
+-	if strings.Contains(hostname, "index.docker.io") {
+-		return "", "", fmt.Errorf("Invalid repository name, try \"%s\" instead", reposName)
+-	}
+ 	if err := validateRepositoryName(reposName); err != nil {
+ 		return "", "", err
+ 	}
+diff -up docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/registry/service.go.registry docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/registry/service.go
+--- docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/registry/service.go.registry	2014-09-15 08:04:44.000000000 -0400
++++ docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/registry/service.go	2014-09-16 09:43:36.119568575 -0400
+@@ -4,6 +4,8 @@ import (
+ 	"github.com/docker/docker/engine"
+ )
+ 
++var RegistryList = []string{"index.docker.io"}
++
+ // Service exposes registry capabilities in the standard Engine
+ // interface. Once installed, it extends the engine with the
+ // following calls:
+@@ -35,6 +37,8 @@ func (s *Service) Auth(job *engine.Job)
+ 	var (
+ 		err        error
+ 		authConfig = &AuthConfig{}
++		r          *Session
++		err        error
+ 	)
+ 
+ 	job.GetenvJson("authConfig", authConfig)
+@@ -90,7 +94,14 @@ func (s *Service) Search(job *engine.Job
+ 	if err != nil {
+ 		return job.Error(err)
+ 	}
+-	r, err := NewSession(authConfig, HTTPRequestFactory(metaHeaders), hostname, true)
++	for reg := len(RegistryList) - 1; reg >= 0; reg-- {
++		if endpoint, err := ExpandAndVerifyRegistryUrl(RegistryList[reg]); err == nil {
++			r, err = NewSession(authConfig, HTTPRequestFactory(metaHeaders), endpoint, true)
++			if err == nil {
++				break
++			}
++		}
++	}
+ 	if err != nil {
+ 		return job.Error(err)
+ 	}
