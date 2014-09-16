@@ -1,6 +1,7 @@
-diff -up docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/docker/docker.go.registry docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/docker/docker.go
---- docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/docker/docker.go.registry	2014-09-15 08:04:44.000000000 -0400
-+++ docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/docker/docker.go	2014-09-16 09:42:42.935415182 -0400
+diff --git a/docker/docker.go b/docker/docker.go
+index e906b20..696bd72 100644
+--- a/docker/docker.go
++++ b/docker/docker.go
 @@ -14,6 +14,7 @@ import (
  	"github.com/docker/docker/dockerversion"
  	flag "github.com/docker/docker/pkg/mflag"
@@ -25,10 +26,11 @@ diff -up docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/docker/docker.go.regist
  	if *flDebug {
  		os.Setenv("DEBUG", "1")
  	}
-diff -up docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/docs/man/docker.1.md.registry docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/docs/man/docker.1.md
---- docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/docs/man/docker.1.md.registry	2014-09-15 08:04:44.000000000 -0400
-+++ docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/docs/man/docker.1.md	2014-09-16 09:42:42.935415182 -0400
-@@ -73,6 +73,12 @@ unix://[/path/to/socket] to use.
+diff --git a/docs/man/docker.1.md b/docs/man/docker.1.md
+index 4e88bff..33e0fde 100644
+--- a/docs/man/docker.1.md
++++ b/docs/man/docker.1.md
+@@ -76,6 +76,12 @@ unix://[/path/to/socket] to use.
  **-v**=*true*|*false*
    Print version information and quit. Default is false.
  
@@ -41,9 +43,10 @@ diff -up docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/docs/man/docker.1.md.re
  **--selinux-enabled**=*true*|*false*
    Enable selinux support. Default is false. SELinux does not presently support the BTRFS storage driver.
  
-diff -up docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/graph/pull.go.registry docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/graph/pull.go
---- docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/graph/pull.go.registry	2014-09-15 08:04:44.000000000 -0400
-+++ docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/graph/pull.go	2014-09-16 09:42:42.935415182 -0400
+diff --git a/graph/pull.go b/graph/pull.go
+index 600e524..d171a06 100644
+--- a/graph/pull.go
++++ b/graph/pull.go
 @@ -15,6 +15,27 @@ import (
  	"github.com/docker/docker/utils"
  )
@@ -72,10 +75,11 @@ diff -up docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/graph/pull.go.registry 
  func (s *TagStore) CmdPull(job *engine.Job) engine.Status {
  	if n := len(job.Args); n != 1 && n != 2 {
  		return job.Errorf("Usage: %s IMAGE [TAG]", job.Name)
-diff -up docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/graph/service.go.registry docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/graph/service.go
---- docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/graph/service.go.registry	2014-09-15 08:04:44.000000000 -0400
-+++ docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/graph/service.go	2014-09-16 09:42:42.936415185 -0400
-@@ -23,7 +23,7 @@ func (s *TagStore) Install(eng *engine.E
+diff --git a/graph/service.go b/graph/service.go
+index e9ff872..38df7ac 100644
+--- a/graph/service.go
++++ b/graph/service.go
+@@ -23,7 +23,7 @@ func (s *TagStore) Install(eng *engine.Engine) error {
  		"viz":            s.CmdViz,
  		"load":           s.CmdLoad,
  		"import":         s.CmdImport,
@@ -84,10 +88,11 @@ diff -up docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/graph/service.go.regist
  		"push":           s.CmdPush,
  	} {
  		if err := eng.Register(name, handler); err != nil {
-diff -up docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/registry/registry.go.registry docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/registry/registry.go
---- docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/registry/registry.go.registry	2014-09-15 08:04:44.000000000 -0400
-+++ docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/registry/registry.go	2014-09-16 09:42:42.936415185 -0400
-@@ -268,9 +268,6 @@ func ResolveRepositoryName(reposName str
+diff --git a/registry/registry.go b/registry/registry.go
+index 2b03c73..e13e68a 100644
+--- a/registry/registry.go
++++ b/registry/registry.go
+@@ -268,9 +268,6 @@ func ResolveRepositoryName(reposName string) (string, string, error) {
  	}
  	hostname := nameParts[0]
  	reposName = nameParts[1]
@@ -97,9 +102,10 @@ diff -up docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/registry/registry.go.re
  	if err := validateRepositoryName(reposName); err != nil {
  		return "", "", err
  	}
-diff -up docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/registry/service.go.registry docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/registry/service.go
---- docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/registry/service.go.registry	2014-09-15 08:04:44.000000000 -0400
-+++ docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/registry/service.go	2014-09-16 09:43:36.119568575 -0400
+diff --git a/registry/service.go b/registry/service.go
+index 0e6f1bd..b44ca7f 100644
+--- a/registry/service.go
++++ b/registry/service.go
 @@ -4,6 +4,8 @@ import (
  	"github.com/docker/docker/engine"
  )
@@ -109,23 +115,23 @@ diff -up docker-dc45aa10f1033f7a0f1a995a78b8f92540c34fc2/registry/service.go.reg
  // Service exposes registry capabilities in the standard Engine
  // interface. Once installed, it extends the engine with the
  // following calls:
-@@ -35,6 +37,8 @@ func (s *Service) Auth(job *engine.Job)
+@@ -35,6 +37,7 @@ func (s *Service) Auth(job *engine.Job) engine.Status {
  	var (
  		err        error
  		authConfig = &AuthConfig{}
-+		r          *Session
-+		err        error
++		status     string
  	)
  
  	job.GetenvJson("authConfig", authConfig)
-@@ -90,7 +94,14 @@ func (s *Service) Search(job *engine.Job
- 	if err != nil {
- 		return job.Error(err)
+@@ -46,7 +49,15 @@ func (s *Service) Auth(job *engine.Job) engine.Status {
+ 		}
+ 		authConfig.ServerAddress = addr
  	}
--	r, err := NewSession(authConfig, HTTPRequestFactory(metaHeaders), hostname, true)
+-	status, err := Login(authConfig, HTTPRequestFactory(nil))
 +	for reg := len(RegistryList) - 1; reg >= 0; reg-- {
 +		if endpoint, err := ExpandAndVerifyRegistryUrl(RegistryList[reg]); err == nil {
-+			r, err = NewSession(authConfig, HTTPRequestFactory(metaHeaders), endpoint, true)
++			authConfig.ServerAddress = endpoint
++			status, err = Login(authConfig, HTTPRequestFactory(nil))
 +			if err == nil {
 +				break
 +			}
