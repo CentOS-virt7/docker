@@ -1,3 +1,19 @@
+From 07d82856bc688f97c9dd3467d63639681626080e Mon Sep 17 00:00:00 2001
+From: Dan Walsh <dwalsh@redhat.com>
+Date: Tue, 16 Sep 2014 12:32:55 -0400
+Subject: [PATCH 16/16] Add Registry Support
+
+Docker-DCO-1.1-Signed-off-by: Dan Walsh <dwalsh@redhat.com> (github: rhatdan)
+---
+ docker/docker.go     | 10 ++++++++++
+ docker/flags.go      | 18 ++++++++++--------
+ docs/man/docker.1.md |  6 ++++++
+ graph/pull.go        | 21 +++++++++++++++++++++
+ graph/service.go     |  2 +-
+ registry/registry.go |  3 ---
+ registry/service.go  | 13 ++++++++++++-
+ 7 files changed, 60 insertions(+), 13 deletions(-)
+
 diff --git a/docker/docker.go b/docker/docker.go
 index e906b20..696bd72 100644
 --- a/docker/docker.go
@@ -26,6 +42,35 @@ index e906b20..696bd72 100644
  	if *flDebug {
  		os.Setenv("DEBUG", "1")
  	}
+diff --git a/docker/flags.go b/docker/flags.go
+index 901ac44..ed36b23 100644
+--- a/docker/flags.go
++++ b/docker/flags.go
+@@ -20,14 +20,16 @@ func init() {
+ }
+ 
+ var (
+-	flVersion     = flag.Bool([]string{"v", "-version"}, false, "Print version information and quit")
+-	flDaemon      = flag.Bool([]string{"d", "-daemon"}, false, "Enable daemon mode")
+-	flDebug       = flag.Bool([]string{"D", "-debug"}, false, "Enable debug mode")
+-	flSocketGroup = flag.String([]string{"G", "-group"}, "docker", "Group to assign the unix socket specified by -H when running in daemon mode\nuse '' (the empty string) to disable setting of a group")
+-	flEnableCors  = flag.Bool([]string{"#api-enable-cors", "-api-enable-cors"}, false, "Enable CORS headers in the remote API")
+-	flTls         = flag.Bool([]string{"-tls"}, false, "Use TLS; implied by tls-verify flags")
+-	flTlsVerify   = flag.Bool([]string{"-tlsverify"}, false, "Use TLS and verify the remote (daemon: verify client, client: verify daemon)")
+-	flHelp        = flag.Bool([]string{"h", "-help"}, false, "Print usage")
++	flVersion         = flag.Bool([]string{"v", "-version"}, false, "Print version information and quit")
++	flDaemon          = flag.Bool([]string{"d", "-daemon"}, false, "Enable daemon mode")
++	flDebug           = flag.Bool([]string{"D", "-debug"}, false, "Enable debug mode")
++	flSocketGroup     = flag.String([]string{"G", "-group"}, "docker", "Group to assign the unix socket specified by -H when running in daemon mode\nuse '' (the empty string) to disable setting of a group")
++	flEnableCors      = flag.Bool([]string{"#api-enable-cors", "-api-enable-cors"}, false, "Enable CORS headers in the remote API")
++	flTls             = flag.Bool([]string{"-tls"}, false, "Use TLS; implied by tls-verify flags")
++	flTlsVerify       = flag.Bool([]string{"-tlsverify"}, false, "Use TLS and verify the remote (daemon: verify client, client: verify daemon)")
++	flHelp            = flag.Bool([]string{"h", "-help"}, false, "Print usage")
++	flAppendRegisty   = flag.String([]string{"#registry-append", "-registry-append"}, "Comma separated list of registries to append to default registry. Registries will be searched in reverse order")
++	flDefaultRegistry = flag.String([]string{"#registry-replace", "-registry-replace"}, "Comma separated list of registries to replace the default registry. Registries will be searched in reverse order")
+ 
+ 	// these are initialized in init() below since their default values depend on dockerCertPath which isn't fully initialized until init() runs
+ 	flCa    *string
 diff --git a/docs/man/docker.1.md b/docs/man/docker.1.md
 index 4e88bff..33e0fde 100644
 --- a/docs/man/docker.1.md
@@ -140,3 +185,6 @@ index 0e6f1bd..b44ca7f 100644
  	if err != nil {
  		return job.Error(err)
  	}
+-- 
+2.1.0
+
