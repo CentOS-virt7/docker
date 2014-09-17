@@ -11,7 +11,7 @@
 
 Name:           docker
 Version:        1.2.0
-Release:        14%{?dist}
+Release:        15%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -51,6 +51,7 @@ Requires:       xz
 
 Provides:       lxc-docker = %{version}
 Provides:       docker
+Provides:	docker-io
 Provides:       nsinit
 
 %description
@@ -534,6 +535,9 @@ exit 0
 %{gopath}/src/%{import_path}/pkg/pools/*.go
 
 %changelog
+* Wed Sep 17 2014 Tomas Hrcka <thrcka@redhat.com> - 1.2.0-15
+- Add provides docker-io to get through compatibility issues
+
 * Tue Sep 16 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-14
 - Add registry-append and registry-replace patch
 
