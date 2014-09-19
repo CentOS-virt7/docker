@@ -11,7 +11,7 @@
 
 Name:           docker
 Version:        1.2.0
-Release:        15%{?dist}
+Release:        16%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -68,6 +68,7 @@ servers, OpenStack clusters, public instances, or combinations of the above.
 BuildRequires:  golang
 Summary:        A golang registry for global request variables (source libraries)
 Provides:       docker-pkg-devel docker-io-pkg-devel
+Provides:       golang(github.com/docker/libcontainer)
 Provides:       golang(%{import_path}) = %{version}-%{release}
 Provides:       golang(%{import_path}/api) = %{version}-%{release}
 Provides:       golang(%{import_path}/api/client) = %{version}-%{release}
@@ -535,6 +536,9 @@ exit 0
 %{gopath}/src/%{import_path}/pkg/pools/*.go
 
 %changelog
+* Fri Sep 19 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-16
+- Add Provides:golang(github.com/docker/libcontainer)
+
 * Wed Sep 17 2014 Tomas Hrcka <thrcka@redhat.com> - 1.2.0-15
 - Add provides docker-io to get through compatibility issues
 
