@@ -11,7 +11,7 @@
 
 Name:           docker
 Version:        1.2.0
-Release:        16%{?dist}
+Release:        17%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -29,6 +29,7 @@ Source3:        docker.sysconfig
 # docker: systemd socket activation results in privilege escalation
 Source4:        docker.socket
 Source5:        codegansta.tgz
+Source6:        docker-storage.sysconfig
 BuildRequires:  gcc
 BuildRequires:  glibc-static
 # ensure build uses golang 1.2-7 and above
@@ -209,6 +210,7 @@ install -p -m 644 %{SOURCE4} %{buildroot}%{_unitdir}
 # for additional args
 install -d %{buildroot}%{_sysconfdir}/sysconfig/
 install -p -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/sysconfig/docker
+install -p -m 644 %{SOURCE6} %{buildroot}%{_sysconfdir}/sysconfig/docker-storage
 
 # install secrets dir
 install -d -p -m 750 %{buildroot}/%{_datadir}/rhel/secrets
@@ -277,6 +279,7 @@ exit 0
 %{_unitdir}/docker.service
 %{_unitdir}/docker.socket
 %config(noreplace) %{_sysconfdir}/sysconfig/docker
+%config(noreplace) %{_sysconfdir}/sysconfig/docker-storage
 %{_sysconfdir}/docker/certs.d
 #%{_sysconfdir}/docker/certs.d/redhat.com
 #%{_sysconfdir}/docker/certs.d/redhat.com/redhat-ca.crt
@@ -536,6 +539,9 @@ exit 0
 %{gopath}/src/%{import_path}/pkg/pools/*.go
 
 %changelog
+* Fri Sep 19 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-17
+- Add support for /etc/sysconfig/docker-storage
+
 * Fri Sep 19 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-16
 - Add Provides:golang(github.com/docker/libcontainer)
 
