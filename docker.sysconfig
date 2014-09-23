@@ -1,4 +1,4 @@
 # /etc/sysconfig/docker
 
 # Modify these options if you want to change the way the docker daemon runs
-OPTIONS=--selinux-enabled -H fd://
+OPTIONS=--selinux-enabled

@@ -27,7 +27,6 @@ Source1:        docker.service
 Source2:        docker-man-3.tar.gz
 Source3:        docker.sysconfig
 # docker: systemd socket activation results in privilege escalation
-Source4:        docker.socket
 Source5:        codegansta.tgz
 Source6:        docker-storage.sysconfig
 BuildRequires:  gcc
@@ -255,6 +254,7 @@ exit 0
 
 %post
 %systemd_post docker
+%systemd_postun docker.socket
 
 %preun
 %systemd_preun docker
@@ -277,7 +277,6 @@ exit 0
 %dir %{_libexecdir}/docker
 %{_libexecdir}/docker/dockerinit
 %{_unitdir}/docker.service
-%{_unitdir}/docker.socket
 %config(noreplace) %{_sysconfdir}/sysconfig/docker
 %config(noreplace) %{_sysconfdir}/sysconfig/docker-storage
 %{_sysconfdir}/docker/certs.d
@@ -539,6 +538,9 @@ exit 0
 %{gopath}/src/%{import_path}/pkg/pools/*.go
 
 %changelog
+* Tue Sep 23 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-18
+- Remove docker.socket
+
 * Fri Sep 19 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-17
 - Add support for /etc/sysconfig/docker-storage
 
