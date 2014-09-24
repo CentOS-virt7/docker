@@ -516,6 +516,17 @@ exit 0
 %dir %{gopath}/src/%{import_path}/pkg/tarsum/testdata/511136ea3c5a64f264b78b5433614aec563103b4d4702f3ba7d4d2698e22c158
 %{gopath}/src/%{import_path}/pkg/tarsum/testdata/511136ea3c5a64f264b78b5433614aec563103b4d4702f3ba7d4d2698e22c158/json
 %{gopath}/src/%{import_path}/pkg/tarsum/testdata/511136ea3c5a64f264b78b5433614aec563103b4d4702f3ba7d4d2698e22c158/layer.tar
+%dir %{gopath}/src/%{import_path}/pkg/tarsum/testdata/collision
+%{gopath}/src/%{import_path}/pkg/tarsum/testdata/collision/*.tar
+%dir %{gopath}/src/%{import_path}/pkg/tarsum/testdata/xattr
+%{gopath}/src/%{import_path}/pkg/tarsum/testdata/xattr/json
+%{gopath}/src/%{import_path}/pkg/tarsum/testdata/xattr/*.tar
+%dir %{gopath}/src/%{import_path}/pkg/timeutils
+%{gopath}/src/%{import_path}/pkg/timeutils/MAINTAINERS
+%{gopath}/src/%{import_path}/pkg/timeutils/*.go
+%dir %{gopath}/src/%{import_path}/pkg/stdcopy/
+%{gopath}/src/%{import_path}/pkg/stdcopy/MAINTAINERS
+%{gopath}/src/%{import_path}/pkg/stdcopy/*.go
 %dir %{gopath}/src/%{import_path}/pkg/truncindex
 %{gopath}/src/%{import_path}/pkg/truncindex/MAINTAINERS
 %{gopath}/src/%{import_path}/pkg/truncindex/*.go
