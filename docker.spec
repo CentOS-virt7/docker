@@ -6,12 +6,12 @@
 %global gopath  %{_datadir}/gocode
 
 %global import_path github.com/docker/docker
-%global commit   dc45aa10f1033f7a0f1a995a78b8f92540c34fc2
+%global commit   998b054e707793abdc4a863bf1bffc75faee92c0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
 Version:        1.2.0
-Release:        18%{?dist}
+Release:        19%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -538,6 +538,11 @@ exit 0
 %{gopath}/src/%{import_path}/pkg/pools/*.go
 
 %changelog
+* Tue Sep 23 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-19
+- Rebase to latest docker-1.2-devel
+- Includes docker exec and docker create
+- Fix problems with existing patches
+
 * Tue Sep 23 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-18
 - Remove docker.socket
 
