@@ -11,7 +11,7 @@
 
 Name:           docker
 Version:        1.2.0
-Release:        19%{?dist}
+Release:        20%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -26,7 +26,7 @@ Patch2: Add-registry-append-and-registry-replace-qualifier-t.patch
 Source1:        docker.service
 Source2:        docker-man-3.tar.gz
 Source3:        docker.sysconfig
-# docker: systemd socket activation results in privilege escalation
+Source4:        docker.socket
 Source5:        codegansta.tgz
 Source6:        docker-storage.sysconfig
 BuildRequires:  gcc
@@ -276,6 +276,7 @@ exit 0
 %dir %{_libexecdir}/docker
 %{_libexecdir}/docker/dockerinit
 %{_unitdir}/docker.service
+%{_unitdir}/docker.socket
 %config(noreplace) %{_sysconfdir}/sysconfig/docker
 %config(noreplace) %{_sysconfdir}/sysconfig/docker-storage
 %{_sysconfdir}/docker/certs.d
@@ -548,6 +549,9 @@ exit 0
 %{gopath}/src/%{import_path}/pkg/pools/*.go
 
 %changelog
+* Tue Oct 7 2014 Eric Paris <eparis@redhat.com> - 1.2.0-20
+- Re-add docker.socket, the right way
+
 * Tue Sep 23 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-19
 - Rebase to latest docker-1.2-devel
 - Includes docker exec and docker create
