@@ -205,6 +205,7 @@ install -d -m 700 %{buildroot}%{_sharedstatedir}/docker
 # install systemd/init scripts
 install -d %{buildroot}%{_unitdir}
 install -p -m 644 %{SOURCE1} %{buildroot}%{_unitdir}
+install -p -m 644 %{SOURCE4} %{buildroot}%{_unitdir}
 # for additional args
 install -d %{buildroot}%{_sysconfdir}/sysconfig/
 install -p -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/sysconfig/docker
@@ -252,14 +253,13 @@ getent group docker > /dev/null || %{_sbindir}/groupadd -r docker
 exit 0
 
 %post
-%systemd_post docker
-%systemd_postun docker.socket
+%systemd_post docker.service
 
 %preun
-%systemd_preun docker
+%systemd_preun docker.service
 
 %postun
-%systemd_postun_with_restart docker
+%systemd_postun_with_restart docker.service
 
 %files
 %defattr(-,root,root,-)
