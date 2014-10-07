@@ -11,7 +11,7 @@
 
 Name:           docker
 Version:        1.2.0
-Release:        19%{?dist}
+Release:        20%{?dist}
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -548,6 +548,10 @@ exit 0
 %{gopath}/src/%{import_path}/pkg/pools/*.go
 
 %changelog
+* Mon Sep 29 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-20
+- Add docker exec
+- Add support for docker run --ipc=*
+
 * Tue Sep 23 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-19
 - Rebase to latest docker-1.2-devel
 - Includes docker exec and docker create
