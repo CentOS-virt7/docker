@@ -73,7 +73,6 @@ Provides:       golang(%{import_path}) = %{version}-%{release}
 Provides:       golang(%{import_path}/api) = %{version}-%{release}
 Provides:       golang(%{import_path}/api/client) = %{version}-%{release}
 Provides:       golang(%{import_path}/api/server) = %{version}-%{release}
-Provides:       golang(%{import_path}/archive) = %{version}-%{release}
 Provides:       golang(%{import_path}/builtins) = %{version}-%{release}
 Provides:       golang(%{import_path}/contrib) = %{version}-%{release}
 Provides:       golang(%{import_path}/contrib/docker-device-tool) = %{version}-%{release}
@@ -311,32 +310,13 @@ exit 0
 %dir %{gopath}/src/%{import_path}/api/server
 %{gopath}/src/%{import_path}/api/server/MAINTAINERS
 %{gopath}/src/%{import_path}/api/server/*.go
-%dir %{gopath}/src/%{import_path}/archive
-%{gopath}/src/%{import_path}/archive/MAINTAINERS
-%{gopath}/src/%{import_path}/archive/README.md
-%{gopath}/src/%{import_path}/archive/*.go
-%dir %{gopath}/src/%{import_path}/archive/testdata
-%{gopath}/src/%{import_path}/archive/testdata/broken.tar
 %dir %{gopath}/src/%{import_path}/builtins
 %{gopath}/src/%{import_path}/builtins/*.go
 %dir %{gopath}/src/%{import_path}/daemon
 %{gopath}/src/%{import_path}/daemon/*.go
 %{gopath}/src/%{import_path}/daemon/MAINTAINERS
 %{gopath}/src/%{import_path}/daemon/README.md
-%dir %{gopath}/src/%{import_path}/daemon/execdriver
-%{gopath}/src/%{import_path}/daemon/execdriver/*.go
-%{gopath}/src/%{import_path}/daemon/execdriver/MAINTAINERS
-%dir %{gopath}/src/%{import_path}/daemon/execdriver/execdrivers
-%{gopath}/src/%{import_path}/daemon/execdriver/execdrivers/*.go
-%dir %{gopath}/src/%{import_path}/daemon/execdriver/lxc
-%{gopath}/src/%{import_path}/daemon/execdriver/lxc/MAINTAINERS
-%{gopath}/src/%{import_path}/daemon/execdriver/lxc/*.go
-%dir %{gopath}/src/%{import_path}/daemon/execdriver/native
-%{gopath}/src/%{import_path}/daemon/execdriver/native/*.go
-%dir %{gopath}/src/%{import_path}/daemon/execdriver/native/configuration
-%{gopath}/src/%{import_path}/daemon/execdriver/native/configuration/*.go
-%dir %{gopath}/src/%{import_path}/daemon/execdriver/native/template
-%{gopath}/src/%{import_path}/daemon/execdriver/native/template/*.go
+%{gopath}/src/%{import_path}/daemon/execdriver
 %dir %{gopath}/src/%{import_path}/daemon/graphdriver
 %{gopath}/src/%{import_path}/daemon/graphdriver/*.go
 %dir %{gopath}/src/%{import_path}/daemon/graphdriver/aufs
