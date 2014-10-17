@@ -6,12 +6,12 @@
 %global gopath  %{_datadir}/gocode
 
 %global import_path github.com/docker/docker
-%global commit   02241e5f1fa13ae30910374eb9f29b8a39e901af
+%global commit   dc640e05c1472abecf9b2869b48e749021ff9e7a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           docker
-Version:        1.2.0
-Release:        20%{?dist}
+Version:        1.3.0
+Release:        1%{?dist}.HTB
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -20,13 +20,13 @@ URL:            http://www.docker.io
 ExclusiveArch:  x86_64
 Source0:        https://github.com/rhatdan/docker/archive/%{commit}/docker-%{shortcommit}.tar.gz
 Patch1: docker-version.patch
-Patch2: Add-registry-append-and-registry-replace-qualifier-t.patch
+
 # though final name for sysconf/sysvinit files is simply 'docker',
 # having .sysvinit and .sysconfig makes things clear
 Source1:        docker.service
-Source2:        docker-man-3.tar.gz
+Source2:        docker-man.tgz
 Source3:        docker.sysconfig
-# docker: systemd socket activation results in privilege escalation
+Source4:        docker.socket
 Source5:        codegansta.tgz
 Source6:        docker-storage.sysconfig
 BuildRequires:  gcc
@@ -141,7 +141,6 @@ This is the source libraries for docker.
 %prep
 %setup -q -n docker-%{commit}
 %patch1 -p1 -b .version
-%patch2 -p1 -b .registry
 tar zxf %{SOURCE2} 
 tar zxf %{SOURCE5} 
 
@@ -205,6 +204,7 @@ install -d -m 700 %{buildroot}%{_sharedstatedir}/docker
 # install systemd/init scripts
 install -d %{buildroot}%{_unitdir}
 install -p -m 644 %{SOURCE1} %{buildroot}%{_unitdir}
+install -p -m 644 %{SOURCE4} %{buildroot}%{_unitdir}
 # for additional args
 install -d %{buildroot}%{_sysconfdir}/sysconfig/
 install -p -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/sysconfig/docker
@@ -252,14 +252,13 @@ getent group docker > /dev/null || %{_sbindir}/groupadd -r docker
 exit 0
 
 %post
-%systemd_post docker
-%systemd_postun docker.socket
+%systemd_post docker.service
 
 %preun
-%systemd_preun docker
+%systemd_preun docker.service
 
 %postun
-%systemd_postun_with_restart docker
+%systemd_postun_with_restart docker.service
 
 %files
 %defattr(-,root,root,-)
@@ -276,6 +275,7 @@ exit 0
 %dir %{_libexecdir}/docker
 %{_libexecdir}/docker/dockerinit
 %{_unitdir}/docker.service
+%{_unitdir}/docker.socket
 %config(noreplace) %{_sysconfdir}/sysconfig/docker
 %config(noreplace) %{_sysconfdir}/sysconfig/docker-storage
 %{_sysconfdir}/docker/certs.d
@@ -548,9 +548,11 @@ exit 0
 %{gopath}/src/%{import_path}/pkg/pools/*.go
 
 %changelog
-* Mon Sep 29 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-20
-- Add docker exec
-- Add support for docker run --ipc=*
+* Fri Oct 17 2014 Dan Walsh <dwalsh@redhat.com> - 1.3.0-1
+- Update to docker-1.3
+
+* Tue Oct 7 2014 Eric Paris <eparis@redhat.com> - 1.2.0-20
+- Re-add docker.socket, the right way
 
 * Tue Sep 23 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-19
 - Rebase to latest docker-1.2-devel
