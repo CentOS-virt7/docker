@@ -239,7 +239,7 @@ done
 # sources
 install -d -p %{buildroot}/%{gopath}/src/%{import_path}
 
-for dir in api archive builtins daemon dockerversion engine graph \
+for dir in api builtins daemon dockerversion engine graph \
            image links nat opts pkg registry runconfig utils
 do
        echo $dir
