@@ -11,7 +11,7 @@
 
 Name:           docker
 Version:        1.3.0
-Release:        2%{?dist}.HTB
+Release:        3%{?dist}.HTB
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -20,6 +20,7 @@ URL:            http://www.docker.io
 ExclusiveArch:  x86_64
 Source0:        https://github.com/rhatdan/docker/archive/%{commit}/docker-%{shortcommit}.tar.gz
 Patch1: docker-version.patch
+Patch2: docker-entitlement.patch
 
 # though final name for sysconf/sysvinit files is simply 'docker',
 # having .sysvinit and .sysconfig makes things clear
@@ -140,6 +141,7 @@ This is the source libraries for docker.
 %prep
 %setup -q -n docker-%{commit}
 %patch1 -p1 -b .version
+%patch2 -p1 -b .entitlement
 
 tar zxf %{SOURCE2} 
 tar zxf %{SOURCE5} 
@@ -320,6 +322,11 @@ exit 0
 %{gopath}/src/%{import_path}/pkg
 
 %changelog
+* Tue Oct 28 2014 Dan Walsh <dwalsh@redhat.com> - 1.3.0-3
+- Fix entitlement patch
+- Set MountFlags for docker containers to private
+- Change /etc/sysconfig/docker to source /etc/sysconfig/docker-storeage.sysconfig
+
 * Fri Oct 17 2014 Dan Walsh <dwalsh@redhat.com> - 1.3.0-2
 - Fix problem with /run patch
 

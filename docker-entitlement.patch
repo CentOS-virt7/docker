@@ -1,0 +1,12 @@
+diff -up docker-16a7d74c1e7357a501a9cd8b9ab8e148faa68940/registry/registry.go~ docker-16a7d74c1e7357a501a9cd8b9ab8e148faa68940/registry/registry.go
+--- docker-16a7d74c1e7357a501a9cd8b9ab8e148faa68940/registry/registry.go~	2014-10-17 17:20:28.000000000 -0400
++++ docker-16a7d74c1e7357a501a9cd8b9ab8e148faa68940/registry/registry.go	2014-10-28 10:25:44.222476061 -0400
+@@ -97,7 +97,7 @@ func doRequest(req *http.Request, jar ht
+ 	if err != nil && !os.IsNotExist(err) {
+ 		return nil, nil, err
+ 	}
+-	hostDir = path.Join(" /etc/pki/entitlement", req.URL.Host)
++	hostDir = path.Join("/etc/pki/entitlement", req.URL.Host)
+ 	if fs1, err := ioutil.ReadDir(hostDir); err == nil {
+ 		for _, f := range fs1 {
+ 			fs = append(fs, f)

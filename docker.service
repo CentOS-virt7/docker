@@ -7,11 +7,11 @@ Requires=docker.socket
 [Service]
 Type=notify
 EnvironmentFile=-/etc/sysconfig/docker
-EnvironmentFile=-/etc/sysconfig/docker-storage
-ExecStart=/usr/bin/docker -d $OPTIONS $DOCKER_STORAGE_OPTIONS
+ExecStart=/usr/bin/docker -d $OPTIONS
 Restart=on-failure
 LimitNOFILE=1048576
 LimitNPROC=1048576
+MountFlags=private
 
 [Install]
 Also=docker.socket
