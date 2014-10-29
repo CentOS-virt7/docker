@@ -11,7 +11,7 @@
 
 Name:           docker
 Version:        1.3.0
-Release:        3%{?dist}.HTB
+Release:        4%{?dist}.HTB
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -322,6 +322,9 @@ exit 0
 %{gopath}/src/%{import_path}/pkg
 
 %changelog
+* Wed Oct 29 2014 Dan Walsh <dwalsh@redhat.com> - 1.3.0-4
+- Move fixes for entitlement patch
+
 * Tue Oct 28 2014 Dan Walsh <dwalsh@redhat.com> - 1.3.0-3
 - Fix entitlement patch
 - Set MountFlags for docker containers to private
