@@ -11,7 +11,7 @@
 
 Name:           docker
 Version:        1.3.0
-Release:        4%{?dist}.HTB
+Release:        5%{?dist}.HTB
 Summary:        Automates deployment of containerized applications
 License:        ASL 2.0
 
@@ -322,6 +322,9 @@ exit 0
 %{gopath}/src/%{import_path}/pkg
 
 %changelog
+* Thu Oct 30 2014 Dan Walsh <dwalsh@redhat.com> - 1.3.0-5
+- Fix docker.service unit file
+
 * Wed Oct 29 2014 Dan Walsh <dwalsh@redhat.com> - 1.3.0-4
 - Move fixes for entitlement patch
 

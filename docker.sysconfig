@@ -1,5 +1,4 @@
 # /etc/sysconfig/docker
-source /etc/sysconfig/docker-storage
 
 # Modify these options if you want to change the way the docker daemon runs
-OPTIONS=--selinux-enabled -H fd:// $DOCKER_STORAGE_OPTIONS
+OPTIONS=--selinux-enabled -H fd:// 

@@ -1,27 +1,20 @@
 diff -up docker-16a7d74c1e7357a501a9cd8b9ab8e148faa68940/registry/registry.go.entitlement docker-16a7d74c1e7357a501a9cd8b9ab8e148faa68940/registry/registry.go
 --- docker-16a7d74c1e7357a501a9cd8b9ab8e148faa68940/registry/registry.go.entitlement	2014-10-17 17:20:28.000000000 -0400
-+++ docker-16a7d74c1e7357a501a9cd8b9ab8e148faa68940/registry/registry.go	2014-10-29 13:57:05.716046827 -0400
-@@ -97,8 +97,8 @@ func doRequest(req *http.Request, jar ht
++++ docker-16a7d74c1e7357a501a9cd8b9ab8e148faa68940/registry/registry.go	2014-10-29 16:30:10.681943732 -0400
+@@ -97,12 +97,6 @@ func doRequest(req *http.Request, jar ht
  	if err != nil && !os.IsNotExist(err) {
  		return nil, nil, err
  	}
 -	hostDir = path.Join(" /etc/pki/entitlement", req.URL.Host)
 -	if fs1, err := ioutil.ReadDir(hostDir); err == nil {
-+	entitlementDir := path.Join("/etc/pki/entitlement", req.URL.Host)
-+	if fs1, err := ioutil.ReadDir(entitlementDir); err == nil {
- 		for _, f := range fs1 {
- 			fs = append(fs, f)
- 		}
-@@ -152,7 +152,7 @@ func doRequest(req *http.Request, jar ht
- 				if !hasFile(fs, keyName) {
- 					return nil, nil, fmt.Errorf("Missing key %s for certificate %s", keyName, certName)
- 				}
--				cert, err := tls.LoadX509KeyPair(path.Join(hostDir, certName), path.Join(hostDir, keyName))
-+				cert, err := tls.LoadX509KeyPair(path.Join(entitlementDir, certName), path.Join(entitlementDir, keyName))
- 				if err != nil {
- 					return nil, nil, err
- 				}
-@@ -225,6 +225,9 @@ func ResolveRepositoryName(reposName str
+-		for _, f := range fs1 {
+-			fs = append(fs, f)
+-		}
+-	}
+ 
+ 	var (
+ 		pool  *x509.CertPool
+@@ -225,6 +219,9 @@ func ResolveRepositoryName(reposName str
  	}
  	hostname := nameParts[0]
  	reposName = nameParts[1]
