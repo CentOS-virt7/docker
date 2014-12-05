@@ -17,7 +17,7 @@
 
 Name:       docker
 Version:    1.3.2
-Release:    5%{?dist}
+Release:    6%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
@@ -316,6 +316,10 @@ exit 0
 %{gopath}/src/%{common_path}/*
 
 %changelog
+* Fri Dec 05 2014 Lokesh Mandvekar <lsm5@redhat.com> - 1.3.2-6
+- update docker.service unitfile
+- include DOCKER_TMPDIR in docker.sysconfig
+
 * Fri Dec 05 2014 Lokesh Mandvekar <lsm5@redhat.com> - 1.3.2-5
 - update to 1.3.2
 

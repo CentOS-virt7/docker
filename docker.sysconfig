@@ -2,3 +2,8 @@
 
 # Modify these options if you want to change the way the docker daemon runs
 OPTIONS=--selinux-enabled -H fd:// 
+
+# Location used for temporary files, such as those created by
+# docker load and build operations. Default is /var/lib/docker/tmp
+# Can be overriden by setting the following environment variable.
+# DOCKER_TMPDIR=/var/tmp

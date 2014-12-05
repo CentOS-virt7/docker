@@ -1,7 +1,7 @@
 [Unit]
 Description=Docker Application Container Engine
-Documentation=http://docs.docker.io
-After=network.target
+Documentation=http://docs.docker.com
+After=network.target docker.socket
 Requires=docker.socket
 
 [Service]
@@ -9,11 +9,9 @@ Type=notify
 EnvironmentFile=-/etc/sysconfig/docker
 EnvironmentFile=-/etc/sysconfig/docker-storage
 ExecStart=/usr/bin/docker -d $OPTIONS $DOCKER_STORAGE_OPTIONS
-Restart=on-failure
 LimitNOFILE=1048576
 LimitNPROC=1048576
 MountFlags=private
 
 [Install]
-Also=docker.socket
 WantedBy=multi-user.target
