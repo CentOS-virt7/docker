@@ -2,7 +2,7 @@
 %global __os_install_post %{_rpmconfigdir}/brp-compress
 
 #debuginfo not supported with Go
-%global debug_package %{nil}
+%global debug_package   %{nil}
 %global provider_tld    com
 %global provider        github
 %global project         docker
@@ -17,13 +17,13 @@
 
 Name:       docker
 Version:    1.3.2
-Release:    6%{?dist}
+Release:    7%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
 # only x86_64 for now: https://github.com/docker/docker/issues/136
 ExclusiveArch:  x86_64
-Source0:    https://github.com/docker/docker/archive/v%{version}.tar.gz
+Source0:    https://%{import_path}/archive/v%{version}.tar.gz
 Patch1:     go-md2man.patch
 Patch2:     0007-validate-image-ID-properly-before-load.patch
 Patch3:     secrets.patch
@@ -39,6 +39,7 @@ BuildRequires:  device-mapper-devel
 BuildRequires:  btrfs-progs-devel
 BuildRequires:  sqlite-devel
 BuildRequires:  pkgconfig(systemd)
+Requires:   device-mapper-libs >= 1.02.90-1
 # Needs systemd >= 208-12 for SocketUser and SocketGroup support
 Requires:   systemd-units >= 208-12
 # need xz to work with ubuntu images
@@ -62,8 +63,7 @@ servers, OpenStack clusters, public instances, or combinations of the above.
 BuildRequires:  golang >= 1.3.1
 Requires:   golang >= 1.3.1
 Summary:    A golang registry for global request variables (source libraries)
-Provides:   docker-pkg-devel docker-io-pkg-devel
-Provides:   golang(%{import_path_libcontainer})
+Provides:   docker-pkg-devel docker-io-devel docker-io-pkg-devel
 Provides:   golang(%{import_path}) = %{version}-%{release}
 Provides:   golang(%{import_path}/api) = %{version}-%{release}
 Provides:   golang(%{import_path}/api/client) = %{version}-%{release}
@@ -148,6 +148,29 @@ Provides:   golang(%{import_path}/pkg/timeutils) = %{version}-%{release}
 Provides:   golang(%{import_path}/pkg/truncindex) = %{version}-%{release}
 Provides:   golang(%{import_path}/pkg/units) = %{version}-%{release}
 Provides:   golang(%{import_path}/pkg/version) = %{version}-%{release}
+Provides:   golang(%{import_path_libcontainer}) = %{version}-%{release}
+Provides:   golang(%{import_path_libcontainer}/apparmor) = %{version}-%{release}
+Provides:   golang(%{import_path_libcontainer}/cgroups) = %{version}-%{release}
+Provides:   golang(%{import_path_libcontainer}/cgroups/fs) = %{version}-%{release}
+Provides:   golang(%{import_path_libcontainer}/cgroups/systemd) = %{version}-%{release}
+Provides:   golang(%{import_path_libcontainer}/console) = %{version}-%{release}
+Provides:   golang(%{import_path_libcontainer}/devices) = %{version}-%{release}
+Provides:   golang(%{import_path_libcontainer}/label) = %{version}-%{release}
+Provides:   golang(%{import_path_libcontainer}/mount) = %{version}-%{release}
+Provides:   golang(%{import_path_libcontainer}/mount/nodes) = %{version}-%{release}
+Provides:   golang(%{import_path_libcontainer}/namespaces) = %{version}-%{release}
+Provides:   golang(%{import_path_libcontainer}/namespaces/nsenter) = %{version}-%{release}
+Provides:   golang(%{import_path_libcontainer}/netlink) = %{version}-%{release}
+Provides:   golang(%{import_path_libcontainer}/network) = %{version}-%{release}
+Provides:   golang(%{import_path_libcontainer}/nsinit) = %{version}-%{release}
+Provides:   golang(%{import_path_libcontainer}/security/capabilities) = %{version}-%{release}
+Provides:   golang(%{import_path_libcontainer}/security/restrict) = %{version}-%{release}
+Provides:   golang(%{import_path_libcontainer}/selinux) = %{version}-%{release}
+Provides:   golang(%{import_path_libcontainer}/syncpipe) = %{version}-%{release}
+Provides:   golang(%{import_path_libcontainer}/system) = %{version}-%{release}
+Provides:   golang(%{import_path_libcontainer}/user) = %{version}-%{release}
+Provides:   golang(%{import_path_libcontainer}/utils) = %{version}-%{release}
+Provides:   golang(%{import_path_libcontainer}/xattr) = %{version}-%{release}
 
 Obsoletes:	golang-github-docker-libcontainer-devel
 
@@ -249,7 +272,7 @@ install -p -m 755 ./_build/src/nsinit %{buildroot}%{_bindir}/nsinit
 for dir in . apparmor cgroups cgroups/fs cgroups/systemd \
 	console devices label mount mount/nodes namespaces \
 	netlink network nsinit security/capabilities \
-	security/restrict selinux syncpipe system user utils
+	security/restrict selinux syncpipe system user utils xattr
 do
     install -dp %{buildroot}%{gopath}/src/%{import_path_libcontainer}/$dir
     cp -pav vendor/src/%{import_path_libcontainer}/$dir/*.go %{buildroot}%{gopath}/src/%{import_path_libcontainer}/$dir
@@ -316,6 +339,10 @@ exit 0
 %{gopath}/src/%{common_path}/*
 
 %changelog
+* Fri Dec 05 2014 Lokesh Mandvekar <lsm5@redhat.com> - 1.3.2-7
+- update libcontainer provides
+- package also provides docker-io-devel
+
 * Fri Dec 05 2014 Lokesh Mandvekar <lsm5@redhat.com> - 1.3.2-6
 - update docker.service unitfile
 - include DOCKER_TMPDIR in docker.sysconfig
