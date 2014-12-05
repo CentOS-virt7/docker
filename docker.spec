@@ -34,7 +34,7 @@ Source6:    docker-storage.sysconfig
 BuildRequires:  glibc-static
 # ensure build uses golang 1.2-7 and above
 # http://code.google.com/p/go/source/detail?r=a15f344a9efa35ef168c8feaa92a15a1cdc93db5
-BuildRequires:  golang >= 1.3.3
+BuildRequires:  golang >= 1.3.1
 BuildRequires:  device-mapper-devel
 BuildRequires:  btrfs-progs-devel
 BuildRequires:  sqlite-devel
