@@ -59,8 +59,8 @@ and tests on a laptop will run at scale, in production*, on VMs, bare-metal
 servers, OpenStack clusters, public instances, or combinations of the above.
 
 %package devel
-BuildRequires:  golang >= 1.3.3
-Requires:   golang >= 1.3.3
+BuildRequires:  golang >= 1.3.1
+Requires:   golang >= 1.3.1
 Summary:    A golang registry for global request variables (source libraries)
 Provides:   docker-pkg-devel docker-io-pkg-devel
 Provides:   golang(%{import_path_libcontainer})
