@@ -17,7 +17,7 @@
 
 Name:       docker
 Version:    1.3.2
-Release:    7%{?dist}
+Release:    8%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
@@ -208,6 +208,11 @@ go build github.com/docker/libcontainer/nsinit
 go build github.com/cpuguy83/go-md2man
 popd
 
+cp _build/src/go-md2man docs/man/.
+sed -i 's/go-md2man/.\/go-md2man/' docs/man/md2man-all.sh
+# build manpages
+docs/man/md2man-all.sh
+
 %install
 # install binary
 install -d %{buildroot}%{_bindir}
@@ -219,8 +224,8 @@ install -p -m 755 bundles/%{version}/dynbinary/dockerinit-%{version} %{buildroot
 
 # install manpages
 install -dp %{buildroot}%{_mandir}/{man1,man5}
-install -p -m 644 docs/man/*.1.md %{buildroot}%{_mandir}/man1
-install -p -m 644 docs/man/*.5.md %{buildroot}%{_mandir}/man5
+install -p -m 644 docs/man/man1/* %{buildroot}%{_mandir}/man1
+install -p -m 644 docs/man/man5/* %{buildroot}%{_mandir}/man5
 
 # install bash completion
 install -d %{buildroot}%{_datadir}/bash-completion/completions/
@@ -339,6 +344,9 @@ exit 0
 %{gopath}/src/%{common_path}/*
 
 %changelog
+* Fri Dec 05 2014 Lokesh Mandvekar <lsm5@redhat.com> - 1.3.2-8
+- build manpages
+
 * Fri Dec 05 2014 Lokesh Mandvekar <lsm5@redhat.com> - 1.3.2-7
 - update libcontainer provides
 - package also provides docker-io-devel
