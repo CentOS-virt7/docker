@@ -3,57 +3,50 @@
 
 #debuginfo not supported with Go
 %global debug_package %{nil}
-%global gopath  %{_datadir}/gocode
+%global provider_tld    com
+%global provider        github
+%global project         docker
+%global repo            docker
+%global common_path     %{provider}.%{provider_tld}/%{project}
 
-%global import_path github.com/docker/docker
-%global commit 16a7d74c1e7357a501a9cd8b9ab8e148faa68940
+%global import_path                 %{common_path}/%{repo}
+%global import_path_libcontainer    %{common_path}/libcontainer
+
+%global commit      39fa2faad2f3d6fa5133de4eb740677202f53ef4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
-Name:           docker
-Version:        1.3.0
-Release:        5%{?dist}.HTB
-Summary:        Automates deployment of containerized applications
-License:        ASL 2.0
-
-URL:            http://www.docker.io
+Name:       docker
+Version:    1.3.2
+Release:    5%{?dist}
+Summary:    Automates deployment of containerized applications
+License:    ASL 2.0
+URL:        http://www.docker.com
 # only x86_64 for now: https://github.com/docker/docker/issues/136
 ExclusiveArch:  x86_64
-Source0:        https://github.com/rhatdan/docker/archive/%{commit}/docker-%{shortcommit}.tar.gz
-Patch1: docker-version.patch
-Patch2: docker-entitlement.patch
-
-# though final name for sysconf/sysvinit files is simply 'docker',
-# having .sysvinit and .sysconfig makes things clear
-Source1:        docker.service
-Source2:        docker-man.tgz
-Source3:        docker.sysconfig
-Source4:        docker.socket
-Source5:        codegansta.tgz
-Source6:        docker-storage.sysconfig
-BuildRequires:  gcc
+Source0:    https://github.com/docker/docker/archive/v%{version}.tar.gz
+Patch1:     go-md2man.patch
+Patch2:     0007-validate-image-ID-properly-before-load.patch
+Patch3:     secrets.patch
+Source1:    docker.service
+Source3:    docker.sysconfig
+Source5:    codegansta.tgz
+Source6:    docker-storage.sysconfig
 BuildRequires:  glibc-static
 # ensure build uses golang 1.2-7 and above
 # http://code.google.com/p/go/source/detail?r=a15f344a9efa35ef168c8feaa92a15a1cdc93db5
-BuildRequires:  golang >= 1.3.1
-BuildRequires:  golang(github.com/gorilla/mux) >= 0-0.12
-BuildRequires:  golang(github.com/kr/pty) >= 0-0.20
-BuildRequires:  golang(code.google.com/p/go.net/websocket)
-BuildRequires:  golang(code.google.com/p/gosqlite/sqlite3)
-BuildRequires:  golang(github.com/syndtr/gocapability/capability) >= 0-0.6
-BuildRequires:  golang(github.com/godbus/dbus)
-BuildRequires:  golang(github.com/coreos/go-systemd/activation) >= 2-2
-#BuildRequires:  golang(github.com/codegangsta/cli)
+BuildRequires:  golang >= 1.3.3
 BuildRequires:  device-mapper-devel
 BuildRequires:  btrfs-progs-devel
+BuildRequires:  sqlite-devel
 BuildRequires:  pkgconfig(systemd)
-Requires:       systemd-units
+# Needs systemd >= 208-12 for SocketUser and SocketGroup support
+Requires:   systemd-units >= 208-12
 # need xz to work with ubuntu images
-Requires:       xz
-
-Provides:       lxc-docker = %{version}
-Provides:       docker
-Provides:	docker-io
-Provides:       nsinit
+Requires:   xz
+Provides:   lxc-docker = %{version}
+Provides:   docker = %{version}
+Provides:	docker-io = %{version}
+Provides:   nsinit
 
 %description
 Docker is an open-source engine that automates the deployment of any
@@ -66,72 +59,95 @@ and tests on a laptop will run at scale, in production*, on VMs, bare-metal
 servers, OpenStack clusters, public instances, or combinations of the above.
 
 %package devel
-BuildRequires:  golang
-Summary:        A golang registry for global request variables (source libraries)
-Provides:       docker-pkg-devel docker-io-pkg-devel
-Provides:       golang(github.com/docker/libcontainer)
-Provides:       golang(%{import_path}) = %{version}-%{release}
-Provides:       golang(%{import_path}/api) = %{version}-%{release}
-Provides:       golang(%{import_path}/api/client) = %{version}-%{release}
-Provides:       golang(%{import_path}/api/server) = %{version}-%{release}
-Provides:       golang(%{import_path}/builtins) = %{version}-%{release}
-Provides:       golang(%{import_path}/contrib) = %{version}-%{release}
-Provides:       golang(%{import_path}/contrib/docker-device-tool) = %{version}-%{release}
-Provides:       golang(%{import_path}/contrib/host-integration) = %{version}-%{release}
-Provides:       golang(%{import_path}/daemon) = %{version}-%{release}
-Provides:       golang(%{import_path}/daemon/execdriver) = %{version}-%{release}
-Provides:       golang(%{import_path}/daemon/execdriver/execdrivers) = %{version}-%{release}
-Provides:       golang(%{import_path}/daemon/execdriver/lxc) = %{version}-%{release}
-Provides:       golang(%{import_path}/daemon/execdriver/native) = %{version}-%{release}
-Provides:       golang(%{import_path}/daemon/execdriver/native/configuration) = %{version}-%{release}
-Provides:       golang(%{import_path}/daemon/execdriver/native/template) = %{version}-%{release}
-Provides:       golang(%{import_path}/daemon/graphdriver) = %{version}-%{release}
-Provides:       golang(%{import_path}/daemon/graphdriver/aufs) = %{version}-%{release}
-Provides:       golang(%{import_path}/daemon/graphdriver/btrfs) = %{version}-%{release}
-Provides:       golang(%{import_path}/daemon/graphdriver/devmapper) = %{version}-%{release}
-Provides:       golang(%{import_path}/daemon/graphdriver/graphtest) = %{version}-%{release}
-Provides:       golang(%{import_path}/daemon/graphdriver/vfs) = %{version}-%{release}
-Provides:       golang(%{import_path}/daemon/networkdriver) = %{version}-%{release}
-Provides:       golang(%{import_path}/daemon/networkdriver/bridge) = %{version}-%{release}
-Provides:       golang(%{import_path}/daemon/networkdriver/ipallocator) = %{version}-%{release}
-Provides:       golang(%{import_path}/daemon/networkdriver/portallocator) = %{version}-%{release}
-Provides:       golang(%{import_path}/daemon/networkdriver/portmapper) = %{version}-%{release}
-Provides:       golang(%{import_path}/dockerversion) = %{version}-%{release}
-Provides:       golang(%{import_path}/engine) = %{version}-%{release}
-Provides:       golang(%{import_path}/graph) = %{version}-%{release}
-Provides:       golang(%{import_path}/image) = %{version}-%{release}
-Provides:       golang(%{import_path}/integration) = %{version}-%{release}
-Provides:       golang(%{import_path}/integration-cli) = %{version}-%{release}
-Provides:       golang(%{import_path}/links) = %{version}-%{release}
-Provides:       golang(%{import_path}/nat) = %{version}-%{release}
-Provides:       golang(%{import_path}/opts) = %{version}-%{release}
-Provides:       golang(%{import_path}/registry) = %{version}-%{release}
-Provides:       golang(%{import_path}/runconfig) = %{version}-%{release}
-Provides:       golang(%{import_path}/utils) = %{version}-%{release}
-Provides:       golang(%{import_path}/utils/broadcastwriter) = %{version}-%{release}
-Provides:       golang(%{import_path}/pkg) = %{version}-%{release}
-Provides:       golang(%{import_path}/pkg/graphdb) = %{version}-%{release}
-Provides:       golang(%{import_path}/pkg/iptables) = %{version}-%{release}
-Provides:       golang(%{import_path}/pkg/listenbuffer) = %{version}-%{release}
-Provides:       golang(%{import_path}/pkg/mflag) = %{version}-%{release}
-Provides:       golang(%{import_path}/pkg/mflag/example) = %{version}-%{release}
-Provides:       golang(%{import_path}/pkg/mount) = %{version}-%{release}
-Provides:       golang(%{import_path}/pkg/namesgenerator) = %{version}-%{release}
-Provides:       golang(%{import_path}/pkg/networkfs/etchosts) = %{version}-%{release}
-Provides:       golang(%{import_path}/pkg/networkfs/resolvconf) = %{version}-%{release}
-Provides:       golang(%{import_path}/pkg/proxy) = %{version}-%{release}
-Provides:       golang(%{import_path}/pkg/signal) = %{version}-%{release}
-Provides:       golang(%{import_path}/pkg/symlink) = %{version}-%{release}
-Provides:       golang(%{import_path}/pkg/sysinfo) = %{version}-%{release}
-Provides:       golang(%{import_path}/pkg/system) = %{version}-%{release}
-Provides:       golang(%{import_path}/pkg/systemd) = %{version}-%{release}
-Provides:       golang(%{import_path}/pkg/tailfile) = %{version}-%{release}
-Provides:       golang(%{import_path}/pkg/term) = %{version}-%{release}
-Provides:       golang(%{import_path}/pkg/testutils) = %{version}-%{release}
-Provides:       golang(%{import_path}/pkg/truncindex) = %{version}-%{release}
-Provides:       golang(%{import_path}/pkg/units) = %{version}-%{release}
-Provides:       golang(%{import_path}/pkg/user) = %{version}-%{release}
-Provides:       golang(%{import_path}/pkg/version) = %{version}-%{release}
+BuildRequires:  golang >= 1.3.3
+Requires:   golang >= 1.3.3
+Summary:    A golang registry for global request variables (source libraries)
+Provides:   docker-pkg-devel docker-io-pkg-devel
+Provides:   golang(%{import_path_libcontainer})
+Provides:   golang(%{import_path}) = %{version}-%{release}
+Provides:   golang(%{import_path}/api) = %{version}-%{release}
+Provides:   golang(%{import_path}/api/client) = %{version}-%{release}
+Provides:   golang(%{import_path}/api/server) = %{version}-%{release}
+Provides:   golang(%{import_path}/builtins) = %{version}-%{release}
+Provides:   golang(%{import_path}/contrib) = %{version}-%{release}
+Provides:   golang(%{import_path}/contrib/docker-device-tool) = %{version}-%{release}
+Provides:   golang(%{import_path}/contrib/host-integration) = %{version}-%{release}
+Provides:   golang(%{import_path}/daemon) = %{version}-%{release}
+Provides:   golang(%{import_path}/daemon/execdriver) = %{version}-%{release}
+Provides:   golang(%{import_path}/daemon/execdriver/execdrivers) = %{version}-%{release}
+Provides:   golang(%{import_path}/daemon/execdriver/lxc) = %{version}-%{release}
+Provides:   golang(%{import_path}/daemon/execdriver/native) = %{version}-%{release}
+Provides:   golang(%{import_path}/daemon/execdriver/native/configuration) = %{version}-%{release}
+Provides:   golang(%{import_path}/daemon/execdriver/native/template) = %{version}-%{release}
+Provides:   golang(%{import_path}/daemon/graphdriver) = %{version}-%{release}
+Provides:   golang(%{import_path}/daemon/graphdriver/aufs) = %{version}-%{release}
+Provides:   golang(%{import_path}/daemon/graphdriver/btrfs) = %{version}-%{release}
+Provides:   golang(%{import_path}/daemon/graphdriver/devmapper) = %{version}-%{release}
+Provides:   golang(%{import_path}/daemon/graphdriver/graphtest) = %{version}-%{release}
+Provides:   golang(%{import_path}/daemon/graphdriver/vfs) = %{version}-%{release}
+Provides:   golang(%{import_path}/daemon/networkdriver) = %{version}-%{release}
+Provides:   golang(%{import_path}/daemon/networkdriver/bridge) = %{version}-%{release}
+Provides:   golang(%{import_path}/daemon/networkdriver/ipallocator) = %{version}-%{release}
+Provides:   golang(%{import_path}/daemon/networkdriver/portallocator) = %{version}-%{release}
+Provides:   golang(%{import_path}/daemon/networkdriver/portmapper) = %{version}-%{release}
+Provides:   golang(%{import_path}/docker) = %{version}-%{release}
+Provides:   golang(%{import_path}/dockerinit) = %{version}-%{release}
+Provides:   golang(%{import_path}/dockerversion) = %{version}-%{release}
+Provides:   golang(%{import_path}/engine) = %{version}-%{release}
+Provides:   golang(%{import_path}/events) = %{version}-%{release}
+Provides:   golang(%{import_path}/graph) = %{version}-%{release}
+Provides:   golang(%{import_path}/image) = %{version}-%{release}
+Provides:   golang(%{import_path}/integration) = %{version}-%{release}
+Provides:   golang(%{import_path}/integration-cli) = %{version}-%{release}
+Provides:   golang(%{import_path}/links) = %{version}-%{release}
+Provides:   golang(%{import_path}/nat) = %{version}-%{release}
+Provides:   golang(%{import_path}/opts) = %{version}-%{release}
+Provides:   golang(%{import_path}/registry) = %{version}-%{release}
+Provides:   golang(%{import_path}/runconfig) = %{version}-%{release}
+Provides:   golang(%{import_path}/trust) = %{version}-%{release}
+Provides:   golang(%{import_path}/utils) = %{version}-%{release}
+Provides:   golang(%{import_path}/utils/broadcastwriter) = %{version}-%{release}
+Provides:   golang(%{import_path}/volumes) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/archive) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/broadcastwriter) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/chrootarchive) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/fileutils) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/graphdb) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/httputils) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/ioutils) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/iptables) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/jsonlog) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/listenbuffer) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/log) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/mflag) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/mflag/example) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/mount) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/namesgenerator) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/networkfs/etchosts) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/networkfs/resolvconf) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/parsers) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/parsers/filters) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/parsers/kernel) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/parsers/operatingsystem) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/pools) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/promise) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/proxy) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/reexec) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/signal) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/stdcopy) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/symlink) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/sysinfo) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/system) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/systemd) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/tailfile) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/tarsum) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/term) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/testutils) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/timeutils) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/truncindex) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/units) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/version) = %{version}-%{release}
 
 Obsoletes:	golang-github-docker-libcontainer-devel
 
@@ -139,11 +155,11 @@ Obsoletes:	golang-github-docker-libcontainer-devel
 This is the source libraries for docker.
 
 %prep
-%setup -q -n docker-%{commit}
-%patch1 -p1 -b .version
-%patch2 -p1 -b .entitlement
+%setup -q -n docker-%{version}
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
 
-tar zxf %{SOURCE2} 
 tar zxf %{SOURCE5} 
 
 %build
@@ -162,9 +178,11 @@ hack/make.sh dynbinary
 cp contrib/syntax/vim/LICENSE LICENSE-vim-syntax
 cp contrib/syntax/vim/README.md README-vim-syntax.md
 
-#build nsinit
 pushd $(pwd)/_build/src
-  go build github.com/docker/libcontainer/nsinit
+#build nsinit
+go build github.com/docker/libcontainer/nsinit
+#build go-md2man for building manpages
+go build github.com/cpuguy83/go-md2man
 popd
 
 %install
@@ -177,10 +195,9 @@ install -d %{buildroot}%{_libexecdir}/docker
 install -p -m 755 bundles/%{version}/dynbinary/dockerinit-%{version} %{buildroot}%{_libexecdir}/docker/dockerinit
 
 # install manpages
-install -d %{buildroot}%{_mandir}/man1
-install -p -m 644 man1/* %{buildroot}%{_mandir}/man1
-install -d %{buildroot}%{_mandir}/man5
-install -p -m 644 man5/* %{buildroot}%{_mandir}/man5
+install -dp %{buildroot}%{_mandir}/{man1,man5}
+install -p -m 644 docs/man/*.1.md %{buildroot}%{_mandir}/man1
+install -p -m 644 docs/man/*.5.md %{buildroot}%{_mandir}/man5
 
 # install bash completion
 install -d %{buildroot}%{_datadir}/bash-completion/completions/
@@ -206,7 +223,7 @@ install -d -m 700 %{buildroot}%{_sharedstatedir}/docker
 # install systemd/init scripts
 install -d %{buildroot}%{_unitdir}
 install -p -m 644 %{SOURCE1} %{buildroot}%{_unitdir}
-install -p -m 644 %{SOURCE4} %{buildroot}%{_unitdir}
+install -p -m 644 contrib/init/systemd/docker.socket %{buildroot}%{_unitdir}
 # for additional args
 install -d %{buildroot}%{_sysconfdir}/sysconfig/
 install -p -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/sysconfig/docker
@@ -223,8 +240,8 @@ mkdir -p %{buildroot}/etc/docker/certs.d/redhat.com
 ln -s /etc/rhsm/ca/redhat-uep.pem %{buildroot}/etc/docker/certs.d/redhat.com/redhat-ca.crt
 
 # Install nsinit
-install -d -p %{buildroot}%{gopath}/src/github.com/docker/libcontainer/nsinit
-cp -pav vendor/src/github.com/docker/libcontainer/nsinit/*.go %{buildroot}%{gopath}/src/github.com/docker/libcontainer/nsinit
+install -d -p %{buildroot}%{gopath}/src/%{import_path_libcontainer}/nsinit
+cp -pav vendor/src/%{import_path_libcontainer}/nsinit/*.go %{buildroot}%{gopath}/src/%{import_path_libcontainer}/nsinit
 install -d %{buildroot}%{_bindir}
 install -p -m 755 ./_build/src/nsinit %{buildroot}%{_bindir}/nsinit
 
@@ -234,15 +251,17 @@ for dir in . apparmor cgroups cgroups/fs cgroups/systemd \
 	netlink network nsinit security/capabilities \
 	security/restrict selinux syncpipe system user utils
 do
-    install -d -p %{buildroot}%{gopath}/src/github.com/docker/libcontainer/$dir
-    cp -pav vendor/src/github.com/docker/libcontainer/$dir/*.go %{buildroot}%{gopath}/src/github.com/docker/libcontainer/$dir
+    install -dp %{buildroot}%{gopath}/src/%{import_path_libcontainer}/$dir
+    cp -pav vendor/src/%{import_path_libcontainer}/$dir/*.go %{buildroot}%{gopath}/src/%{import_path_libcontainer}/$dir
 done
 
 # sources
 install -d -p %{buildroot}/%{gopath}/src/%{import_path}
+rm -rf pkg/archive/testdata
 
-for dir in api builtins daemon dockerversion engine graph \
-           image links nat opts pkg registry runconfig utils
+for dir in api builtins daemon docker dockerinit dockerversion \
+            engine events graph image integration integration-cli \
+            links nat opts pkg registry runconfig trust utils volumes
 do
        echo $dir
         cp -pav $dir %{buildroot}/%{gopath}/src/%{import_path}/
@@ -263,26 +282,22 @@ exit 0
 %systemd_postun_with_restart docker.service
 
 %files
-%defattr(-,root,root,-)
 %doc AUTHORS CHANGELOG.md CONTRIBUTING.md MAINTAINERS NOTICE
 %doc LICENSE* README*.md
+%config(noreplace) %{_sysconfdir}/sysconfig/docker
+%config(noreplace) %{_sysconfdir}/sysconfig/docker-storage
 %{_mandir}/man1/*
 %{_mandir}/man5/*
-%{_bindir}/docker
+%{_bindir}/%{name}
 %dir %{_datadir}/rhel
 %dir %{_datadir}/rhel/secrets
 %{_datadir}/rhel/secrets/etc-pki-entitlement
 %{_datadir}/rhel/secrets/rhel7.repo
 %{_datadir}/rhel/secrets/rhsm
-%dir %{_libexecdir}/docker
-%{_libexecdir}/docker/dockerinit
-%{_unitdir}/docker.service
-%{_unitdir}/docker.socket
-%config(noreplace) %{_sysconfdir}/sysconfig/docker
-%config(noreplace) %{_sysconfdir}/sysconfig/docker-storage
+%{_libexecdir}/%{name}/*
+%{_unitdir}/%{name}.service
+%{_unitdir}/%{name}.socket
 %{_sysconfdir}/docker/certs.d
-#%{_sysconfdir}/docker/certs.d/redhat.com
-#%{_sysconfdir}/docker/certs.d/redhat.com/redhat-ca.crt
 %{_datadir}/bash-completion/completions/docker
 %{_datadir}/zsh/site-functions/_docker
 %dir %{_sharedstatedir}/docker
@@ -295,33 +310,15 @@ exit 0
 %dir %{_datadir}/vim/vimfiles/syntax
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 %{_bindir}/nsinit
-%dir %{gopath}/src/github.com/docker/libcontainer/nsinit
-%{gopath}/src/github.com/docker/libcontainer/nsinit/*.go
-%dir %{gopath}/src/%{import_path}/runconfig
-%{gopath}/src/%{import_path}/runconfig/*.go
-%dir %{gopath}/src/%{import_path}/utils
-%{gopath}/src/%{import_path}/utils/*.go
 
 %files devel
-%dir %{gopath}/src/%{import_path}
-%{gopath}/src/%{import_path}/api
-%{gopath}/src/%{import_path}/builtins
-%{gopath}/src/%{import_path}/daemon
-%{gopath}/src/%{import_path}/dockerversion
-%{gopath}/src/%{import_path}/engine
-%{gopath}/src/%{import_path}/graph
-%{gopath}/src/%{import_path}/image
-%{gopath}/src/%{import_path}/links
-%{gopath}/src/%{import_path}/nat
-%{gopath}/src/%{import_path}/opts
-%{gopath}/src/%{import_path}/registry
-%{gopath}/src/%{import_path}/runconfig
-%{gopath}/src/%{import_path}/utils
-#libcontainer
-%{gopath}/src/github.com/docker/libcontainer
-%{gopath}/src/%{import_path}/pkg
+%doc AUTHORS CHANGELOG.md CONTRIBUTING.md LICENSE MAINTAINERS NOTICE README.md
+%{gopath}/src/%{common_path}/*
 
 %changelog
+* Fri Dec 05 2014 Lokesh Mandvekar <lsm5@redhat.com> - 1.3.2-5
+- update to 1.3.2
+
 * Thu Oct 30 2014 Dan Walsh <dwalsh@redhat.com> - 1.3.0-5
 - Fix docker.service unit file
 
