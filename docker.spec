@@ -17,7 +17,7 @@
 
 Name:       docker
 Version:    1.3.2
-Release:    8%{?dist}
+Release:    9%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
@@ -41,7 +41,7 @@ BuildRequires:  sqlite-devel
 BuildRequires:  pkgconfig(systemd)
 Requires:   device-mapper-libs >= 1.02.90-1
 # Needs systemd >= 208-12 for SocketUser and SocketGroup support
-Requires:   systemd-units >= 208-12
+Requires:   systemd >= 208-12
 # need xz to work with ubuntu images
 Requires:   xz
 Provides:   lxc-docker = %{version}
@@ -344,6 +344,9 @@ exit 0
 %{gopath}/src/%{common_path}/*
 
 %changelog
+* Tue Dec 09 2014 Lokesh Mandvekar <lsm5@redhat.com> - 1.3.2-9
+- use systemd instead of systemd-units
+
 * Fri Dec 05 2014 Lokesh Mandvekar <lsm5@redhat.com> - 1.3.2-8
 - build manpages
 
