@@ -17,7 +17,7 @@
 
 Name:       docker
 Version:    1.3.2
-Release:    9%{?dist}
+Release:    10%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
@@ -27,6 +27,7 @@ Source0:    https://%{import_path}/archive/v%{version}.tar.gz
 Patch1:     go-md2man.patch
 Patch2:     0007-validate-image-ID-properly-before-load.patch
 Patch3:     secrets.patch
+Patch4:     0001-Label-content-created-for-containers-with-the-privat.patch
 Source1:    docker.service
 Source3:    docker.sysconfig
 Source5:    codegansta.tgz
@@ -182,6 +183,7 @@ This is the source libraries for docker.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 tar zxf %{SOURCE5} 
 
@@ -344,6 +346,9 @@ exit 0
 %{gopath}/src/%{common_path}/*
 
 %changelog
+* Thu Jan 15 2015 Colin Walters <walters@redhat.com> - 1.3.2-10
+- Backport patch to fix resolv.conf labels
+
 * Tue Dec 09 2014 Lokesh Mandvekar <lsm5@redhat.com> - 1.3.2-9
 - use systemd instead of systemd-units
 

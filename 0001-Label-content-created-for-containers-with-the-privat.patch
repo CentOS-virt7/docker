@@ -1,0 +1,53 @@
+From edc8d70a2c87ee2e4907aef2494f66832402fd0a Mon Sep 17 00:00:00 2001
+From: Colin Walters <walters@verbum.org>
+Date: Thu, 15 Jan 2015 16:39:17 -0500
+Subject: [PATCH] Label content created for containers with the private label
+
+Currently this content gets a system label and is not writable based on
+SELinux controls.  This patch will set the labels to the correct label.
+
+Docker-DCO-1.1-Signed-off-by: Dan Walsh <dwalsh@redhat.com> (github: rhatdan)
+---
+ daemon/volumes.go | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/daemon/volumes.go b/daemon/volumes.go
+index 12eb86e..c590353 100644
+--- a/daemon/volumes.go
++++ b/daemon/volumes.go
+@@ -14,6 +14,7 @@ import (
+ 	"github.com/docker/docker/pkg/log"
+ 	"github.com/docker/docker/pkg/symlink"
+ 	"github.com/docker/docker/volumes"
++	"github.com/docker/libcontainer/label"
+ )
+ 
+ type Mount struct {
+@@ -222,15 +223,24 @@ func validMountMode(mode string) bool {
+ }
+ 
+ func (container *Container) setupMounts() error {
++	if err := label.SetFileLabel(container.ResolvConfPath, container.MountLabel); err != nil {
++		return err
++	}
+ 	mounts := []execdriver.Mount{
+ 		{Source: container.ResolvConfPath, Destination: "/etc/resolv.conf", Writable: true, Private: true},
+ 	}
+ 
+ 	if container.HostnamePath != "" {
++		if err := label.SetFileLabel(container.HostnamePath, container.MountLabel); err != nil {
++			return err
++		}
+ 		mounts = append(mounts, execdriver.Mount{Source: container.HostnamePath, Destination: "/etc/hostname", Writable: true, Private: true})
+ 	}
+ 
+ 	if container.HostsPath != "" {
++		if err := label.SetFileLabel(container.HostsPath, container.MountLabel); err != nil {
++			return err
++		}
+ 		mounts = append(mounts, execdriver.Mount{Source: container.HostsPath, Destination: "/etc/hosts", Writable: true, Private: true})
+ 	}
+ 
+-- 
+1.8.3.1
+
