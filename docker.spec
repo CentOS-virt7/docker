@@ -17,7 +17,7 @@
 
 Name:       docker
 Version:    1.4.1
-Release:    13%{?dist}
+Release:    14%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
@@ -383,6 +383,9 @@ exit 0
 %{_sysconfdir}/cron.daily/docker-logrotate
 
 %changelog
+* Tue Jan 20 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-14
+- increment release number to avoid conflict with 7.0
+
 * Tue Jan 20 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-13
 - build rhatdan/1.4.1-beta2 commit#2de8e5d
 - Resolves: rhbz#1180718 - MountFlags=slave in unitfile
