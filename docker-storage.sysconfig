@@ -11,4 +11,4 @@
 # one for data).
 # DOCKER_STORAGE_OPTIONS = --storage-opt dm.metadatadev=/dev/mylogvol/my-docker-metadata --storage-opt dm.datadev=/dev/mylogvol/my-docker-data
 
-DOCKER_STORAGE_OPTIONS=--storage-opt dm.fs=xfs
+DOCKER_STORAGE_OPTIONS=

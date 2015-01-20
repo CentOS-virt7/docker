@@ -12,42 +12,42 @@
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global commit      39fa2faad2f3d6fa5133de4eb740677202f53ef4
+%global commit      2de8e5d22f7216f963050f4e47124f47478b49df
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:       docker
-Version:    1.3.2
-Release:    10%{?dist}
+Version:    1.4.1
+Release:    13%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
 # only x86_64 for now: https://github.com/docker/docker/issues/136
 ExclusiveArch:  x86_64
-Source0:    https://%{import_path}/archive/v%{version}.tar.gz
-Patch1:     go-md2man.patch
-Patch2:     0007-validate-image-ID-properly-before-load.patch
-Patch3:     secrets.patch
-Patch4:     0001-Label-content-created-for-containers-with-the-privat.patch
+#Source0:    https://%{import_path}/archive/v%{version}.tar.gz
+Source0:    https://github.com/rhatdan/docker/archive/%{commit}.tar.gz
 Source1:    docker.service
 Source3:    docker.sysconfig
-Source5:    codegansta.tgz
-Source6:    docker-storage.sysconfig
+Source4:    docker-storage.sysconfig
+Source5:    docker-logrotate.sh
+Source6:    README.docker-logrotate
+Source7:    docker-network.sysconfig
+Patch1:     go-md2man.patch
+Patch2:     docker-cert-path.patch
+Patch3:     codegangsta-cli.patch
 BuildRequires:  glibc-static
-# ensure build uses golang 1.2-7 and above
-# http://code.google.com/p/go/source/detail?r=a15f344a9efa35ef168c8feaa92a15a1cdc93db5
 BuildRequires:  golang >= 1.3.1
 BuildRequires:  device-mapper-devel
 BuildRequires:  btrfs-progs-devel
 BuildRequires:  sqlite-devel
 BuildRequires:  pkgconfig(systemd)
-Requires:   device-mapper-libs >= 1.02.90-1
-# Needs systemd >= 208-12 for SocketUser and SocketGroup support
-Requires:   systemd >= 208-12
+# appropriate systemd version as per rhbz#1171054
+Requires:   systemd >= 208-11.el7_0.5
 # need xz to work with ubuntu images
 Requires:   xz
-Provides:   lxc-docker = %{version}
-Provides:   docker = %{version}
-Provides:	docker-io = %{version}
+Requires:   device-mapper-libs >= 1.02.90-1
+Provides:   lxc-docker = %{version}-%{release}
+Provides:   docker = %{version}-%{release}
+Provides:	docker-io = %{version}-%{release}
 Provides:   nsinit
 
 %description
@@ -61,7 +61,7 @@ and tests on a laptop will run at scale, in production*, on VMs, bare-metal
 servers, OpenStack clusters, public instances, or combinations of the above.
 
 %package devel
-BuildRequires:  golang >= 1.3.1
+BuildRequires:   golang >= 1.3.1
 Requires:   golang >= 1.3.1
 Summary:    A golang registry for global request variables (source libraries)
 Provides:   docker-pkg-devel docker-io-devel docker-io-pkg-devel
@@ -69,8 +69,10 @@ Provides:   golang(%{import_path}) = %{version}-%{release}
 Provides:   golang(%{import_path}/api) = %{version}-%{release}
 Provides:   golang(%{import_path}/api/client) = %{version}-%{release}
 Provides:   golang(%{import_path}/api/server) = %{version}-%{release}
+Provides:   golang(%{import_path}/builder) = %{version}-%{release}
+Provides:   golang(%{import_path}/builder/parser) = %{version}-%{release}
+Provides:   golang(%{import_path}/builder/parser/dumper) = %{version}-%{release}
 Provides:   golang(%{import_path}/builtins) = %{version}-%{release}
-Provides:   golang(%{import_path}/contrib) = %{version}-%{release}
 Provides:   golang(%{import_path}/contrib/docker-device-tool) = %{version}-%{release}
 Provides:   golang(%{import_path}/contrib/host-integration) = %{version}-%{release}
 Provides:   golang(%{import_path}/daemon) = %{version}-%{release}
@@ -78,7 +80,6 @@ Provides:   golang(%{import_path}/daemon/execdriver) = %{version}-%{release}
 Provides:   golang(%{import_path}/daemon/execdriver/execdrivers) = %{version}-%{release}
 Provides:   golang(%{import_path}/daemon/execdriver/lxc) = %{version}-%{release}
 Provides:   golang(%{import_path}/daemon/execdriver/native) = %{version}-%{release}
-Provides:   golang(%{import_path}/daemon/execdriver/native/configuration) = %{version}-%{release}
 Provides:   golang(%{import_path}/daemon/execdriver/native/template) = %{version}-%{release}
 Provides:   golang(%{import_path}/daemon/graphdriver) = %{version}-%{release}
 Provides:   golang(%{import_path}/daemon/graphdriver/aufs) = %{version}-%{release}
@@ -91,15 +92,11 @@ Provides:   golang(%{import_path}/daemon/networkdriver/bridge) = %{version}-%{re
 Provides:   golang(%{import_path}/daemon/networkdriver/ipallocator) = %{version}-%{release}
 Provides:   golang(%{import_path}/daemon/networkdriver/portallocator) = %{version}-%{release}
 Provides:   golang(%{import_path}/daemon/networkdriver/portmapper) = %{version}-%{release}
-Provides:   golang(%{import_path}/docker) = %{version}-%{release}
-Provides:   golang(%{import_path}/dockerinit) = %{version}-%{release}
 Provides:   golang(%{import_path}/dockerversion) = %{version}-%{release}
 Provides:   golang(%{import_path}/engine) = %{version}-%{release}
 Provides:   golang(%{import_path}/events) = %{version}-%{release}
 Provides:   golang(%{import_path}/graph) = %{version}-%{release}
 Provides:   golang(%{import_path}/image) = %{version}-%{release}
-Provides:   golang(%{import_path}/integration) = %{version}-%{release}
-Provides:   golang(%{import_path}/integration-cli) = %{version}-%{release}
 Provides:   golang(%{import_path}/links) = %{version}-%{release}
 Provides:   golang(%{import_path}/nat) = %{version}-%{release}
 Provides:   golang(%{import_path}/opts) = %{version}-%{release}
@@ -107,12 +104,11 @@ Provides:   golang(%{import_path}/registry) = %{version}-%{release}
 Provides:   golang(%{import_path}/runconfig) = %{version}-%{release}
 Provides:   golang(%{import_path}/trust) = %{version}-%{release}
 Provides:   golang(%{import_path}/utils) = %{version}-%{release}
-Provides:   golang(%{import_path}/utils/broadcastwriter) = %{version}-%{release}
 Provides:   golang(%{import_path}/volumes) = %{version}-%{release}
-Provides:   golang(%{import_path}/pkg) = %{version}-%{release}
 Provides:   golang(%{import_path}/pkg/archive) = %{version}-%{release}
 Provides:   golang(%{import_path}/pkg/broadcastwriter) = %{version}-%{release}
 Provides:   golang(%{import_path}/pkg/chrootarchive) = %{version}-%{release}
+Provides:   golang(%{import_path}/pkg/devicemapper) = %{version}-%{release}
 Provides:   golang(%{import_path}/pkg/fileutils) = %{version}-%{release}
 Provides:   golang(%{import_path}/pkg/graphdb) = %{version}-%{release}
 Provides:   golang(%{import_path}/pkg/httputils) = %{version}-%{release}
@@ -120,7 +116,6 @@ Provides:   golang(%{import_path}/pkg/ioutils) = %{version}-%{release}
 Provides:   golang(%{import_path}/pkg/iptables) = %{version}-%{release}
 Provides:   golang(%{import_path}/pkg/jsonlog) = %{version}-%{release}
 Provides:   golang(%{import_path}/pkg/listenbuffer) = %{version}-%{release}
-Provides:   golang(%{import_path}/pkg/log) = %{version}-%{release}
 Provides:   golang(%{import_path}/pkg/mflag) = %{version}-%{release}
 Provides:   golang(%{import_path}/pkg/mflag/example) = %{version}-%{release}
 Provides:   golang(%{import_path}/pkg/mount) = %{version}-%{release}
@@ -156,6 +151,8 @@ Provides:   golang(%{import_path_libcontainer}/cgroups/fs) = %{version}-%{releas
 Provides:   golang(%{import_path_libcontainer}/cgroups/systemd) = %{version}-%{release}
 Provides:   golang(%{import_path_libcontainer}/console) = %{version}-%{release}
 Provides:   golang(%{import_path_libcontainer}/devices) = %{version}-%{release}
+Provides:   golang(%{import_path_libcontainer}/integration) = %{version}-%{release}
+Provides:   golang(%{import_path_libcontainer}/ipc) = %{version}-%{release}
 Provides:   golang(%{import_path_libcontainer}/label) = %{version}-%{release}
 Provides:   golang(%{import_path_libcontainer}/mount) = %{version}-%{release}
 Provides:   golang(%{import_path_libcontainer}/mount/nodes) = %{version}-%{release}
@@ -167,7 +164,6 @@ Provides:   golang(%{import_path_libcontainer}/nsinit) = %{version}-%{release}
 Provides:   golang(%{import_path_libcontainer}/security/capabilities) = %{version}-%{release}
 Provides:   golang(%{import_path_libcontainer}/security/restrict) = %{version}-%{release}
 Provides:   golang(%{import_path_libcontainer}/selinux) = %{version}-%{release}
-Provides:   golang(%{import_path_libcontainer}/syncpipe) = %{version}-%{release}
 Provides:   golang(%{import_path_libcontainer}/system) = %{version}-%{release}
 Provides:   golang(%{import_path_libcontainer}/user) = %{version}-%{release}
 Provides:   golang(%{import_path_libcontainer}/utils) = %{version}-%{release}
@@ -176,16 +172,23 @@ Provides:   golang(%{import_path_libcontainer}/xattr) = %{version}-%{release}
 Obsoletes:	golang-github-docker-libcontainer-devel
 
 %description devel
-This is the source libraries for docker.
+This package installs the source libraries for docker.
+
+%package logrotate
+Summary:    cron job to run logrotate on docker containers
+Requires:   docker = %{version}-%{release}
+Provides:   docker-io-logrotate = %{version}-%{release}
+
+%description logrotate
+This package installs %{summary}. logrotate is assumed to be installed on
+containers for this to work, failures are silently ignored.
 
 %prep
-%setup -q -n docker-%{version}
+%setup -qn docker-%{commit}
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch4 -p1
-
-tar zxf %{SOURCE5} 
+cp %{SOURCE6} .
 
 %build
 mkdir _build
@@ -196,17 +199,18 @@ pushd _build
 popd
 
 export DOCKER_GITCOMMIT="%{shortcommit}/%{version}"
-export DOCKER_BUILDTAGS='selinux'
+export DOCKER_BUILDTAGS='selinux btrfs_noversion'
 export GOPATH=$(pwd)/_build:$(pwd)/vendor:%{gopath}
 
+# build docker binary
 hack/make.sh dynbinary
 cp contrib/syntax/vim/LICENSE LICENSE-vim-syntax
 cp contrib/syntax/vim/README.md README-vim-syntax.md
 
 pushd $(pwd)/_build/src
-#build nsinit
+# build nsinit
 go build github.com/docker/libcontainer/nsinit
-#build go-md2man for building manpages
+# build go-md2man for building manpages
 go build github.com/cpuguy83/go-md2man
 popd
 
@@ -218,30 +222,41 @@ docs/man/md2man-all.sh
 %install
 # install binary
 install -d %{buildroot}%{_bindir}
-install -p -m 755 bundles/%{version}/dynbinary/docker-%{version} %{buildroot}%{_bindir}/docker
+install -p -m 755 bundles/%{version}-dev/dynbinary/docker-%{version}-dev %{buildroot}%{_bindir}/docker
 
 # install dockerinit
 install -d %{buildroot}%{_libexecdir}/docker
-install -p -m 755 bundles/%{version}/dynbinary/dockerinit-%{version} %{buildroot}%{_libexecdir}/docker/dockerinit
+install -p -m 755 bundles/%{version}-dev/dynbinary/dockerinit-%{version}-dev %{buildroot}%{_libexecdir}/docker/dockerinit
 
 # install manpages
-install -dp %{buildroot}%{_mandir}/{man1,man5}
+install -d %{buildroot}%{_mandir}/man1
 install -p -m 644 docs/man/man1/* %{buildroot}%{_mandir}/man1
+install -d %{buildroot}%{_mandir}/man5
 install -p -m 644 docs/man/man5/* %{buildroot}%{_mandir}/man5
 
 # install bash completion
 install -d %{buildroot}%{_datadir}/bash-completion/completions/
 install -p -m 644 contrib/completion/bash/docker %{buildroot}%{_datadir}/bash-completion/completions/
 
-# install zsh completion
-install -d %{buildroot}%{_datadir}/zsh/site-functions
-install -p -m 644 contrib/completion/zsh/_docker %{buildroot}%{_datadir}/zsh/site-functions
+# install fish completion
+# create, install and own /usr/share/fish/vendor_completions.d until
+# upstream fish provides it
+install -dp %{buildroot}%{_datadir}/fish/vendor_completions.d
+install -p -m 644 contrib/completion/fish/docker.fish %{buildroot}%{_datadir}/fish/vendor_completions.d
+
+# install container logrotate cron script
+install -dp %{buildroot}%{_sysconfdir}/cron.daily/
+install -p -m 755 %{SOURCE5} %{buildroot}%{_sysconfdir}/cron.daily/docker-logrotate
 
 # install vim syntax highlighting
 install -d %{buildroot}%{_datadir}/vim/vimfiles/{doc,ftdetect,syntax}
 install -p -m 644 contrib/syntax/vim/doc/dockerfile.txt %{buildroot}%{_datadir}/vim/vimfiles/doc
 install -p -m 644 contrib/syntax/vim/ftdetect/dockerfile.vim %{buildroot}%{_datadir}/vim/vimfiles/ftdetect
 install -p -m 644 contrib/syntax/vim/syntax/dockerfile.vim %{buildroot}%{_datadir}/vim/vimfiles/syntax
+
+# install zsh completion
+install -d %{buildroot}%{_datadir}/zsh/site-functions
+install -p -m 644 contrib/completion/zsh/_docker %{buildroot}%{_datadir}/zsh/site-functions
 
 # install udev rules
 install -d %{buildroot}%{_sysconfdir}/udev/rules.d
@@ -253,11 +268,12 @@ install -d -m 700 %{buildroot}%{_sharedstatedir}/docker
 # install systemd/init scripts
 install -d %{buildroot}%{_unitdir}
 install -p -m 644 %{SOURCE1} %{buildroot}%{_unitdir}
-install -p -m 644 contrib/init/systemd/docker.socket %{buildroot}%{_unitdir}
+
 # for additional args
 install -d %{buildroot}%{_sysconfdir}/sysconfig/
 install -p -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/sysconfig/docker
-install -p -m 644 %{SOURCE6} %{buildroot}%{_sysconfdir}/sysconfig/docker-storage
+install -p -m 644 %{SOURCE4} %{buildroot}%{_sysconfdir}/sysconfig/docker-storage
+install -p -m 644 %{SOURCE7} %{buildroot}%{_sysconfdir}/sysconfig/docker-network
 
 # install secrets dir
 install -d -p -m 750 %{buildroot}/%{_datadir}/rhel/secrets
@@ -275,31 +291,45 @@ cp -pav vendor/src/%{import_path_libcontainer}/nsinit/*.go %{buildroot}%{gopath}
 install -d %{buildroot}%{_bindir}
 install -p -m 755 ./_build/src/nsinit %{buildroot}%{_bindir}/nsinit
 
+# install docker config directory
+install -dp %{buildroot}%{_sysconfdir}/docker/
+
 # Install libcontainer
 for dir in . apparmor cgroups cgroups/fs cgroups/systemd \
-	console devices label mount mount/nodes namespaces \
+	console devices integration label mount mount/nodes namespaces \
 	netlink network nsinit security/capabilities \
-	security/restrict selinux syncpipe system user utils xattr
+	security/restrict selinux system user utils xattr
 do
-    install -dp %{buildroot}%{gopath}/src/%{import_path_libcontainer}/$dir
+    install -d -p %{buildroot}%{gopath}/src/%{import_path_libcontainer}/$dir
     cp -pav vendor/src/%{import_path_libcontainer}/$dir/*.go %{buildroot}%{gopath}/src/%{import_path_libcontainer}/$dir
 done
 
 # sources
 install -d -p %{buildroot}/%{gopath}/src/%{import_path}
-rm -rf pkg/archive/testdata
 
-for dir in api builtins daemon docker dockerinit dockerversion \
-            engine events graph image integration integration-cli \
-            links nat opts pkg registry runconfig trust utils volumes
+for dir in api builder builtins contrib/docker-device-tool \
+        contrib/host-integration daemon docker dockerinit \
+        dockerversion engine events graph \
+        image links nat opts pkg registry runconfig \
+        trust utils volumes
 do
-       echo $dir
-        cp -pav $dir %{buildroot}/%{gopath}/src/%{import_path}/
+       cp -pav $dir %{buildroot}/%{gopath}/src/%{import_path}/
 done
 find %{buildroot}/%{gopath}/src/%{import_path}/ -name \*.registry -delete
 
+%check
+[ ! -e /run/docker.sock ] || {
+    mkdir test_dir
+    pushd test_dir
+    git clone https://%{import_path}
+    pushd docker
+    make test
+    popd
+    popd
+}
+
 %pre
-getent group docker > /dev/null || %{_sbindir}/groupadd -r docker
+getent passwd dockerroot > /dev/null || %{_sbindir}/useradd -r -d %{_sharedstatedir}/docker -s /sbin/nologin -c "Docker User" dockerroot
 exit 0
 
 %post
@@ -314,136 +344,162 @@ exit 0
 %files
 %doc AUTHORS CHANGELOG.md CONTRIBUTING.md MAINTAINERS NOTICE
 %doc LICENSE* README*.md
-%config(noreplace) %{_sysconfdir}/sysconfig/docker
-%config(noreplace) %{_sysconfdir}/sysconfig/docker-storage
 %{_mandir}/man1/*
 %{_mandir}/man5/*
-%{_bindir}/%{name}
+%{_bindir}/docker
 %dir %{_datadir}/rhel
 %dir %{_datadir}/rhel/secrets
 %{_datadir}/rhel/secrets/etc-pki-entitlement
 %{_datadir}/rhel/secrets/rhel7.repo
 %{_datadir}/rhel/secrets/rhsm
-%{_libexecdir}/%{name}/*
-%{_unitdir}/%{name}.service
-%{_unitdir}/%{name}.socket
-%{_sysconfdir}/docker/certs.d
+%{_libexecdir}/docker
+%{_unitdir}/docker.service
+%config(noreplace) %{_sysconfdir}/sysconfig/docker
+%config(noreplace) %{_sysconfdir}/sysconfig/docker-storage
+%config(noreplace) %{_sysconfdir}/sysconfig/docker-network
 %{_datadir}/bash-completion/completions/docker
-%{_datadir}/zsh/site-functions/_docker
 %dir %{_sharedstatedir}/docker
 %dir %{_sysconfdir}/udev/rules.d
 %{_sysconfdir}/udev/rules.d/80-docker.rules
+%{_bindir}/nsinit
+%dir %{_datadir}/fish/vendor_completions.d/
+%{_datadir}/fish/vendor_completions.d/docker.fish
 %dir %{_datadir}/vim/vimfiles/doc
 %{_datadir}/vim/vimfiles/doc/dockerfile.txt
 %dir %{_datadir}/vim/vimfiles/ftdetect
 %{_datadir}/vim/vimfiles/ftdetect/dockerfile.vim
 %dir %{_datadir}/vim/vimfiles/syntax
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
-%{_bindir}/nsinit
+%dir %{_datadir}/zsh/site-functions
+%{_datadir}/zsh/site-functions/_docker
+%{_sysconfdir}/docker
 
 %files devel
-%doc AUTHORS CHANGELOG.md CONTRIBUTING.md LICENSE MAINTAINERS NOTICE README.md
+%doc AUTHORS CHANGELOG.md CONTRIBUTING.md LICENSE MAINTAINERS NOTICE README.md 
 %{gopath}/src/%{common_path}/*
 
+%files logrotate
+%doc README.docker-logrotate
+%{_sysconfdir}/cron.daily/docker-logrotate
+
 %changelog
-* Thu Jan 15 2015 Colin Walters <walters@redhat.com> - 1.3.2-10
-- Backport patch to fix resolv.conf labels
+* Tue Jan 20 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-13
+- build rhatdan/1.4.1-beta2 commit#2de8e5d
+- Resolves: rhbz#1180718 - MountFlags=slave in unitfile
 
-* Tue Dec 09 2014 Lokesh Mandvekar <lsm5@redhat.com> - 1.3.2-9
-- use systemd instead of systemd-units
+* Mon Jan 19 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-12
+- build rhatdan/1.4.1-beta2 commit#218805f
 
-* Fri Dec 05 2014 Lokesh Mandvekar <lsm5@redhat.com> - 1.3.2-8
-- build manpages
+* Mon Jan 19 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-11
+- build rhatdan/1.4.1-beta2 commit#4b7addf
 
-* Fri Dec 05 2014 Lokesh Mandvekar <lsm5@redhat.com> - 1.3.2-7
-- update libcontainer provides
-- package also provides docker-io-devel
+* Fri Jan 16 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-10
+- build rhatdan/1.4.1-beta2 commit #a0c7884
+- socket activation not used
+- include docker_transition_unconfined boolean info and disable socket
+activation in /etc/sysconfig/docker
+- docker group not created
 
-* Fri Dec 05 2014 Lokesh Mandvekar <lsm5@redhat.com> - 1.3.2-6
+* Fri Jan 16 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-9
+- run all tests and not just unit tests
+- replace codegansta.tgz with codegangsta-cli.patch
+
+* Thu Jan 15 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-8
+- build rhatdan/1.4.1-beta2 commit #6ee2421
+
+* Wed Jan 14 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-7
+- build rhatdan/1.4.1-beta2 01a64e011da131869b42be8b2f11f540fd4b8f33
+- run tests inside a docker repo during check phase
+
+* Mon Jan 12 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-6
+- build rhatdan/1.4.1-beta2 01a64e011da131869b42be8b2f11f540fd4b8f33
+
+* Wed Jan 07 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-5
+- own /etc/docker
+- include check for unit tests
+
+* Fri Dec 19 2014 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-4
+- Install vim and shell completion files in main package itself
+
+* Thu Dec 18 2014 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-3
+- rename cron script
+- change enable/disable to true/false
+
+* Thu Dec 18 2014 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-2
+- Enable the logrotate cron job by default, disable via sysconfig variable
+- Install docker-network and docker-container-logrotate sysconfig files
+
+* Thu Dec 18 2014 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-1
+- Resolves: rhbz#1174351 - update to 1.4.1
+- Provide subpackages for fish and zsh completion and vim syntax highlighting
+- Provide subpackage to run logrotate on running containers as a daily cron
+job
+
+* Mon Dec 15 2014 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.0-1
+- Resolves: rhbz#1174266 - update to 1.4.0
+- Fixes: CVE-2014-9357, CVE-2014-9358
+- uses /etc/docker as cert path
+- create dockerroot user
+- skip btrfs version check
+
+* Fri Dec 05 2014 Lokesh Mandvekar <lsm5@redhat.com> - 1.3.2-4
+- update libcontainer paths
+- update docker.sysconfig to include DOCKER_TMPDIR
 - update docker.service unitfile
-- include DOCKER_TMPDIR in docker.sysconfig
+- package provides docker-io-devel
 
-* Fri Dec 05 2014 Lokesh Mandvekar <lsm5@redhat.com> - 1.3.2-5
-- update to 1.3.2
+* Mon Dec 01 2014 Lokesh Mandvekar <lsm5@redhat.com> - 1.3.2-3
+- revert docker.service change, -H fd:// in sysconfig file
 
-* Thu Oct 30 2014 Dan Walsh <dwalsh@redhat.com> - 1.3.0-5
-- Fix docker.service unit file
+* Mon Dec 01 2014 Lokesh Mandvekar <lsm5@redhat.com> - 1.3.2-2
+- update systemd files
 
-* Wed Oct 29 2014 Dan Walsh <dwalsh@redhat.com> - 1.3.0-4
-- Move fixes for entitlement patch
+* Tue Nov 25 2014 Lokesh Mandvekar <lsm5@redhat.com> - 1.3.2-1
+- Resolves: rhbz#1167870 - update to v1.3.2
+- Fixes CVE-2014-6407, CVE-2014-6408
 
-* Tue Oct 28 2014 Dan Walsh <dwalsh@redhat.com> - 1.3.0-3
-- Fix entitlement patch
-- Set MountFlags for docker containers to private
-- Change /etc/sysconfig/docker to source /etc/sysconfig/docker-storeage.sysconfig
+* Fri Nov 14 2014 Lokesh Mandvekar <lsm5@redhat.com> - 1.3.1-2
+- remove unused buildrequires
 
-* Fri Oct 17 2014 Dan Walsh <dwalsh@redhat.com> - 1.3.0-2
-- Fix problem with /run patch
+* Thu Nov 13 2014 Lokesh Mandvekar <lsm5@redhat.com> - 1.3.1-1
+- bump to upstream v1.3.1
+- patch to vendor in go-md2man and deps for manpage generation
 
-* Fri Oct 17 2014 Dan Walsh <dwalsh@redhat.com> - 1.3.0-1
-- Update to docker-1.3
+* Thu Oct 30 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-1.8
+- Remove docker-rhel entitlment patch. This was buggy and is no longer needed
 
-* Tue Oct 7 2014 Eric Paris <eparis@redhat.com> - 1.2.0-20
-- Re-add docker.socket, the right way
+* Mon Oct 20 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-1.7
+- Add 404 patch to allow docker to continue to try to download updates with 
+- different certs, even if the registry returns 404 error
 
-* Tue Sep 23 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-19
-- Rebase to latest docker-1.2-devel
-- Includes docker exec and docker create
-- Fix problems with existing patches
+* Tue Oct 7 2014 Eric Paris <eparis@redhat.com> - 1.2.0-1.6
+- make docker.socket start/restart when docker starts/restarts
 
-* Tue Sep 23 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-18
+* Tue Sep 30 2014 Eric Paris <eparis@redhat.com> - 1.2.0-1.5
+- put docker.socket back the right way
+
+* Sat Sep 27 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-1.4
 - Remove docker.socket
 
-* Fri Sep 19 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-17
+* Mon Sep 22 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-1.2
+- Fix docker.service file to use /etc/sysconfig/docker-storage.service
+
+* Mon Sep 22 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-1.1
+- Bump release to 1.2.0
 - Add support for /etc/sysconfig/docker-storage
-
-* Fri Sep 19 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-16
 - Add Provides:golang(github.com/docker/libcontainer)
-
-* Wed Sep 17 2014 Tomas Hrcka <thrcka@redhat.com> - 1.2.0-15
 - Add provides docker-io to get through compatibility issues
-
-* Tue Sep 16 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-14
-- Add registry-append and registry-replace patch
-
-* Mon Sep 15 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-13
-- Fix Comment and META patch to work in Dockerfile
-
-* Fri Sep 12 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-12
 - Update man pages
-
-* Fri Sep 12 2014 Tomas Hrcka <thrcka@redhat.com> - 1.2.0-11
 - Add missing pieces of libcontainer
 - Devel now obsoletes golang-github-docker-libcontainer-devel
-
-* Thu Sep 11 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-10
-- Re-add all of the patches
-
-* Thu Sep 11 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-9
 - Remove runtime dependency on golang
-
-* Thu Sep 11 2014 Tomas Hrcka <thrcka@redhat.com> - 1.2.0-8
-- Remove runtime dependency on golang
-
-* Tue Sep 09 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-7
 - Fix secrets patch
-
-* Tue Sep 09 2014 Tomas Hrcka <thrcka@redhat.com> - 1.2.0-4
 - Add -devel -pkg-devel subpackages
 - Move libcontainer from -lib to -devel subpackage
-
-* Mon Sep 08 2014 Dan Walsh <dwalsh@redhat.com> - 1.2.0-3
 - Allow docker to use /etc/pki/entitlement for certs
-
-* Mon Sep 08 2014 Tomas Hrcka <thrcka@redhat.com> - 1.2.0-2
-- Enable nsinit again
 - New sources that satisfy nsinit deps
-
-* Thu Sep 04 2014 Tomas Hrcka <thrcka@redhat.com> - 1.2.0-1
-- Bump release to 1.2.0
 - Change docker client certs links
 - Add nsinit
-- Add docker-lib subpackage which provides libcontainer sources
 
 * Tue Sep 2 2014 Dan Walsh <dwalsh@redhat.com> - 1.1.2-10
 - Add  docker client entitlement certs

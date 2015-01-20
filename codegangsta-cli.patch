@@ -1,0 +1,2359 @@
+diff -uNr docker-6ee24211b4111e0b1e1bd7a46c5a3c4ced1b2ffa/vendor/src/github.com/codegangsta/cli/app.go docker-1/vendor/src/github.com/codegangsta/cli/app.go
+--- docker-6ee24211b4111e0b1e1bd7a46c5a3c4ced1b2ffa/vendor/src/github.com/codegangsta/cli/app.go	1969-12-31 19:00:00.000000000 -0500
++++ docker-1/vendor/src/github.com/codegangsta/cli/app.go	2015-01-16 03:56:49.105152140 -0500
+@@ -0,0 +1,248 @@
++package cli
++
++import (
++	"fmt"
++	"io/ioutil"
++	"os"
++	"time"
++)
++
++// App is the main structure of a cli application. It is recomended that
++// and app be created with the cli.NewApp() function
++type App struct {
++	// The name of the program. Defaults to os.Args[0]
++	Name string
++	// Description of the program.
++	Usage string
++	// Version of the program
++	Version string
++	// List of commands to execute
++	Commands []Command
++	// List of flags to parse
++	Flags []Flag
++	// Boolean to enable bash completion commands
++	EnableBashCompletion bool
++	// Boolean to hide built-in help command
++	HideHelp bool
++	// An action to execute when the bash-completion flag is set
++	BashComplete func(context *Context)
++	// An action to execute before any subcommands are run, but after the context is ready
++	// If a non-nil error is returned, no subcommands are run
++	Before func(context *Context) error
++	// The action to execute when no subcommands are specified
++	Action func(context *Context)
++	// Execute this function if the proper command cannot be found
++	CommandNotFound func(context *Context, command string)
++	// Compilation date
++	Compiled time.Time
++	// Author
++	Author string
++	// Author e-mail
++	Email string
++}
++
++// Tries to find out when this binary was compiled.
++// Returns the current time if it fails to find it.
++func compileTime() time.Time {
++	info, err := os.Stat(os.Args[0])
++	if err != nil {
++		return time.Now()
++	}
++	return info.ModTime()
++}
++
++// Creates a new cli Application with some reasonable defaults for Name, Usage, Version and Action.
++func NewApp() *App {
++	return &App{
++		Name:         os.Args[0],
++		Usage:        "A new cli application",
++		Version:      "0.0.0",
++		BashComplete: DefaultAppComplete,
++		Action:       helpCommand.Action,
++		Compiled:     compileTime(),
++		Author:       "Author",
++		Email:        "unknown@email",
++	}
++}
++
++// Entry point to the cli app. Parses the arguments slice and routes to the proper flag/args combination
++func (a *App) Run(arguments []string) error {
++	// append help to commands
++	if a.Command(helpCommand.Name) == nil && !a.HideHelp {
++		a.Commands = append(a.Commands, helpCommand)
++		a.appendFlag(HelpFlag)
++	}
++
++	//append version/help flags
++	if a.EnableBashCompletion {
++		a.appendFlag(BashCompletionFlag)
++	}
++	a.appendFlag(VersionFlag)
++
++	// parse flags
++	set := flagSet(a.Name, a.Flags)
++	set.SetOutput(ioutil.Discard)
++	err := set.Parse(arguments[1:])
++	nerr := normalizeFlags(a.Flags, set)
++	if nerr != nil {
++		fmt.Println(nerr)
++		context := NewContext(a, set, set)
++		ShowAppHelp(context)
++		fmt.Println("")
++		return nerr
++	}
++	context := NewContext(a, set, set)
++
++	if err != nil {
++		fmt.Printf("Incorrect Usage.\n\n")
++		ShowAppHelp(context)
++		fmt.Println("")
++		return err
++	}
++
++	if checkCompletions(context) {
++		return nil
++	}
++
++	if checkHelp(context) {
++		return nil
++	}
++
++	if checkVersion(context) {
++		return nil
++	}
++
++	if a.Before != nil {
++		err := a.Before(context)
++		if err != nil {
++			return err
++		}
++	}
++
++	args := context.Args()
++	if args.Present() {
++		name := args.First()
++		c := a.Command(name)
++		if c != nil {
++			return c.Run(context)
++		}
++	}
++
++	// Run default Action
++	a.Action(context)
++	return nil
++}
++
++// Another entry point to the cli app, takes care of passing arguments and error handling
++func (a *App) RunAndExitOnError() {
++	if err := a.Run(os.Args); err != nil {
++		os.Stderr.WriteString(fmt.Sprintln(err))
++		os.Exit(1)
++	}
++}
++
++// Invokes the subcommand given the context, parses ctx.Args() to generate command-specific flags
++func (a *App) RunAsSubcommand(ctx *Context) error {
++	// append help to commands
++	if len(a.Commands) > 0 {
++		if a.Command(helpCommand.Name) == nil && !a.HideHelp {
++			a.Commands = append(a.Commands, helpCommand)
++			a.appendFlag(HelpFlag)
++		}
++	}
++
++	// append flags
++	if a.EnableBashCompletion {
++		a.appendFlag(BashCompletionFlag)
++	}
++
++	// parse flags
++	set := flagSet(a.Name, a.Flags)
++	set.SetOutput(ioutil.Discard)
++	err := set.Parse(ctx.Args().Tail())
++	nerr := normalizeFlags(a.Flags, set)
++	context := NewContext(a, set, ctx.globalSet)
++
++	if nerr != nil {
++		fmt.Println(nerr)
++		if len(a.Commands) > 0 {
++			ShowSubcommandHelp(context)
++		} else {
++			ShowCommandHelp(ctx, context.Args().First())
++		}
++		fmt.Println("")
++		return nerr
++	}
++
++	if err != nil {
++		fmt.Printf("Incorrect Usage.\n\n")
++		ShowSubcommandHelp(context)
++		return err
++	}
++
++	if checkCompletions(context) {
++		return nil
++	}
++
++	if len(a.Commands) > 0 {
++		if checkSubcommandHelp(context) {
++			return nil
++		}
++	} else {
++		if checkCommandHelp(ctx, context.Args().First()) {
++			return nil
++		}
++	}
++
++	if a.Before != nil {
++		err := a.Before(context)
++		if err != nil {
++			return err
++		}
++	}
++
++	args := context.Args()
++	if args.Present() {
++		name := args.First()
++		c := a.Command(name)
++		if c != nil {
++			return c.Run(context)
++		}
++	}
++
++	// Run default Action
++	if len(a.Commands) > 0 {
++		a.Action(context)
++	} else {
++		a.Action(ctx)
++	}
++
++	return nil
++}
++
++// Returns the named command on App. Returns nil if the command does not exist
++func (a *App) Command(name string) *Command {
++	for _, c := range a.Commands {
++		if c.HasName(name) {
++			return &c
++		}
++	}
++
++	return nil
++}
++
++func (a *App) hasFlag(flag Flag) bool {
++	for _, f := range a.Flags {
++		if flag == f {
++			return true
++		}
++	}
++
++	return false
++}
++
++func (a *App) appendFlag(flag Flag) {
++	if !a.hasFlag(flag) {
++		a.Flags = append(a.Flags, flag)
++	}
++}
+diff -uNr docker-6ee24211b4111e0b1e1bd7a46c5a3c4ced1b2ffa/vendor/src/github.com/codegangsta/cli/app_test.go docker-1/vendor/src/github.com/codegangsta/cli/app_test.go
+--- docker-6ee24211b4111e0b1e1bd7a46c5a3c4ced1b2ffa/vendor/src/github.com/codegangsta/cli/app_test.go	1969-12-31 19:00:00.000000000 -0500
++++ docker-1/vendor/src/github.com/codegangsta/cli/app_test.go	2015-01-16 03:56:49.104152140 -0500
+@@ -0,0 +1,399 @@
++package cli_test
++
++import (
++	"fmt"
++	"os"
++	"testing"
++
++	"github.com/codegangsta/cli"
++)
++
++func ExampleApp() {
++	// set args for examples sake
++	os.Args = []string{"greet", "--name", "Jeremy"}
++
++	app := cli.NewApp()
++	app.Name = "greet"
++	app.Flags = []cli.Flag{
++		cli.StringFlag{Name: "name", Value: "bob", Usage: "a name to say"},
++	}
++	app.Action = func(c *cli.Context) {
++		fmt.Printf("Hello %v\n", c.String("name"))
++	}
++	app.Run(os.Args)
++	// Output:
++	// Hello Jeremy
++}
++
++func ExampleAppSubcommand() {
++	// set args for examples sake
++	os.Args = []string{"say", "hi", "english", "--name", "Jeremy"}
++	app := cli.NewApp()
++	app.Name = "say"
++	app.Commands = []cli.Command{
++		{
++			Name:        "hello",
++			ShortName:   "hi",
++			Usage:       "use it to see a description",
++			Description: "This is how we describe hello the function",
++			Subcommands: []cli.Command{
++				{
++					Name:        "english",
++					ShortName:   "en",
++					Usage:       "sends a greeting in english",
++					Description: "greets someone in english",
++					Flags: []cli.Flag{
++						cli.StringFlag{Name: "name", Value: "Bob", Usage: "Name of the person to greet"},
++					},
++					Action: func(c *cli.Context) {
++						fmt.Println("Hello,", c.String("name"))
++					},
++				},
++			},
++		},
++	}
++
++	app.Run(os.Args)
++	// Output:
++	// Hello, Jeremy
++}
++
++func ExampleAppHelp() {
++	// set args for examples sake
++	os.Args = []string{"greet", "h", "describeit"}
++
++	app := cli.NewApp()
++	app.Name = "greet"
++	app.Flags = []cli.Flag{
++		cli.StringFlag{Name: "name", Value: "bob", Usage: "a name to say"},
++	}
++	app.Commands = []cli.Command{
++		{
++			Name:        "describeit",
++			ShortName:   "d",
++			Usage:       "use it to see a description",
++			Description: "This is how we describe describeit the function",
++			Action: func(c *cli.Context) {
++				fmt.Printf("i like to describe things")
++			},
++		},
++	}
++	app.Run(os.Args)
++	// Output:
++	// NAME:
++	//    describeit - use it to see a description
++	//
++	// USAGE:
++	//    command describeit [arguments...]
++	//
++	// DESCRIPTION:
++	//    This is how we describe describeit the function
++}
++
++func ExampleAppBashComplete() {
++	// set args for examples sake
++	os.Args = []string{"greet", "--generate-bash-completion"}
++
++	app := cli.NewApp()
++	app.Name = "greet"
++	app.EnableBashCompletion = true
++	app.Commands = []cli.Command{
++		{
++			Name:        "describeit",
++			ShortName:   "d",
++			Usage:       "use it to see a description",
++			Description: "This is how we describe describeit the function",
++			Action: func(c *cli.Context) {
++				fmt.Printf("i like to describe things")
++			},
++		}, {
++			Name:        "next",
++			Usage:       "next example",
++			Description: "more stuff to see when generating bash completion",
++			Action: func(c *cli.Context) {
++				fmt.Printf("the next example")
++			},
++		},
++	}
++
++	app.Run(os.Args)
++	// Output:
++	// describeit
++	// d
++	// next
++	// help
++	// h
++}
++
++func TestApp_Run(t *testing.T) {
++	s := ""
++
++	app := cli.NewApp()
++	app.Action = func(c *cli.Context) {
++		s = s + c.Args().First()
++	}
++
++	err := app.Run([]string{"command", "foo"})
++	expect(t, err, nil)
++	err = app.Run([]string{"command", "bar"})
++	expect(t, err, nil)
++	expect(t, s, "foobar")
++}
++
++var commandAppTests = []struct {
++	name     string
++	expected bool
++}{
++	{"foobar", true},
++	{"batbaz", true},
++	{"b", true},
++	{"f", true},
++	{"bat", false},
++	{"nothing", false},
++}
++
++func TestApp_Command(t *testing.T) {
++	app := cli.NewApp()
++	fooCommand := cli.Command{Name: "foobar", ShortName: "f"}
++	batCommand := cli.Command{Name: "batbaz", ShortName: "b"}
++	app.Commands = []cli.Command{
++		fooCommand,
++		batCommand,
++	}
++
++	for _, test := range commandAppTests {
++		expect(t, app.Command(test.name) != nil, test.expected)
++	}
++}
++
++func TestApp_CommandWithArgBeforeFlags(t *testing.T) {
++	var parsedOption, firstArg string
++
++	app := cli.NewApp()
++	command := cli.Command{
++		Name: "cmd",
++		Flags: []cli.Flag{
++			cli.StringFlag{Name: "option", Value: "", Usage: "some option"},
++		},
++		Action: func(c *cli.Context) {
++			parsedOption = c.String("option")
++			firstArg = c.Args().First()
++		},
++	}
++	app.Commands = []cli.Command{command}
++
++	app.Run([]string{"", "cmd", "my-arg", "--option", "my-option"})
++
++	expect(t, parsedOption, "my-option")
++	expect(t, firstArg, "my-arg")
++}
++
++func TestApp_Float64Flag(t *testing.T) {
++	var meters float64
++
++	app := cli.NewApp()
++	app.Flags = []cli.Flag{
++		cli.Float64Flag{Name: "height", Value: 1.5, Usage: "Set the height, in meters"},
++	}
++	app.Action = func(c *cli.Context) {
++		meters = c.Float64("height")
++	}
++
++	app.Run([]string{"", "--height", "1.93"})
++	expect(t, meters, 1.93)
++}
++
++func TestApp_ParseSliceFlags(t *testing.T) {
++	var parsedOption, firstArg string
++	var parsedIntSlice []int
++	var parsedStringSlice []string
++
++	app := cli.NewApp()
++	command := cli.Command{
++		Name: "cmd",
++		Flags: []cli.Flag{
++			cli.IntSliceFlag{Name: "p", Value: &cli.IntSlice{}, Usage: "set one or more ip addr"},
++			cli.StringSliceFlag{Name: "ip", Value: &cli.StringSlice{}, Usage: "set one or more ports to open"},
++		},
++		Action: func(c *cli.Context) {
++			parsedIntSlice = c.IntSlice("p")
++			parsedStringSlice = c.StringSlice("ip")
++			parsedOption = c.String("option")
++			firstArg = c.Args().First()
++		},
++	}
++	app.Commands = []cli.Command{command}
++
++	app.Run([]string{"", "cmd", "my-arg", "-p", "22", "-p", "80", "-ip", "8.8.8.8", "-ip", "8.8.4.4"})
++
++	IntsEquals := func(a, b []int) bool {
++		if len(a) != len(b) {
++			return false
++		}
++		for i, v := range a {
++			if v != b[i] {
++				return false
++			}
++		}
++		return true
++	}
++
++	StrsEquals := func(a, b []string) bool {
++		if len(a) != len(b) {
++			return false
++		}
++		for i, v := range a {
++			if v != b[i] {
++				return false
++			}
++		}
++		return true
++	}
++	var expectedIntSlice = []int{22, 80}
++	var expectedStringSlice = []string{"8.8.8.8", "8.8.4.4"}
++
++	if !IntsEquals(parsedIntSlice, expectedIntSlice) {
++		t.Errorf("%v does not match %v", parsedIntSlice, expectedIntSlice)
++	}
++
++	if !StrsEquals(parsedStringSlice, expectedStringSlice) {
++		t.Errorf("%v does not match %v", parsedStringSlice, expectedStringSlice)
++	}
++}
++
++func TestApp_BeforeFunc(t *testing.T) {
++	beforeRun, subcommandRun := false, false
++	beforeError := fmt.Errorf("fail")
++	var err error
++
++	app := cli.NewApp()
++
++	app.Before = func(c *cli.Context) error {
++		beforeRun = true
++		s := c.String("opt")
++		if s == "fail" {
++			return beforeError
++		}
++
++		return nil
++	}
++
++	app.Commands = []cli.Command{
++		cli.Command{
++			Name: "sub",
++			Action: func(c *cli.Context) {
++				subcommandRun = true
++			},
++		},
++	}
++
++	app.Flags = []cli.Flag{
++		cli.StringFlag{Name: "opt"},
++	}
++
++	// run with the Before() func succeeding
++	err = app.Run([]string{"command", "--opt", "succeed", "sub"})
++
++	if err != nil {
++		t.Fatalf("Run error: %s", err)
++	}
++
++	if beforeRun == false {
++		t.Errorf("Before() not executed when expected")
++	}
++
++	if subcommandRun == false {
++		t.Errorf("Subcommand not executed when expected")
++	}
++
++	// reset
++	beforeRun, subcommandRun = false, false
++
++	// run with the Before() func failing
++	err = app.Run([]string{"command", "--opt", "fail", "sub"})
++
++	// should be the same error produced by the Before func
++	if err != beforeError {
++		t.Errorf("Run error expected, but not received")
++	}
++
++	if beforeRun == false {
++		t.Errorf("Before() not executed when expected")
++	}
++
++	if subcommandRun == true {
++		t.Errorf("Subcommand executed when NOT expected")
++	}
++
++}
++
++func TestAppHelpPrinter(t *testing.T) {
++	oldPrinter := cli.HelpPrinter
++	defer func() {
++		cli.HelpPrinter = oldPrinter
++	}()
++
++	var wasCalled = false
++	cli.HelpPrinter = func(template string, data interface{}) {
++		wasCalled = true
++	}
++
++	app := cli.NewApp()
++	app.Run([]string{"-h"})
++
++	if wasCalled == false {
++		t.Errorf("Help printer expected to be called, but was not")
++	}
++}
++
++func TestAppCommandNotFound(t *testing.T) {
++	beforeRun, subcommandRun := false, false
++	app := cli.NewApp()
++
++	app.CommandNotFound = func(c *cli.Context, command string) {
++		beforeRun = true
++	}
++
++	app.Commands = []cli.Command{
++		cli.Command{
++			Name: "bar",
++			Action: func(c *cli.Context) {
++				subcommandRun = true
++			},
++		},
++	}
++
++	app.Run([]string{"command", "foo"})
++
++	expect(t, beforeRun, true)
++	expect(t, subcommandRun, false)
++}
++
++func TestGlobalFlagsInSubcommands(t *testing.T) {
++	subcommandRun := false
++	app := cli.NewApp()
++
++	app.Flags = []cli.Flag{
++		cli.BoolFlag{Name: "debug, d", Usage: "Enable debugging"},
++	}
++
++	app.Commands = []cli.Command{
++		cli.Command{
++			Name: "foo",
++			Subcommands: []cli.Command{
++				{
++					Name: "bar",
++					Action: func(c *cli.Context) {
++						if c.GlobalBool("debug") {
++							subcommandRun = true
++						}
++					},
++				},
++			},
++		},
++	}
++
++	app.Run([]string{"command", "-d", "foo", "bar"})
++
++	expect(t, subcommandRun, true)
++}
+diff -uNr docker-6ee24211b4111e0b1e1bd7a46c5a3c4ced1b2ffa/vendor/src/github.com/codegangsta/cli/autocomplete/bash_autocomplete docker-1/vendor/src/github.com/codegangsta/cli/autocomplete/bash_autocomplete
+--- docker-6ee24211b4111e0b1e1bd7a46c5a3c4ced1b2ffa/vendor/src/github.com/codegangsta/cli/autocomplete/bash_autocomplete	1969-12-31 19:00:00.000000000 -0500
++++ docker-1/vendor/src/github.com/codegangsta/cli/autocomplete/bash_autocomplete	2015-01-16 03:56:49.103152140 -0500
+@@ -0,0 +1,13 @@
++#! /bin/bash
++
++_cli_bash_autocomplete() {
++     local cur prev opts base
++     COMPREPLY=()
++     cur="${COMP_WORDS[COMP_CWORD]}"
++     prev="${COMP_WORDS[COMP_CWORD-1]}"
++     opts=$( ${COMP_WORDS[@]:0:COMP_CWORD} --generate-bash-completion )
++     COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
++     return 0
++ }
++  
++ complete -F _cli_bash_autocomplete $PROG
+\ No newline at end of file
+diff -uNr docker-6ee24211b4111e0b1e1bd7a46c5a3c4ced1b2ffa/vendor/src/github.com/codegangsta/cli/cli.go docker-1/vendor/src/github.com/codegangsta/cli/cli.go
+--- docker-6ee24211b4111e0b1e1bd7a46c5a3c4ced1b2ffa/vendor/src/github.com/codegangsta/cli/cli.go	1969-12-31 19:00:00.000000000 -0500
++++ docker-1/vendor/src/github.com/codegangsta/cli/cli.go	2015-01-16 03:56:49.104152140 -0500
+@@ -0,0 +1,19 @@
++// Package cli provides a minimal framework for creating and organizing command line
++// Go applications. cli is designed to be easy to understand and write, the most simple
++// cli application can be written as follows:
++//   func main() {
++//     cli.NewApp().Run(os.Args)
++//   }
++//
++// Of course this application does not do much, so let's make this an actual application:
++//   func main() {
++//     app := cli.NewApp()
++//     app.Name = "greet"
++//     app.Usage = "say a greeting"
++//     app.Action = func(c *cli.Context) {
++//       println("Greetings")
++//     }
++//
++//     app.Run(os.Args)
++//   }
++package cli
+diff -uNr docker-6ee24211b4111e0b1e1bd7a46c5a3c4ced1b2ffa/vendor/src/github.com/codegangsta/cli/cli_test.go docker-1/vendor/src/github.com/codegangsta/cli/cli_test.go
+--- docker-6ee24211b4111e0b1e1bd7a46c5a3c4ced1b2ffa/vendor/src/github.com/codegangsta/cli/cli_test.go	1969-12-31 19:00:00.000000000 -0500
++++ docker-1/vendor/src/github.com/codegangsta/cli/cli_test.go	2015-01-16 03:56:49.105152140 -0500
+@@ -0,0 +1,88 @@
++package cli_test
++
++import (
++	"os"
++
++	"github.com/codegangsta/cli"
++)
++
++func Example() {
++	app := cli.NewApp()
++	app.Name = "todo"
++	app.Usage = "task list on the command line"
++	app.Commands = []cli.Command{
++		{
++			Name:      "add",
++			ShortName: "a",
++			Usage:     "add a task to the list",
++			Action: func(c *cli.Context) {
++				println("added task: ", c.Args().First())
++			},
++		},
++		{
++			Name:      "complete",
++			ShortName: "c",
++			Usage:     "complete a task on the list",
++			Action: func(c *cli.Context) {
++				println("completed task: ", c.Args().First())
++			},
++		},
++	}
++
++	app.Run(os.Args)
++}
++
++func ExampleSubcommand() {
++	app := cli.NewApp()
++	app.Name = "say"
++	app.Commands = []cli.Command{
++		{
++			Name:        "hello",
++			ShortName:   "hi",
++			Usage:       "use it to see a description",
++			Description: "This is how we describe hello the function",
++			Subcommands: []cli.Command{
++				{
++					Name:        "english",
++					ShortName:   "en",
++					Usage:       "sends a greeting in english",
++					Description: "greets someone in english",
++					Flags: []cli.Flag{
++						cli.StringFlag{Name: "name", Value: "Bob", Usage: "Name of the person to greet"},
++					},
++					Action: func(c *cli.Context) {
++						println("Hello, ", c.String("name"))
++					},
++				}, {
++					Name:      "spanish",
++					ShortName: "sp",
++					Usage:     "sends a greeting in spanish",
++					Flags: []cli.Flag{
++						cli.StringFlag{Name: "surname", Value: "Jones", Usage: "Surname of the person to greet"},
++					},
++					Action: func(c *cli.Context) {
++						println("Hola, ", c.String("surname"))
++					},
++				}, {
++					Name:      "french",
++					ShortName: "fr",
++					Usage:     "sends a greeting in french",
++					Flags: []cli.Flag{
++						cli.StringFlag{Name: "nickname", Value: "Stevie", Usage: "Nickname of the person to greet"},
++					},
++					Action: func(c *cli.Context) {
++						println("Bonjour, ", c.String("nickname"))
++					},
++				},
++			},
++		}, {
++			Name:  "bye",
++			Usage: "says goodbye",
++			Action: func(c *cli.Context) {
++				println("bye")
++			},
++		},
++	}
++
++	app.Run(os.Args)
++}
+diff -uNr docker-6ee24211b4111e0b1e1bd7a46c5a3c4ced1b2ffa/vendor/src/github.com/codegangsta/cli/command.go docker-1/vendor/src/github.com/codegangsta/cli/command.go
+--- docker-6ee24211b4111e0b1e1bd7a46c5a3c4ced1b2ffa/vendor/src/github.com/codegangsta/cli/command.go	1969-12-31 19:00:00.000000000 -0500
++++ docker-1/vendor/src/github.com/codegangsta/cli/command.go	2015-01-16 03:56:49.105152140 -0500
+@@ -0,0 +1,141 @@
++package cli
++
++import (
++	"fmt"
++	"io/ioutil"
++	"strings"
++)
++
++// Command is a subcommand for a cli.App.
++type Command struct {
++	// The name of the command
++	Name string
++	// short name of the command. Typically one character
++	ShortName string
++	// A short description of the usage of this command
++	Usage string
++	// A longer explanation of how the command works
++	Description string
++	// The function to call when checking for bash command completions
++	BashComplete func(context *Context)
++	// An action to execute before any sub-subcommands are run, but after the context is ready
++	// If a non-nil error is returned, no sub-subcommands are run
++	Before func(context *Context) error
++	// The function to call when this command is invoked
++	Action func(context *Context)
++	// List of child commands
++	Subcommands []Command
++	// List of flags to parse
++	Flags []Flag
++	// Treat all flags as normal arguments if true
++	SkipFlagParsing bool
++	// Boolean to hide built-in help command
++	HideHelp bool
++}
++
++// Invokes the command given the context, parses ctx.Args() to generate command-specific flags
++func (c Command) Run(ctx *Context) error {
++
++	if len(c.Subcommands) > 0 || c.Before != nil {
++		return c.startApp(ctx)
++	}
++
++	if !c.HideHelp {
++		// append help to flags
++		c.Flags = append(
++			c.Flags,
++			HelpFlag,
++		)
++	}
++
++	if ctx.App.EnableBashCompletion {
++		c.Flags = append(c.Flags, BashCompletionFlag)
++	}
++
++	set := flagSet(c.Name, c.Flags)
++	set.SetOutput(ioutil.Discard)
++
++	firstFlagIndex := -1
++	for index, arg := range ctx.Args() {
++		if strings.HasPrefix(arg, "-") {
++			firstFlagIndex = index
++			break
++		}
++	}
++
++	var err error
++	if firstFlagIndex > -1 && !c.SkipFlagParsing {
++		args := ctx.Args()
++		regularArgs := args[1:firstFlagIndex]
++		flagArgs := args[firstFlagIndex:]
++		err = set.Parse(append(flagArgs, regularArgs...))
++	} else {
++		err = set.Parse(ctx.Args().Tail())
++	}
++
++	if err != nil {
++		fmt.Printf("Incorrect Usage.\n\n")
++		ShowCommandHelp(ctx, c.Name)
++		fmt.Println("")
++		return err
++	}
++
++	nerr := normalizeFlags(c.Flags, set)
++	if nerr != nil {
++		fmt.Println(nerr)
++		fmt.Println("")
++		ShowCommandHelp(ctx, c.Name)
++		fmt.Println("")
++		return nerr
++	}
++	context := NewContext(ctx.App, set, ctx.globalSet)
++
++	if checkCommandCompletions(context, c.Name) {
++		return nil
++	}
++
++	if checkCommandHelp(context, c.Name) {
++		return nil
++	}
++	context.Command = c
++	c.Action(context)
++	return nil
++}
++
++// Returns true if Command.Name or Command.ShortName matches given name
++func (c Command) HasName(name string) bool {
++	return c.Name == name || c.ShortName == name
++}
++
++func (c Command) startApp(ctx *Context) error {
++	app := NewApp()
++
++	// set the name and usage
++	app.Name = fmt.Sprintf("%s %s", ctx.App.Name, c.Name)
++	if c.Description != "" {
++		app.Usage = c.Description
++	} else {
++		app.Usage = c.Usage
++	}
++
++	// set the flags and commands
++	app.Commands = c.Subcommands
++	app.Flags = c.Flags
++	app.HideHelp = c.HideHelp
++
++	// bash completion
++	app.EnableBashCompletion = ctx.App.EnableBashCompletion
++	if c.BashComplete != nil {
++		app.BashComplete = c.BashComplete
++	}
++
++	// set the actions
++	app.Before = c.Before
++	if c.Action != nil {
++		app.Action = c.Action
++	} else {
++		app.Action = helpSubcommand.Action
++	}
++
++	return app.RunAsSubcommand(ctx)
++}
+diff -uNr docker-6ee24211b4111e0b1e1bd7a46c5a3c4ced1b2ffa/vendor/src/github.com/codegangsta/cli/command_test.go docker-1/vendor/src/github.com/codegangsta/cli/command_test.go
+--- docker-6ee24211b4111e0b1e1bd7a46c5a3c4ced1b2ffa/vendor/src/github.com/codegangsta/cli/command_test.go	1969-12-31 19:00:00.000000000 -0500
++++ docker-1/vendor/src/github.com/codegangsta/cli/command_test.go	2015-01-16 03:56:49.104152140 -0500
+@@ -0,0 +1,48 @@
++package cli_test
++
++import (
++	"flag"
++	"github.com/codegangsta/cli"
++	"testing"
++)
++
++func TestCommandDoNotIgnoreFlags(t *testing.T) {
++	app := cli.NewApp()
++	set := flag.NewFlagSet("test", 0)
++	test := []string{"blah", "blah", "-break"}
++	set.Parse(test)
++
++	c := cli.NewContext(app, set, set)
++
++	command := cli.Command {
++		Name: "test-cmd",
++		ShortName: "tc",
++		Usage: "this is for testing",
++		Description: "testing",
++		Action: func(_ *cli.Context) { },
++	}
++	err := command.Run(c)
++
++	expect(t, err.Error(), "flag provided but not defined: -break")
++}
++
++func TestCommandIgnoreFlags(t *testing.T) {
++	app := cli.NewApp()
++	set := flag.NewFlagSet("test", 0)
++	test := []string{"blah", "blah"}
++	set.Parse(test)
++
++	c := cli.NewContext(app, set, set)
++
++	command := cli.Command {
++		Name: "test-cmd",
++		ShortName: "tc",
++		Usage: "this is for testing",
++		Description: "testing",
++		Action: func(_ *cli.Context) { },
++		SkipFlagParsing: true,
++	}
++	err := command.Run(c)
++
++	expect(t, err, nil)
++}
+diff -uNr docker-6ee24211b4111e0b1e1bd7a46c5a3c4ced1b2ffa/vendor/src/github.com/codegangsta/cli/context.go docker-1/vendor/src/github.com/codegangsta/cli/context.go
+--- docker-6ee24211b4111e0b1e1bd7a46c5a3c4ced1b2ffa/vendor/src/github.com/codegangsta/cli/context.go	1969-12-31 19:00:00.000000000 -0500
++++ docker-1/vendor/src/github.com/codegangsta/cli/context.go	2015-01-16 03:56:49.104152140 -0500
+@@ -0,0 +1,280 @@
++package cli
++
++import (
++	"errors"
++	"flag"
++	"strconv"
++	"strings"
++)
++
++// Context is a type that is passed through to
++// each Handler action in a cli application. Context
++// can be used to retrieve context-specific Args and
++// parsed command-line options.
++type Context struct {
++	App       *App
++	Command   Command
++	flagSet   *flag.FlagSet
++	globalSet *flag.FlagSet
++	setFlags  map[string]bool
++}
++
++// Creates a new context. For use in when invoking an App or Command action.
++func NewContext(app *App, set *flag.FlagSet, globalSet *flag.FlagSet) *Context {
++	return &Context{App: app, flagSet: set, globalSet: globalSet}
++}
++
++// Looks up the value of a local int flag, returns 0 if no int flag exists
++func (c *Context) Int(name string) int {
++	return lookupInt(name, c.flagSet)
++}
++
++// Looks up the value of a local float64 flag, returns 0 if no float64 flag exists
++func (c *Context) Float64(name string) float64 {
++	return lookupFloat64(name, c.flagSet)
++}
++
++// Looks up the value of a local bool flag, returns false if no bool flag exists
++func (c *Context) Bool(name string) bool {
++	return lookupBool(name, c.flagSet)
++}
++
++// Looks up the value of a local boolT flag, returns false if no bool flag exists
++func (c *Context) BoolT(name string) bool {
++	return lookupBoolT(name, c.flagSet)
++}
++
++// Looks up the value of a local string flag, returns "" if no string flag exists
++func (c *Context) String(name string) string {
++	return lookupString(name, c.flagSet)
++}
++
++// Looks up the value of a local string slice flag, returns nil if no string slice flag exists
++func (c *Context) StringSlice(name string) []string {
++	return lookupStringSlice(name, c.flagSet)
++}
++
++// Looks up the value of a local int slice flag, returns nil if no int slice flag exists
++func (c *Context) IntSlice(name string) []int {
++	return lookupIntSlice(name, c.flagSet)
++}
++
++// Looks up the value of a local generic flag, returns nil if no generic flag exists
++func (c *Context) Generic(name string) interface{} {
++	return lookupGeneric(name, c.flagSet)
++}
++
++// Looks up the value of a global int flag, returns 0 if no int flag exists
++func (c *Context) GlobalInt(name string) int {
++	return lookupInt(name, c.globalSet)
++}
++
++// Looks up the value of a global bool flag, returns false if no bool flag exists
++func (c *Context) GlobalBool(name string) bool {
++	return lookupBool(name, c.globalSet)
++}
++
++// Looks up the value of a global string flag, returns "" if no string flag exists
++func (c *Context) GlobalString(name string) string {
++	return lookupString(name, c.globalSet)
++}
++
++// Looks up the value of a global string slice flag, returns nil if no string slice flag exists
++func (c *Context) GlobalStringSlice(name string) []string {
++	return lookupStringSlice(name, c.globalSet)
++}
++
++// Looks up the value of a global int slice flag, returns nil if no int slice flag exists
++func (c *Context) GlobalIntSlice(name string) []int {
++	return lookupIntSlice(name, c.globalSet)
++}
++
++// Looks up the value of a global generic flag, returns nil if no generic flag exists
++func (c *Context) GlobalGeneric(name string) interface{} {
++	return lookupGeneric(name, c.globalSet)
++}
++
++// Determines if the flag was actually set exists
++func (c *Context) IsSet(name string) bool {
++	if c.setFlags == nil {
++		c.setFlags = make(map[string]bool)
++		c.flagSet.Visit(func(f *flag.Flag) {
++			c.setFlags[f.Name] = true
++		})
++	}
++	return c.setFlags[name] == true
++}
++
++type Args []string
++
++// Returns the command line arguments associated with the context.
++func (c *Context) Args() Args {
++	args := Args(c.flagSet.Args())
++	return args
++}
++
++// Returns the nth argument, or else a blank string
++func (a Args) Get(n int) string {
++	if len(a) > n {
++		return a[n]
++	}
++	return ""
++}
++
++// Returns the first argument, or else a blank string
++func (a Args) First() string {
++	return a.Get(0)
++}
++
++// Return the rest of the arguments (not the first one)
++// or else an empty string slice
++func (a Args) Tail() []string {
++	if len(a) >= 2 {
++		return []string(a)[1:]
++	}
++	return []string{}
++}
++
++// Checks if there are any arguments present
++func (a Args) Present() bool {
++	return len(a) != 0
++}
++
++// Swaps arguments at the given indexes
++func (a Args) Swap(from, to int) error {
++	if from >= len(a) || to >= len(a) {
++		return errors.New("index out of range")
++	}
++	a[from], a[to] = a[to], a[from]
++	return nil
++}
++
++func lookupInt(name string, set *flag.FlagSet) int {
++	f := set.Lookup(name)
++	if f != nil {
++		val, err := strconv.Atoi(f.Value.String())
++		if err != nil {
++			return 0
++		}
++		return val
++	}
++
++	return 0
++}
++
++func lookupFloat64(name string, set *flag.FlagSet) float64 {
++	f := set.Lookup(name)
++	if f != nil {
++		val, err := strconv.ParseFloat(f.Value.String(), 64)
++		if err != nil {
++			return 0
++		}
++		return val
++	}
++
++	return 0
++}
++
++func lookupString(name string, set *flag.FlagSet) string {
++	f := set.Lookup(name)
++	if f != nil {
++		return f.Value.String()
++	}
++
++	return ""
++}
++
++func lookupStringSlice(name string, set *flag.FlagSet) []string {
++	f := set.Lookup(name)
++	if f != nil {
++		return (f.Value.(*StringSlice)).Value()
++
++	}
++
++	return nil
++}
++
++func lookupIntSlice(name string, set *flag.FlagSet) []int {
++	f := set.Lookup(name)
++	if f != nil {
++		return (f.Value.(*IntSlice)).Value()
++
++	}
++
++	return nil
++}
++
++func lookupGeneric(name string, set *flag.FlagSet) interface{} {
++	f := set.Lookup(name)
++	if f != nil {
++		return f.Value
++	}
++	return nil
++}
++
++func lookupBool(name string, set *flag.FlagSet) bool {
++	f := set.Lookup(name)
++	if f != nil {
++		val, err := strconv.ParseBool(f.Value.String())
++		if err != nil {
++			return false
++		}
++		return val
++	}
++
++	return false
++}
++
++func lookupBoolT(name string, set *flag.FlagSet) bool {
++	f := set.Lookup(name)
++	if f != nil {
++		val, err := strconv.ParseBool(f.Value.String())
++		if err != nil {
++			return true
++		}
++		return val
++	}
++
++	return false
++}
++
++func copyFlag(name string, ff *flag.Flag, set *flag.FlagSet) {
++	switch ff.Value.(type) {
++	case *StringSlice:
++	default:
++		set.Set(name, ff.Value.String())
++	}
++}
++
++func normalizeFlags(flags []Flag, set *flag.FlagSet) error {
++	visited := make(map[string]bool)
++	set.Visit(func(f *flag.Flag) {
++		visited[f.Name] = true
++	})
++	for _, f := range flags {
++		parts := strings.Split(f.getName(), ",")
++		if len(parts) == 1 {
++			continue
++		}
++		var ff *flag.Flag
++		for _, name := range parts {
++			name = strings.Trim(name, " ")
++			if visited[name] {
++				if ff != nil {
++					return errors.New("Cannot use two forms of the same flag: " + name + " " + ff.Name)
++				}
++				ff = set.Lookup(name)
++			}
++		}
++		if ff == nil {
++			continue
++		}
++		for _, name := range parts {
++			name = strings.Trim(name, " ")
++			if !visited[name] {
++				copyFlag(name, ff, set)
++			}
++		}
++	}
++	return nil
++}
+diff -uNr docker-6ee24211b4111e0b1e1bd7a46c5a3c4ced1b2ffa/vendor/src/github.com/codegangsta/cli/context_test.go docker-1/vendor/src/github.com/codegangsta/cli/context_test.go
+--- docker-6ee24211b4111e0b1e1bd7a46c5a3c4ced1b2ffa/vendor/src/github.com/codegangsta/cli/context_test.go	1969-12-31 19:00:00.000000000 -0500
++++ docker-1/vendor/src/github.com/codegangsta/cli/context_test.go	2015-01-16 03:56:49.104152140 -0500
+@@ -0,0 +1,68 @@
++package cli_test
++
++import (
++	"flag"
++	"github.com/codegangsta/cli"
++	"testing"
++)
++
++func TestNewContext(t *testing.T) {
++	set := flag.NewFlagSet("test", 0)
++	set.Int("myflag", 12, "doc")
++	globalSet := flag.NewFlagSet("test", 0)
++	globalSet.Int("myflag", 42, "doc")
++	command := cli.Command{Name: "mycommand"}
++	c := cli.NewContext(nil, set, globalSet)
++	c.Command = command
++	expect(t, c.Int("myflag"), 12)
++	expect(t, c.GlobalInt("myflag"), 42)
++	expect(t, c.Command.Name, "mycommand")
++}
++
++func TestContext_Int(t *testing.T) {
++	set := flag.NewFlagSet("test", 0)
++	set.Int("myflag", 12, "doc")
++	c := cli.NewContext(nil, set, set)
++	expect(t, c.Int("myflag"), 12)
++}
++
++func TestContext_String(t *testing.T) {
++	set := flag.NewFlagSet("test", 0)
++	set.String("myflag", "hello world", "doc")
++	c := cli.NewContext(nil, set, set)
++	expect(t, c.String("myflag"), "hello world")
++}
++
++func TestContext_Bool(t *testing.T) {
++	set := flag.NewFlagSet("test", 0)
++	set.Bool("myflag", false, "doc")
++	c := cli.NewContext(nil, set, set)
++	expect(t, c.Bool("myflag"), false)
++}
++
++func TestContext_BoolT(t *testing.T) {
++	set := flag.NewFlagSet("test", 0)
++	set.Bool("myflag", true, "doc")
++	c := cli.NewContext(nil, set, set)
++	expect(t, c.BoolT("myflag"), true)
++}
++
++func TestContext_Args(t *testing.T) {
++	set := flag.NewFlagSet("test", 0)
++	set.Bool("myflag", false, "doc")
++	c := cli.NewContext(nil, set, set)
++	set.Parse([]string{"--myflag", "bat", "baz"})
++	expect(t, len(c.Args()), 2)
++	expect(t, c.Bool("myflag"), true)
++}
++
++func TestContext_IsSet(t *testing.T) {
++	set := flag.NewFlagSet("test", 0)
++	set.Bool("myflag", false, "doc")
++	set.String("otherflag", "hello world", "doc")
++	c := cli.NewContext(nil, set, set)
++	set.Parse([]string{"--myflag", "bat", "baz"})
++	expect(t, c.IsSet("myflag"), true)
++	expect(t, c.IsSet("otherflag"), false)
++	expect(t, c.IsSet("bogusflag"), false)
++}
+diff -uNr docker-6ee24211b4111e0b1e1bd7a46c5a3c4ced1b2ffa/vendor/src/github.com/codegangsta/cli/flag.go docker-1/vendor/src/github.com/codegangsta/cli/flag.go
+--- docker-6ee24211b4111e0b1e1bd7a46c5a3c4ced1b2ffa/vendor/src/github.com/codegangsta/cli/flag.go	1969-12-31 19:00:00.000000000 -0500
++++ docker-1/vendor/src/github.com/codegangsta/cli/flag.go	2015-01-16 03:56:49.103152140 -0500
+@@ -0,0 +1,280 @@
++package cli
++
++import (
++	"flag"
++	"fmt"
++	"strconv"
++	"strings"
++)
++
++// This flag enables bash-completion for all commands and subcommands
++var BashCompletionFlag = BoolFlag{"generate-bash-completion", ""}
++
++// This flag prints the version for the application
++var VersionFlag = BoolFlag{"version, v", "print the version"}
++
++// This flag prints the help for all commands and subcommands
++var HelpFlag = BoolFlag{"help, h", "show help"}
++
++// Flag is a common interface related to parsing flags in cli.
++// For more advanced flag parsing techniques, it is recomended that
++// this interface be implemented.
++type Flag interface {
++	fmt.Stringer
++	// Apply Flag settings to the given flag set
++	Apply(*flag.FlagSet)
++	getName() string
++}
++
++func flagSet(name string, flags []Flag) *flag.FlagSet {
++	set := flag.NewFlagSet(name, flag.ContinueOnError)
++
++	for _, f := range flags {
++		f.Apply(set)
++	}
++	return set
++}
++
++func eachName(longName string, fn func(string)) {
++	parts := strings.Split(longName, ",")
++	for _, name := range parts {
++		name = strings.Trim(name, " ")
++		fn(name)
++	}
++}
++
++// Generic is a generic parseable type identified by a specific flag
++type Generic interface {
++	Set(value string) error
++	String() string
++}
++
++// GenericFlag is the flag type for types implementing Generic
++type GenericFlag struct {
++	Name  string
++	Value Generic
++	Usage string
++}
++
++func (f GenericFlag) String() string {
++	return fmt.Sprintf("%s%s %v\t`%v` %s", prefixFor(f.Name), f.Name, f.Value, "-"+f.Name+" option -"+f.Name+" option", f.Usage)
++}
++
++func (f GenericFlag) Apply(set *flag.FlagSet) {
++	eachName(f.Name, func(name string) {
++		set.Var(f.Value, name, f.Usage)
++	})
++}
++
++func (f GenericFlag) getName() string {
++	return f.Name
++}
++
++type StringSlice []string
++
++func (f *StringSlice) Set(value string) error {
++	*f = append(*f, value)
++	return nil
++}
++
++func (f *StringSlice) String() string {
++	return fmt.Sprintf("%s", *f)
++}
++
++func (f *StringSlice) Value() []string {
++	return *f
++}
++
++type StringSliceFlag struct {
++	Name  string
++	Value *StringSlice
++	Usage string
++}
++
++func (f StringSliceFlag) String() string {
++	firstName := strings.Trim(strings.Split(f.Name, ",")[0], " ")
++	pref := prefixFor(firstName)
++	return fmt.Sprintf("%s '%v'\t%v", prefixedNames(f.Name), pref+firstName+" option "+pref+firstName+" option", f.Usage)
++}
++
++func (f StringSliceFlag) Apply(set *flag.FlagSet) {
++	eachName(f.Name, func(name string) {
++		set.Var(f.Value, name, f.Usage)
++	})
++}
++
++func (f StringSliceFlag) getName() string {
++	return f.Name
++}
++
++type IntSlice []int
++
++func (f *IntSlice) Set(value string) error {
++
++	tmp, err := strconv.Atoi(value)
++	if err != nil {
++		return err
++	} else {
++		*f = append(*f, tmp)
++	}
++	return nil
++}
++
++func (f *IntSlice) String() string {
++	return fmt.Sprintf("%d", *f)
++}
++
++func (f *IntSlice) Value() []int {
++	return *f
++}
++
++type IntSliceFlag struct {
++	Name  string
++	Value *IntSlice
++	Usage string
++}
++
++func (f IntSliceFlag) String() string {
++	firstName := strings.Trim(strings.Split(f.Name, ",")[0], " ")
++	pref := prefixFor(firstName)
++	return fmt.Sprintf("%s '%v'\t%v", prefixedNames(f.Name), pref+firstName+" option "+pref+firstName+" option", f.Usage)
++}
++
++func (f IntSliceFlag) Apply(set *flag.FlagSet) {
++	eachName(f.Name, func(name string) {
++		set.Var(f.Value, name, f.Usage)
++	})
++}
++
++func (f IntSliceFlag) getName() string {
++	return f.Name
++}
++
++type BoolFlag struct {
++	Name  string
++	Usage string
++}
++
++func (f BoolFlag) String() string {
++	return fmt.Sprintf("%s\t%v", prefixedNames(f.Name), f.Usage)
++}
++
++func (f BoolFlag) Apply(set *flag.FlagSet) {
++	eachName(f.Name, func(name string) {
++		set.Bool(name, false, f.Usage)
++	})
++}
++
++func (f BoolFlag) getName() string {
++	return f.Name
++}
++
++type BoolTFlag struct {
++	Name  string
++	Usage string
++}
++
++func (f BoolTFlag) String() string {
++	return fmt.Sprintf("%s\t%v", prefixedNames(f.Name), f.Usage)
++}
++
++func (f BoolTFlag) Apply(set *flag.FlagSet) {
++	eachName(f.Name, func(name string) {
++		set.Bool(name, true, f.Usage)
++	})
++}
++
++func (f BoolTFlag) getName() string {
++	return f.Name
++}
++
++type StringFlag struct {
++	Name  string
++	Value string
++	Usage string
++}
++
++func (f StringFlag) String() string {
++	var fmtString string
++	fmtString = "%s %v\t%v"
++
++	if len(f.Value) > 0 {
++		fmtString = "%s '%v'\t%v"
++	} else {
++		fmtString = "%s %v\t%v"
++	}
++
++	return fmt.Sprintf(fmtString, prefixedNames(f.Name), f.Value, f.Usage)
++}
++
++func (f StringFlag) Apply(set *flag.FlagSet) {
++	eachName(f.Name, func(name string) {
++		set.String(name, f.Value, f.Usage)
++	})
++}
++
++func (f StringFlag) getName() string {
++	return f.Name
++}
++
++type IntFlag struct {
++	Name  string
++	Value int
++	Usage string
++}
++
++func (f IntFlag) String() string {
++	return fmt.Sprintf("%s '%v'\t%v", prefixedNames(f.Name), f.Value, f.Usage)
++}
++
++func (f IntFlag) Apply(set *flag.FlagSet) {
++	eachName(f.Name, func(name string) {
++		set.Int(name, f.Value, f.Usage)
++	})
++}
++
++func (f IntFlag) getName() string {
++	return f.Name
++}
++
++type Float64Flag struct {
++	Name  string
++	Value float64
++	Usage string
++}
++
++func (f Float64Flag) String() string {
++	return fmt.Sprintf("%s '%v'\t%v", prefixedNames(f.Name), f.Value, f.Usage)
++}
++
++func (f Float64Flag) Apply(set *flag.FlagSet) {
++	eachName(f.Name, func(name string) {
++		set.Float64(name, f.Value, f.Usage)
++	})
++}
++
++func (f Float64Flag) getName() string {
++	return f.Name
++}
++
++func prefixFor(name string) (prefix string) {
++	if len(name) == 1 {
++		prefix = "-"
++	} else {
++		prefix = "--"
++	}
++
++	return
++}
++
++func prefixedNames(fullName string) (prefixed string) {
++	parts := strings.Split(fullName, ",")
++	for i, name := range parts {
++		name = strings.Trim(name, " ")
++		prefixed += prefixFor(name) + name
++		if i < len(parts)-1 {
++			prefixed += ", "
++		}
++	}
++	return
++}
+diff -uNr docker-6ee24211b4111e0b1e1bd7a46c5a3c4ced1b2ffa/vendor/src/github.com/codegangsta/cli/flag_test.go docker-1/vendor/src/github.com/codegangsta/cli/flag_test.go
+--- docker-6ee24211b4111e0b1e1bd7a46c5a3c4ced1b2ffa/vendor/src/github.com/codegangsta/cli/flag_test.go	1969-12-31 19:00:00.000000000 -0500
++++ docker-1/vendor/src/github.com/codegangsta/cli/flag_test.go	2015-01-16 03:56:49.103152140 -0500
+@@ -0,0 +1,194 @@
++package cli_test
++
++import (
++	"github.com/codegangsta/cli"
++
++	"fmt"
++	"reflect"
++	"strings"
++	"testing"
++)
++
++var boolFlagTests = []struct {
++	name     string
++	expected string
++}{
++	{"help", "--help\t"},
++	{"h", "-h\t"},
++}
++
++func TestBoolFlagHelpOutput(t *testing.T) {
++
++	for _, test := range boolFlagTests {
++		flag := cli.BoolFlag{Name: test.name}
++		output := flag.String()
++
++		if output != test.expected {
++			t.Errorf("%s does not match %s", output, test.expected)
++		}
++	}
++}
++
++var stringFlagTests = []struct {
++	name     string
++	value    string
++	expected string
++}{
++	{"help", "", "--help \t"},
++	{"h", "", "-h \t"},
++	{"h", "", "-h \t"},
++	{"test", "Something", "--test 'Something'\t"},
++}
++
++func TestStringFlagHelpOutput(t *testing.T) {
++
++	for _, test := range stringFlagTests {
++		flag := cli.StringFlag{Name: test.name, Value: test.value}
++		output := flag.String()
++
++		if output != test.expected {
++			t.Errorf("%s does not match %s", output, test.expected)
++		}
++	}
++}
++
++var intFlagTests = []struct {
++	name     string
++	expected string
++}{
++	{"help", "--help '0'\t"},
++	{"h", "-h '0'\t"},
++}
++
++func TestIntFlagHelpOutput(t *testing.T) {
++
++	for _, test := range intFlagTests {
++		flag := cli.IntFlag{Name: test.name}
++		output := flag.String()
++
++		if output != test.expected {
++			t.Errorf("%s does not match %s", output, test.expected)
++		}
++	}
++}
++
++var float64FlagTests = []struct {
++	name     string
++	expected string
++}{
++	{"help", "--help '0'\t"},
++	{"h", "-h '0'\t"},
++}
++
++func TestFloat64FlagHelpOutput(t *testing.T) {
++
++	for _, test := range float64FlagTests {
++		flag := cli.Float64Flag{Name: test.name}
++		output := flag.String()
++
++		if output != test.expected {
++			t.Errorf("%s does not match %s", output, test.expected)
++		}
++	}
++}
++
++func TestParseMultiString(t *testing.T) {
++	(&cli.App{
++		Flags: []cli.Flag{
++			cli.StringFlag{Name: "serve, s"},
++		},
++		Action: func(ctx *cli.Context) {
++			if ctx.String("serve") != "10" {
++				t.Errorf("main name not set")
++			}
++			if ctx.String("s") != "10" {
++				t.Errorf("short name not set")
++			}
++		},
++	}).Run([]string{"run", "-s", "10"})
++}
++
++func TestParseMultiStringSlice(t *testing.T) {
++	(&cli.App{
++		Flags: []cli.Flag{
++			cli.StringSliceFlag{Name: "serve, s", Value: &cli.StringSlice{}},
++		},
++		Action: func(ctx *cli.Context) {
++			if !reflect.DeepEqual(ctx.StringSlice("serve"), []string{"10", "20"}) {
++				t.Errorf("main name not set")
++			}
++			if !reflect.DeepEqual(ctx.StringSlice("s"), []string{"10", "20"}) {
++				t.Errorf("short name not set")
++			}
++		},
++	}).Run([]string{"run", "-s", "10", "-s", "20"})
++}
++
++func TestParseMultiInt(t *testing.T) {
++	a := cli.App{
++		Flags: []cli.Flag{
++			cli.IntFlag{Name: "serve, s"},
++		},
++		Action: func(ctx *cli.Context) {
++			if ctx.Int("serve") != 10 {
++				t.Errorf("main name not set")
++			}
++			if ctx.Int("s") != 10 {
++				t.Errorf("short name not set")
++			}
++		},
++	}
++	a.Run([]string{"run", "-s", "10"})
++}
++
++func TestParseMultiBool(t *testing.T) {
++	a := cli.App{
++		Flags: []cli.Flag{
++			cli.BoolFlag{Name: "serve, s"},
++		},
++		Action: func(ctx *cli.Context) {
++			if ctx.Bool("serve") != true {
++				t.Errorf("main name not set")
++			}
++			if ctx.Bool("s") != true {
++				t.Errorf("short name not set")
++			}
++		},
++	}
++	a.Run([]string{"run", "--serve"})
++}
++
++type Parser [2]string
++
++func (p *Parser) Set(value string) error {
++	parts := strings.Split(value, ",")
++	if len(parts) != 2 {
++		return fmt.Errorf("invalid format")
++	}
++
++	(*p)[0] = parts[0]
++	(*p)[1] = parts[1]
++
++	return nil
++}
++
++func (p *Parser) String() string {
++	return fmt.Sprintf("%s,%s", p[0], p[1])
++}
++
++func TestParseGeneric(t *testing.T) {
++	a := cli.App{
++		Flags: []cli.Flag{
++			cli.GenericFlag{Name: "serve, s", Value: &Parser{}},
++		},
++		Action: func(ctx *cli.Context) {
++			if !reflect.DeepEqual(ctx.Generic("serve"), &Parser{"10", "20"}) {
++				t.Errorf("main name not set")
++			}
++			if !reflect.DeepEqual(ctx.Generic("s"), &Parser{"10", "20"}) {
++				t.Errorf("short name not set")
++			}
++		},
++	}
++	a.Run([]string{"run", "-s", "10,20"})
++}
+diff -uNr docker-6ee24211b4111e0b1e1bd7a46c5a3c4ced1b2ffa/vendor/src/github.com/codegangsta/cli/helpers_test.go docker-1/vendor/src/github.com/codegangsta/cli/helpers_test.go
+--- docker-6ee24211b4111e0b1e1bd7a46c5a3c4ced1b2ffa/vendor/src/github.com/codegangsta/cli/helpers_test.go	1969-12-31 19:00:00.000000000 -0500
++++ docker-1/vendor/src/github.com/codegangsta/cli/helpers_test.go	2015-01-16 03:56:49.104152140 -0500
+@@ -0,0 +1,19 @@
++package cli_test
++
++import (
++	"reflect"
++	"testing"
++)
++
++/* Test Helpers */
++func expect(t *testing.T, a interface{}, b interface{}) {
++	if a != b {
++		t.Errorf("Expected %v (type %v) - Got %v (type %v)", b, reflect.TypeOf(b), a, reflect.TypeOf(a))
++	}
++}
++
++func refute(t *testing.T, a interface{}, b interface{}) {
++	if a == b {
++		t.Errorf("Did not expect %v (type %v) - Got %v (type %v)", b, reflect.TypeOf(b), a, reflect.TypeOf(a))
++	}
++}
+diff -uNr docker-6ee24211b4111e0b1e1bd7a46c5a3c4ced1b2ffa/vendor/src/github.com/codegangsta/cli/help.go docker-1/vendor/src/github.com/codegangsta/cli/help.go
+--- docker-6ee24211b4111e0b1e1bd7a46c5a3c4ced1b2ffa/vendor/src/github.com/codegangsta/cli/help.go	1969-12-31 19:00:00.000000000 -0500
++++ docker-1/vendor/src/github.com/codegangsta/cli/help.go	2015-01-16 03:56:49.104152140 -0500
+@@ -0,0 +1,213 @@
++package cli
++
++import (
++	"fmt"
++	"os"
++	"text/tabwriter"
++	"text/template"
++)
++
++// The text template for the Default help topic.
++// cli.go uses text/template to render templates. You can
++// render custom help text by setting this variable.
++var AppHelpTemplate = `NAME:
++   {{.Name}} - {{.Usage}}
++
++USAGE:
++   {{.Name}} {{ if .Flags }}[global options] {{ end }}command{{ if .Flags }} [command options]{{ end }} [arguments...]
++
++VERSION:
++   {{.Version}}
++
++COMMANDS:
++   {{range .Commands}}{{.Name}}{{with .ShortName}}, {{.}}{{end}}{{ "\t" }}{{.Usage}}
++   {{end}}{{ if .Flags }}
++GLOBAL OPTIONS:
++   {{range .Flags}}{{.}}
++   {{end}}{{ end }}
++`
++
++// The text template for the command help topic.
++// cli.go uses text/template to render templates. You can
++// render custom help text by setting this variable.
++var CommandHelpTemplate = `NAME:
++   {{.Name}} - {{.Usage}}
++
++USAGE:
++   command {{.Name}}{{ if .Flags }} [command options]{{ end }} [arguments...]
++
++DESCRIPTION:
++   {{.Description}}{{ if .Flags }}
++
++OPTIONS:
++   {{range .Flags}}{{.}}
++   {{end}}{{ end }}
++`
++
++// The text template for the subcommand help topic.
++// cli.go uses text/template to render templates. You can
++// render custom help text by setting this variable.
++var SubcommandHelpTemplate = `NAME:
++   {{.Name}} - {{.Usage}}
++
++USAGE:
++   {{.Name}} command{{ if .Flags }} [command options]{{ end }} [arguments...]
++
++COMMANDS:
++   {{range .Commands}}{{.Name}}{{with .ShortName}}, {{.}}{{end}}{{ "\t" }}{{.Usage}}
++   {{end}}{{ if .Flags }}
++OPTIONS:
++   {{range .Flags}}{{.}}
++   {{end}}{{ end }}
++`
++
++var helpCommand = Command{
++	Name:      "help",
++	ShortName: "h",
++	Usage:     "Shows a list of commands or help for one command",
++	Action: func(c *Context) {
++		args := c.Args()
++		if args.Present() {
++			ShowCommandHelp(c, args.First())
++		} else {
++			ShowAppHelp(c)
++		}
++	},
++}
++
++var helpSubcommand = Command{
++	Name:      "help",
++	ShortName: "h",
++	Usage:     "Shows a list of commands or help for one command",
++	Action: func(c *Context) {
++		args := c.Args()
++		if args.Present() {
++			ShowCommandHelp(c, args.First())
++		} else {
++			ShowSubcommandHelp(c)
++		}
++	},
++}
++
++// Prints help for the App
++var HelpPrinter = printHelp
++
++func ShowAppHelp(c *Context) {
++	HelpPrinter(AppHelpTemplate, c.App)
++}
++
++// Prints the list of subcommands as the default app completion method
++func DefaultAppComplete(c *Context) {
++	for _, command := range c.App.Commands {
++		fmt.Println(command.Name)
++		if command.ShortName != "" {
++			fmt.Println(command.ShortName)
++		}
++	}
++}
++
++// Prints help for the given command
++func ShowCommandHelp(c *Context, command string) {
++	for _, c := range c.App.Commands {
++		if c.HasName(command) {
++			HelpPrinter(CommandHelpTemplate, c)
++			return
++		}
++	}
++
++	if c.App.CommandNotFound != nil {
++		c.App.CommandNotFound(c, command)
++	} else {
++		fmt.Printf("No help topic for '%v'\n", command)
++	}
++}
++
++// Prints help for the given subcommand
++func ShowSubcommandHelp(c *Context) {
++	HelpPrinter(SubcommandHelpTemplate, c.App)
++}
++
++// Prints the version number of the App
++func ShowVersion(c *Context) {
++	fmt.Printf("%v version %v\n", c.App.Name, c.App.Version)
++}
++
++// Prints the lists of commands within a given context
++func ShowCompletions(c *Context) {
++	a := c.App
++	if a != nil && a.BashComplete != nil {
++		a.BashComplete(c)
++	}
++}
++
++// Prints the custom completions for a given command
++func ShowCommandCompletions(ctx *Context, command string) {
++	c := ctx.App.Command(command)
++	if c != nil && c.BashComplete != nil {
++		c.BashComplete(ctx)
++	}
++}
++
++func printHelp(templ string, data interface{}) {
++	w := tabwriter.NewWriter(os.Stdout, 0, 8, 1, '\t', 0)
++	t := template.Must(template.New("help").Parse(templ))
++	err := t.Execute(w, data)
++	if err != nil {
++		panic(err)
++	}
++	w.Flush()
++}
++
++func checkVersion(c *Context) bool {
++	if c.GlobalBool("version") {
++		ShowVersion(c)
++		return true
++	}
++
++	return false
++}
++
++func checkHelp(c *Context) bool {
++	if c.GlobalBool("h") || c.GlobalBool("help") {
++		ShowAppHelp(c)
++		return true
++	}
++
++	return false
++}
++
++func checkCommandHelp(c *Context, name string) bool {
++	if c.Bool("h") || c.Bool("help") {
++		ShowCommandHelp(c, name)
++		return true
++	}
++
++	return false
++}
++
++func checkSubcommandHelp(c *Context) bool {
++	if c.GlobalBool("h") || c.GlobalBool("help") {
++		ShowSubcommandHelp(c)
++		return true
++	}
++
++	return false
++}
++
++func checkCompletions(c *Context) bool {
++	if c.GlobalBool(BashCompletionFlag.Name) && c.App.EnableBashCompletion {
++		ShowCompletions(c)
++		return true
++	}
++
++	return false
++}
++
++func checkCommandCompletions(c *Context, name string) bool {
++	if c.Bool(BashCompletionFlag.Name) && c.App.EnableBashCompletion {
++		ShowCommandCompletions(c, name)
++		return true
++	}
++
++	return false
++}
+diff -uNr docker-6ee24211b4111e0b1e1bd7a46c5a3c4ced1b2ffa/vendor/src/github.com/codegangsta/cli/LICENSE docker-1/vendor/src/github.com/codegangsta/cli/LICENSE
+--- docker-6ee24211b4111e0b1e1bd7a46c5a3c4ced1b2ffa/vendor/src/github.com/codegangsta/cli/LICENSE	1969-12-31 19:00:00.000000000 -0500
++++ docker-1/vendor/src/github.com/codegangsta/cli/LICENSE	2015-01-16 03:56:49.105152140 -0500
+@@ -0,0 +1,21 @@
++Copyright (C) 2013 Jeremy Saenz
++All Rights Reserved.
++
++MIT LICENSE
++
++Permission is hereby granted, free of charge, to any person obtaining a copy of
++this software and associated documentation files (the "Software"), to deal in
++the Software without restriction, including without limitation the rights to
++use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
++the Software, and to permit persons to whom the Software is furnished to do so,
++subject to the following conditions:
++
++The above copyright notice and this permission notice shall be included in all
++copies or substantial portions of the Software.
++
++THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
++FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
++COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
++IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
++CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+diff -uNr docker-6ee24211b4111e0b1e1bd7a46c5a3c4ced1b2ffa/vendor/src/github.com/codegangsta/cli/README.md docker-1/vendor/src/github.com/codegangsta/cli/README.md
+--- docker-6ee24211b4111e0b1e1bd7a46c5a3c4ced1b2ffa/vendor/src/github.com/codegangsta/cli/README.md	1969-12-31 19:00:00.000000000 -0500
++++ docker-1/vendor/src/github.com/codegangsta/cli/README.md	2015-01-16 03:56:49.105152140 -0500
+@@ -0,0 +1,257 @@
++[![Build Status](https://travis-ci.org/codegangsta/cli.png?branch=master)](https://travis-ci.org/codegangsta/cli)
++
++# cli.go
++cli.go is simple, fast, and fun package for building command line apps in Go. The goal is to enable developers to write fast and distributable command line applications in an expressive way.
++
++You can view the API docs here:
++http://godoc.org/github.com/codegangsta/cli
++
++## Overview
++Command line apps are usually so tiny that there is absolutely no reason why your code should *not* be self-documenting. Things like generating help text and parsing command flags/options should not hinder productivity when writing a command line app.
++
++This is where cli.go comes into play. cli.go makes command line programming fun, organized, and expressive!
++
++## Installation
++Make sure you have a working Go environment (go 1.1 is *required*). [See the install instructions](http://golang.org/doc/install.html).
++
++To install cli.go, simply run:
++```
++$ go get github.com/codegangsta/cli
++```
++
++Make sure your PATH includes to the `$GOPATH/bin` directory so your commands can be easily used:
++```
++export PATH=$PATH:$GOPATH/bin
++```
++
++## Getting Started
++One of the philosophies behind cli.go is that an API should be playful and full of discovery. So a cli.go app can be as little as one line of code in `main()`. 
++
++``` go
++package main
++
++import (
++  "os"
++  "github.com/codegangsta/cli"
++)
++
++func main() {
++  cli.NewApp().Run(os.Args)
++}
++```
++
++This app will run and show help text, but is not very useful. Let's give an action to execute and some help documentation:
++
++``` go
++package main
++
++import (
++  "os"
++  "github.com/codegangsta/cli"
++)
++
++func main() {
++  app := cli.NewApp()
++  app.Name = "boom"
++  app.Usage = "make an explosive entrance"
++  app.Action = func(c *cli.Context) {
++    println("boom! I say!")
++  }
++  
++  app.Run(os.Args)
++}
++```
++
++Running this already gives you a ton of functionality, plus support for things like subcommands and flags, which are covered below.
++
++## Example
++
++Being a programmer can be a lonely job. Thankfully by the power of automation that is not the case! Let's create a greeter app to fend off our demons of loneliness!
++
++``` go
++/* greet.go */
++package main
++
++import (
++  "os"
++  "github.com/codegangsta/cli"
++)
++
++func main() {
++  app := cli.NewApp()
++  app.Name = "greet"
++  app.Usage = "fight the loneliness!"
++  app.Action = func(c *cli.Context) {
++    println("Hello friend!")
++  }
++  
++  app.Run(os.Args)
++}
++```
++
++Install our command to the `$GOPATH/bin` directory:
++
++```
++$ go install
++```
++
++Finally run our new command:
++
++```
++$ greet
++Hello friend!
++```
++
++cli.go also generates some bitchass help text:
++```
++$ greet help
++NAME:
++    greet - fight the loneliness!
++
++USAGE:
++    greet [global options] command [command options] [arguments...]
++
++VERSION:
++    0.0.0
++
++COMMANDS:
++    help, h  Shows a list of commands or help for one command
++
++GLOBAL OPTIONS
++    --version	Shows version information
++```
++
++### Arguments
++You can lookup arguments by calling the `Args` function on cli.Context.
++
++``` go
++...
++app.Action = func(c *cli.Context) {
++  println("Hello", c.Args()[0])
++}
++...
++```
++
++### Flags
++Setting and querying flags is simple.
++``` go
++...
++app.Flags = []cli.Flag {
++  cli.StringFlag{Name: "lang", Value: "english", Usage: "language for the greeting"},
++}
++app.Action = func(c *cli.Context) {
++  name := "someone"
++  if len(c.Args()) > 0 {
++    name = c.Args()[0]
++  }
++  if c.String("lang") == "spanish" {
++    println("Hola", name)
++  } else {
++    println("Hello", name)
++  }
++}
++...
++```
++
++#### Alternate Names
++
++You can set alternate (or short) names for flags by providing a comma-delimited list for the Name. e.g.
++
++``` go
++app.Flags = []cli.Flag {
++  cli.StringFlag{Name: "lang, l", Value: "english", Usage: "language for the greeting"},
++}
++```
++
++That flag can then be set with `--lang spanish` or `-l spanish`. Note that giving two different forms of the same flag in the same command invocation is an error.
++
++### Subcommands
++
++Subcommands can be defined for a more git-like command line app.
++```go
++...
++app.Commands = []cli.Command{
++  {
++    Name:      "add",
++    ShortName: "a",
++    Usage:     "add a task to the list",
++    Action: func(c *cli.Context) {
++      println("added task: ", c.Args().First())
++    },
++  },
++  {
++    Name:      "complete",
++    ShortName: "c",
++    Usage:     "complete a task on the list",
++    Action: func(c *cli.Context) {
++      println("completed task: ", c.Args().First())
++    },
++  },
++  {
++    Name:      "template",
++    ShortName: "r",
++    Usage:     "options for task templates",
++    Subcommands: []cli.Command{
++      {
++        Name:  "add",
++        Usage: "add a new template",
++        Action: func(c *cli.Context) {
++            println("new task template: ", c.Args().First())
++        },
++      },
++      {
++        Name:  "remove",
++        Usage: "remove an existing template",
++        Action: func(c *cli.Context) {
++          println("removed task template: ", c.Args().First())
++        },
++      },
++    },
++  },     
++}
++...
++```
++
++### Bash Completion
++
++You can enable completion commands by setting the EnableBashCompletion
++flag on the App object.  By default, this setting will only auto-complete to
++show an app's subcommands, but you can write your own completion methods for
++the App or its subcommands.
++```go
++...
++var tasks = []string{"cook", "clean", "laundry", "eat", "sleep", "code"}
++app := cli.NewApp()
++app.EnableBashCompletion = true
++app.Commands = []cli.Command{
++  {
++    Name: "complete",
++    ShortName: "c",
++    Usage: "complete a task on the list",
++    Action: func(c *cli.Context) {
++       println("completed task: ", c.Args().First())
++    },
++    BashComplete: func(c *cli.Context) {
++      // This will complete if no args are passed
++      if len(c.Args()) > 0 {
++        return
++      }
++      for _, t := range tasks {
++        println(t)
++      }
++    },
++  }
++}
++...
++```
++
++#### To Enable
++
++Source the autocomplete/bash_autocomplete file in your .bashrc file while
++setting the PROG variable to the name of your program:
++
++`PROG=myprogram source /.../cli/autocomplete/bash_autocomplete`
++
++
++## About
++cli.go is written by none other than the [Code Gangsta](http://codegangsta.io)
+diff -uNr docker-6ee24211b4111e0b1e1bd7a46c5a3c4ced1b2ffa/vendor/src/github.com/codegangsta/cli/.travis.yml docker-1/vendor/src/github.com/codegangsta/cli/.travis.yml
+--- docker-6ee24211b4111e0b1e1bd7a46c5a3c4ced1b2ffa/vendor/src/github.com/codegangsta/cli/.travis.yml	1969-12-31 19:00:00.000000000 -0500
++++ docker-1/vendor/src/github.com/codegangsta/cli/.travis.yml	2015-01-16 03:56:49.104152140 -0500
+@@ -0,0 +1,6 @@
++language: go
++go: 1.1
++
++script:
++- go vet ./...
++- go test -v ./...
