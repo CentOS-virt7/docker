@@ -1,6 +1,18 @@
 # modifying the dockerinit binary breaks the SHA1 sum check by docker
 %global __os_install_post %{_rpmconfigdir}/brp-compress
 
+# no python3 subpackage for docker-py
+%global with_python3 0
+
+# for python-websocket-client, prefix with w_
+%global w_modname websocket
+%global w_distname websocket-client
+%global w_eggname websocket_client
+%global w_version 0.14.1
+
+# for python-docker, prefix with dp_
+%global dp_version 0.7.1
+
 #debuginfo not supported with Go
 %global debug_package   %{nil}
 %global provider_tld    com
@@ -8,6 +20,7 @@
 %global project         docker
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
+%global d_version       1.4.1
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
@@ -17,7 +30,7 @@
 
 Name:       docker
 Version:    1.4.1
-Release:    15%{?dist}
+Release:    16%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
@@ -31,6 +44,10 @@ Source4:    docker-storage.sysconfig
 Source5:    docker-logrotate.sh
 Source6:    README.docker-logrotate
 Source7:    docker-network.sysconfig
+# Source8 is the source tarball for python-websocket-client
+Source8:    http://pypi.python.org/packages/source/w/%{w_distname}/%{w_distname}-%{w_version}.tar.gz
+# Source9 is the source tarball for docker-py
+Source9:    http://pypi.python.org/packages/source/d/docker-py/docker-py-%{dp_version}.tar.gz
 Patch1:     go-md2man.patch
 Patch2:     docker-cert-path.patch
 Patch3:     codegangsta-cli.patch
@@ -184,12 +201,52 @@ Provides:   docker-io-logrotate = %{version}-%{release}
 This package installs %{summary}. logrotate is assumed to be installed on
 containers for this to work, failures are silently ignored.
 
+%package -n python-%{w_distname}
+Summary:    WebSocket client for python
+Version:    %{w_version}
+License:    LGPLv2
+BuildArch:  noarch
+
+%description -n python-%{w_distname}
+python-websocket-client module is WebSocket client for python. This
+provides the low level APIs for WebSocket. All APIs are the synchronous
+functions.
+
+python-websocket-client supports only hybi-13.
+
+
+%package python
+Version:        %{dp_version}
+License:        ASL 2.0
+Summary:        An API client for docker written in Python
+BuildRequires:  python2-devel
+BuildRequires:  python-setuptools
+BuildRequires:  python-tools
+BuildRequires:  %{name}
+Requires:       %{name}
+BuildRequires:  python-requests
+Requires:       python-requests
+Requires:       python-%{w_distname} >= 0.11.0
+Requires:       python-six >= 1.3.0
+Provides:       python-docker-py
+Provides:       python-docker
+
+%description python
+%{summary}
+
 %prep
 %setup -qn docker-%{commit}
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
 cp %{SOURCE6} .
+
+# untar python-websocket-client tarball
+tar zxf %{SOURCE8}
+rm -rf %{w_distname}-%{w_version}/%{w_distname}.egg-info
+
+# untar docker-py tarball
+tar zxf %{SOURCE9}
 
 %build
 mkdir _build
@@ -199,7 +256,7 @@ pushd _build
   ln -s $(dirs +1 -l) src/github.com/docker/docker
 popd
 
-export DOCKER_GITCOMMIT="%{shortcommit}/%{version}"
+export DOCKER_GITCOMMIT="%{shortcommit}/%{d_version}"
 export DOCKER_BUILDTAGS='selinux btrfs_noversion'
 export GOPATH=$(pwd)/_build:$(pwd)/vendor:%{gopath}
 
@@ -220,14 +277,24 @@ sed -i 's/go-md2man/.\/go-md2man/' docs/man/md2man-all.sh
 # build manpages
 docs/man/md2man-all.sh
 
+# build python-websocket-client
+pushd %{w_distname}-%{w_version}
+%{__python} setup.py build
+popd
+
+# build docker-py
+pushd docker-py-%{dp_version}
+%{__python} setup.py build
+popd
+
 %install
 # install binary
 install -d %{buildroot}%{_bindir}
-install -p -m 755 bundles/%{version}-dev/dynbinary/docker-%{version}-dev %{buildroot}%{_bindir}/docker
+install -p -m 755 bundles/%{d_version}-dev/dynbinary/docker-%{d_version}-dev %{buildroot}%{_bindir}/docker
 
 # install dockerinit
 install -d %{buildroot}%{_libexecdir}/docker
-install -p -m 755 bundles/%{version}-dev/dynbinary/dockerinit-%{version}-dev %{buildroot}%{_libexecdir}/docker/dockerinit
+install -p -m 755 bundles/%{d_version}-dev/dynbinary/dockerinit-%{d_version}-dev %{buildroot}%{_libexecdir}/docker/dockerinit
 
 # install manpages
 install -d %{buildroot}%{_mandir}/man1
@@ -318,6 +385,30 @@ do
 done
 find %{buildroot}/%{gopath}/src/%{import_path}/ -name \*.registry -delete
 
+# install python-websocket-client
+pushd %{w_distname}-%{w_version}
+%{__python} setup.py install -O1 --skip-build --root=%{buildroot}
+mv %{buildroot}/%{_bindir}/wsdump.py \
+    %{buildroot}/%{_bindir}/wsdump
+
+# unbundle cacert (python-websocket-client)
+rm %{buildroot}/%{python2_sitelib}/%{w_modname}/cacert.pem
+# And link in the mozilla ca (python-websocket-client)
+ln -s /etc/pki/tls/cert.pem \
+    %{buildroot}/%{python2_sitelib}/%{w_modname}/cacert.pem
+
+# remove tests that got installed into the buildroot (python-websocket-client)
+rm -rf %{buildroot}/%{python2_sitelib}/tests/
+
+# Remove executable bit from installed files. (python-websocket-client)
+find %{buildroot}/%{python2_sitelib} -type f -exec chmod -x {} \;
+popd
+
+# install docker-py
+pushd docker-py-%{dp_version}
+%{__python} setup.py install --root %{buildroot}
+popd
+
 %check
 [ ! -e /run/docker.sock ] || {
     mkdir test_dir
@@ -383,7 +474,21 @@ exit 0
 %doc README.docker-logrotate
 %{_sysconfdir}/cron.daily/docker-logrotate
 
+%files -n python-websocket-client
+%doc %{w_distname}-%{w_version}/{README.rst,LICENSE}
+%{python2_sitelib}/%{w_modname}/
+%{python2_sitelib}/%{w_eggname}*%{w_version}*
+%{_bindir}/wsdump
+
+%files python
+%doc docker-py-%{dp_version}/{LICENSE,README.md}
+%{python_sitelib}/docker
+%{python_sitelib}/docker_py-%{dp_version}-py2*.egg-info
+
 %changelog
+* Thu Jan 22 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-16
+- install python-websocket-client and python-docker as subpackages
+
 * Thu Jan 22 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-15
 - build rhatdan/1.4.1-beta2 commit#06670da
 - install subscription manager
