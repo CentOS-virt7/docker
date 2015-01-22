@@ -12,12 +12,12 @@
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global commit      2de8e5d22f7216f963050f4e47124f47478b49df
+%global commit      06670dac2bf26a3a2fee1b5210f8bb30a9bc3c74
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:       docker
 Version:    1.4.1
-Release:    14%{?dist}
+Release:    15%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
@@ -45,6 +45,7 @@ Requires:   systemd >= 208-11.el7_0.5
 # need xz to work with ubuntu images
 Requires:   xz
 Requires:   device-mapper-libs >= 1.02.90-1
+Requires:   subscription-manager
 Provides:   lxc-docker = %{version}-%{release}
 Provides:   docker = %{version}-%{release}
 Provides:	docker-io = %{version}-%{release}
@@ -383,6 +384,10 @@ exit 0
 %{_sysconfdir}/cron.daily/docker-logrotate
 
 %changelog
+* Thu Jan 22 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-15
+- build rhatdan/1.4.1-beta2 commit#06670da
+- install subscription manager
+
 * Tue Jan 20 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-14
 - increment release number to avoid conflict with 7.0
 
