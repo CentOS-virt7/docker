@@ -28,11 +28,11 @@
 %global commit      35a8dc5f59d4be64317b8254dfa27a4df7361825
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
-%global atom_commit 10fc4c89dbb05aa5993d92d3cecef9f14625ad02
+%global atom_commit ef16d409230781548d094d3edd52af9f3488be61
 
 Name:       docker
 Version:    %{d_version}
-Release:    22%{?dist}
+Release:    23%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
@@ -55,6 +55,7 @@ Source10:   https://github.com/rhatdan/atom/archive/%{atom_commit}.tar.gz
 Patch1:     go-md2man.patch
 Patch2:     docker-cert-path.patch
 Patch3:     codegangsta-cli.patch
+Patch4:     urlparse.patch
 BuildRequires:  glibc-static
 BuildRequires:  golang >= 1.3.1
 BuildRequires:  device-mapper-devel
@@ -132,6 +133,9 @@ cp %{SOURCE6} .
 # untar python-websocket-client tarball
 tar zxf %{SOURCE8}
 rm -rf %{w_distname}-%{w_version}/%{w_distname}.egg-info
+pushd %{w_distname}-%{w_version}/websocket
+%patch4 -p1
+popd
 
 # untar docker-py tarball
 tar zxf %{SOURCE9}
@@ -168,7 +172,6 @@ docs/man/md2man-all.sh
 
 # build python-websocket-client
 pushd %{w_distname}-%{w_version}
-sed -i 's/from six.moves.urllib.parse //' websocket/__init__.py
 %{__python} setup.py build
 popd
 
@@ -353,6 +356,10 @@ exit 0
 %{_mandir}/man1/atomic*
 
 %changelog
+* Fri Jan 23 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-23
+- build rhatdan/atom commit#ef16d40
+- try urlparse from six, else from argparse
+
 * Fri Jan 23 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-22
 - use python-argparse to provide urlparse
 

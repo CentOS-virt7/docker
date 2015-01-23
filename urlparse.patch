@@ -1,0 +1,15 @@
+diff -uNr websocket/__init__.py websocket-1/__init__.py
+--- websocket/__init__.py	2014-05-07 21:53:31.000000000 -0400
++++ websocket-1/__init__.py	2015-01-23 12:34:41.231543225 -0500
+@@ -40,7 +40,10 @@
+ 
+     HAVE_SSL = False
+ 
+-from six.moves.urllib.parse import urlparse
++try:
++    from six.moves.urllib.parse import urlparse
++except:
++    import urlparse
+ if six.PY3:
+     from base64 import encodebytes as base64encode
+ else:
