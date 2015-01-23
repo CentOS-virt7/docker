@@ -28,12 +28,11 @@
 %global commit      35a8dc5f59d4be64317b8254dfa27a4df7361825
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
-%global atom_commit 394732cdaa0b85d1d1cd86bba1799d353775dcfc
-
+%global atom_commit 10fc4c89dbb05aa5993d92d3cecef9f14625ad02
 
 Name:       docker
 Version:    1.4.1
-Release:    19%{?dist}
+Release:    20%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
@@ -351,6 +350,9 @@ exit 0
 %{python_sitelib}/docker_py-%{dp_version}-py2*.egg-info
 
 %changelog
+* Fri Jan 23 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-20
+- update atom commit#10fc4c8
+
 * Fri Jan 23 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-19
 - build rhatdan/1.4.1-beta2 commit#35a8dc5
 - --registry-prepend instead of --registry-append
