@@ -28,9 +28,12 @@
 %global commit      06670dac2bf26a3a2fee1b5210f8bb30a9bc3c74
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
+%global atom_commit 394732cdaa0b85d1d1cd86bba1799d353775dcfc
+
+
 Name:       docker
 Version:    1.4.1
-Release:    16%{?dist}
+Release:    17%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
@@ -48,6 +51,8 @@ Source7:    docker-network.sysconfig
 Source8:    http://pypi.python.org/packages/source/w/%{w_distname}/%{w_distname}-%{w_version}.tar.gz
 # Source9 is the source tarball for docker-py
 Source9:    http://pypi.python.org/packages/source/d/docker-py/docker-py-%{dp_version}.tar.gz
+# Source10 is the source tarball for atomic
+Source10:   https://github.com/rhatdan/atom/archive/%{atom_commit}.tar.gz
 Patch1:     go-md2man.patch
 Patch2:     docker-cert-path.patch
 Patch3:     codegangsta-cli.patch
@@ -78,9 +83,6 @@ and between virtually any server. The same container that a developer builds
 and tests on a laptop will run at scale, in production*, on VMs, bare-metal
 servers, OpenStack clusters, public instances, or combinations of the above.
 
-%description devel
-This package installs the source libraries for docker.
-
 %package logrotate
 Summary:    cron job to run logrotate on docker containers
 Requires:   docker = %{version}-%{release}
@@ -110,7 +112,6 @@ Summary:        An API client for docker written in Python
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-tools
-BuildRequires:  %{name}
 Requires:       %{name}
 BuildRequires:  python-requests
 Requires:       python-requests
@@ -135,6 +136,9 @@ rm -rf %{w_distname}-%{w_version}/%{w_distname}.egg-info
 
 # untar docker-py tarball
 tar zxf %{SOURCE9}
+
+tar zxf %{SOURCE10}
+cp atom-%{atom_commit}/docs/* ./docs/man/.
 
 %build
 mkdir _build
@@ -172,6 +176,11 @@ popd
 
 # build docker-py
 pushd docker-py-%{dp_version}
+%{__python} setup.py build
+popd
+
+# build atomic
+pushd atom-%{atom_commit}
 %{__python} setup.py build
 popd
 
@@ -272,6 +281,10 @@ pushd docker-py-%{dp_version}
 %{__python} setup.py install --root %{buildroot}
 popd
 
+# install atomic
+install -d %{buildroot}%{_bindir}
+install -p -m 755 atom-%{atom_commit}/build/scripts-2.7/atomic %{buildroot}%{_bindir}
+
 %check
 [ ! -e /run/docker.sock ] || {
     mkdir test_dir
@@ -328,6 +341,7 @@ exit 0
 %dir %{_datadir}/zsh/site-functions
 %{_datadir}/zsh/site-functions/_docker
 %{_sysconfdir}/docker
+%{_bindir}/atomic
 
 %files logrotate
 %doc README.docker-logrotate
@@ -345,6 +359,10 @@ exit 0
 %{python_sitelib}/docker_py-%{dp_version}-py2*.egg-info
 
 %changelog
+* Thu Jan 22 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-17
+- install atomic and manpages
+- don't provide -devel subpackage
+
 * Thu Jan 22 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-16
 - install python-websocket-client and python-docker as subpackages
 
