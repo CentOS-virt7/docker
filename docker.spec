@@ -33,7 +33,7 @@
 
 Name:       docker
 Version:    1.4.1
-Release:    17%{?dist}
+Release:    18%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
@@ -71,7 +71,6 @@ Requires:   subscription-manager
 Provides:   lxc-docker = %{version}-%{release}
 Provides:   docker = %{version}-%{release}
 Provides:	docker-io = %{version}-%{release}
-Provides:   nsinit
 
 %description
 Docker is an open-source engine that automates the deployment of any
@@ -158,8 +157,6 @@ cp contrib/syntax/vim/LICENSE LICENSE-vim-syntax
 cp contrib/syntax/vim/README.md README-vim-syntax.md
 
 pushd $(pwd)/_build/src
-# build nsinit
-go build github.com/docker/libcontainer/nsinit
 # build go-md2man for building manpages
 go build github.com/cpuguy83/go-md2man
 popd
@@ -250,10 +247,6 @@ ln -s %{_sysconfdir}/yum.repos.d/redhat.repo %{buildroot}%{_datadir}/rhel/secret
 mkdir -p %{buildroot}/etc/docker/certs.d/redhat.com
 ln -s /etc/rhsm/ca/redhat-uep.pem %{buildroot}/etc/docker/certs.d/redhat.com/redhat-ca.crt
 
-# Install nsinit
-install -d %{buildroot}%{_bindir}
-install -p -m 755 ./_build/src/nsinit %{buildroot}%{_bindir}/nsinit
-
 # install docker config directory
 install -dp %{buildroot}%{_sysconfdir}/docker/
 
@@ -329,7 +322,6 @@ exit 0
 %dir %{_sharedstatedir}/docker
 %dir %{_sysconfdir}/udev/rules.d
 %{_sysconfdir}/udev/rules.d/80-docker.rules
-%{_bindir}/nsinit
 %dir %{_datadir}/fish/vendor_completions.d/
 %{_datadir}/fish/vendor_completions.d/docker.fish
 %dir %{_datadir}/vim/vimfiles/doc
@@ -359,6 +351,9 @@ exit 0
 %{python_sitelib}/docker_py-%{dp_version}-py2*.egg-info
 
 %changelog
+* Thu Jan 22 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-18
+- don't install nsinit
+
 * Thu Jan 22 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-17
 - install atomic and manpages
 - don't provide -devel subpackage
