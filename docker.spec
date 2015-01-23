@@ -10,7 +10,7 @@
 %global w_eggname websocket_client
 %global w_version 0.14.1
 
-# for python-docker, prefix with dp_
+# for docker-python, prefix with dp_
 %global dp_version 0.7.1
 
 #debuginfo not supported with Go
@@ -31,8 +31,8 @@
 %global atom_commit 10fc4c89dbb05aa5993d92d3cecef9f14625ad02
 
 Name:       docker
-Version:    1.4.1
-Release:    20%{?dist}
+Version:    %{d_version}
+Release:    22%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
@@ -67,9 +67,9 @@ Requires:   systemd >= 208-11.el7_0.5
 Requires:   xz
 Requires:   device-mapper-libs >= 1.02.90-1
 Requires:   subscription-manager
-Provides:   lxc-docker = %{version}-%{release}
-Provides:   docker = %{version}-%{release}
-Provides:	docker-io = %{version}-%{release}
+Provides:   lxc-docker = %{d_version}-%{release}
+Provides:   docker = %{d_version}-%{release}
+Provides:	docker-io = %{d_version}-%{release}
 
 %description
 Docker is an open-source engine that automates the deployment of any
@@ -110,13 +110,14 @@ Summary:        An API client for docker written in Python
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-tools
-Requires:       %{name}
+Requires:       docker >= %{d_version}-%{release}
 BuildRequires:  python-requests
 Requires:       python-requests
 Requires:       python-%{w_distname} >= 0.11.0
 Requires:       python-six >= 1.3.0
-Provides:       python-docker-py
-Provides:       python-docker
+Requires:       python-argparse
+Provides:       python-docker-py = %{dp_version}-%{release}
+Provides:       python-docker = %{dp_version}-%{release}
 
 %description python
 %{summary}
@@ -167,6 +168,7 @@ docs/man/md2man-all.sh
 
 # build python-websocket-client
 pushd %{w_distname}-%{w_version}
+sed -i 's/from six.moves.urllib.parse //' websocket/__init__.py
 %{__python} setup.py build
 popd
 
@@ -304,7 +306,7 @@ exit 0
 %files
 %doc AUTHORS CHANGELOG.md CONTRIBUTING.md MAINTAINERS NOTICE
 %doc LICENSE* README*.md
-%{_mandir}/man1/*
+%{_mandir}/man1/docker*
 %{_mandir}/man5/*
 %{_bindir}/docker
 %dir %{_datadir}/rhel
@@ -332,7 +334,6 @@ exit 0
 %dir %{_datadir}/zsh/site-functions
 %{_datadir}/zsh/site-functions/_docker
 %{_sysconfdir}/docker
-%{_bindir}/atomic
 
 %files logrotate
 %doc README.docker-logrotate
@@ -348,8 +349,16 @@ exit 0
 %doc docker-py-%{dp_version}/{LICENSE,README.md}
 %{python_sitelib}/docker
 %{python_sitelib}/docker_py-%{dp_version}-py2*.egg-info
+%{_bindir}/atomic
+%{_mandir}/man1/atomic*
 
 %changelog
+* Fri Jan 23 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-22
+- use python-argparse to provide urlparse
+
+* Fri Jan 23 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-21
+- move atomic bits into -python subpackage
+
 * Fri Jan 23 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-20
 - update atom commit#10fc4c8
 
