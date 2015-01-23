@@ -25,7 +25,7 @@
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global commit      06670dac2bf26a3a2fee1b5210f8bb30a9bc3c74
+%global commit      35a8dc5f59d4be64317b8254dfa27a4df7361825
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 %global atom_commit 394732cdaa0b85d1d1cd86bba1799d353775dcfc
@@ -33,7 +33,7 @@
 
 Name:       docker
 Version:    1.4.1
-Release:    18%{?dist}
+Release:    19%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
@@ -351,6 +351,10 @@ exit 0
 %{python_sitelib}/docker_py-%{dp_version}-py2*.egg-info
 
 %changelog
+* Fri Jan 23 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-19
+- build rhatdan/1.4.1-beta2 commit#35a8dc5
+- --registry-prepend instead of --registry-append
+
 * Thu Jan 22 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-18
 - don't install nsinit
 
