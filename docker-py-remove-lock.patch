@@ -1,0 +1,41 @@
+From 8699e821282802626210fd1d78f982975611f3ed Mon Sep 17 00:00:00 2001
+From: Lokesh Mandvekar <lsm5@fedoraproject.org>
+Date: Fri, 23 Jan 2015 17:43:42 -0500
+Subject: [PATCH] remove lock for rhel7
+
+Signed-off-by: Lokesh Mandvekar <lsm5@fedoraproject.org>
+---
+ docker/unixconn/unixconn.py | 17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
+
+diff --git a/docker/unixconn/unixconn.py b/docker/unixconn/unixconn.py
+index 1f18060..57c98a5 100644
+--- a/docker/unixconn/unixconn.py
++++ b/docker/unixconn/unixconn.py
+@@ -72,15 +72,14 @@ class UnixAdapter(requests.adapters.HTTPAdapter):
+         super(UnixAdapter, self).__init__()
+
+     def get_connection(self, socket_path, proxies=None):
+-        with self.pools.lock:
+-            pool = self.pools.get(socket_path)
+-            if pool:
+-                return pool
+-
+-            pool = UnixHTTPConnectionPool(
+-                self.base_url, socket_path, self.timeout
+-            )
+-            self.pools[socket_path] = pool
++        pool = self.pools.get(socket_path)
++        if pool:
++            return pool
++
++        pool = UnixHTTPConnectionPool(
++            self.base_url, socket_path, self.timeout
++        )
++        self.pools[socket_path] = pool
+
+         return pool
+
+-- 
+1.8.3.1
+

@@ -25,14 +25,16 @@
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global commit      35a8dc5f59d4be64317b8254dfa27a4df7361825
+%global commit      f4768369f318524c3e25fbab203fd59858a1323b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
-%global atom_commit ef16d409230781548d094d3edd52af9f3488be61
+%global atom_commit fcbc57bb276491de9de66c2f14d625066deec626
+
+%global utils_commit    9f8f987a708e2d30560995956f2306dd85c68ade
 
 Name:       docker
 Version:    %{d_version}
-Release:    23%{?dist}
+Release:    25%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
@@ -52,10 +54,13 @@ Source8:    http://pypi.python.org/packages/source/w/%{w_distname}/%{w_distname}
 Source9:    http://pypi.python.org/packages/source/d/docker-py/docker-py-%{dp_version}.tar.gz
 # Source10 is the source tarball for atomic
 Source10:   https://github.com/rhatdan/atom/archive/%{atom_commit}.tar.gz
+# Source11 is the source tarball for dockertarsum and docker-fetch
+Source11:   https://github.com/vbatts/docker-utils/archive/%{utils_commit}.tar.gz
 Patch1:     go-md2man.patch
 Patch2:     docker-cert-path.patch
 Patch3:     codegangsta-cli.patch
 Patch4:     urlparse.patch
+Patch5:     docker-py-remove-lock.patch
 BuildRequires:  glibc-static
 BuildRequires:  golang >= 1.3.1
 BuildRequires:  device-mapper-devel
@@ -130,6 +135,9 @@ Provides:       python-docker = %{dp_version}-%{release}
 %patch3 -p1
 cp %{SOURCE6} .
 
+# untar docker-utils tarball
+tar zxf %{SOURCE11}
+
 # untar python-websocket-client tarball
 tar zxf %{SOURCE8}
 rm -rf %{w_distname}-%{w_version}/%{w_distname}.egg-info
@@ -139,6 +147,9 @@ popd
 
 # untar docker-py tarball
 tar zxf %{SOURCE9}
+pushd docker-py-%{dp_version}
+%patch5 -p1
+popd
 
 tar zxf %{SOURCE10}
 cp atom-%{atom_commit}/docs/* ./docs/man/.
@@ -147,8 +158,9 @@ cp atom-%{atom_commit}/docs/* ./docs/man/.
 mkdir _build
 
 pushd _build
-  mkdir -p src/github.com/docker
+  mkdir -p src/github.com/{docker,vbatts}
   ln -s $(dirs +1 -l) src/github.com/docker/docker
+  ln -s $(dirs +1 -l)/docker-utils-%{utils_commit} src/github.com/vbatts/docker-utils
 popd
 
 export DOCKER_GITCOMMIT="%{shortcommit}/%{d_version}"
@@ -163,6 +175,9 @@ cp contrib/syntax/vim/README.md README-vim-syntax.md
 pushd $(pwd)/_build/src
 # build go-md2man for building manpages
 go build github.com/cpuguy83/go-md2man
+# build dockertarsum and docker-fetch(commented out)
+#go build github.com/vbatts/docker-utils/cmd/docker-fetch
+go build github.com/vbatts/docker-utils/cmd/dockertarsum
 popd
 
 cp _build/src/go-md2man docs/man/.
@@ -189,6 +204,10 @@ popd
 # install binary
 install -d %{buildroot}%{_bindir}
 install -p -m 755 bundles/%{d_version}-dev/dynbinary/docker-%{d_version}-dev %{buildroot}%{_bindir}/docker
+
+# install dockertarsum and docker-fetch (commented out)
+# install -p -m 755 _build/src/docker-fetch %{buildroot}%{_bindir}
+install -p -m 755 _build/src/dockertarsum %{buildroot}%{_bindir}
 
 # install dockerinit
 install -d %{buildroot}%{_libexecdir}/docker
@@ -337,6 +356,7 @@ exit 0
 %dir %{_datadir}/zsh/site-functions
 %{_datadir}/zsh/site-functions/_docker
 %{_sysconfdir}/docker
+%{_bindir}/dockertarsum
 
 %files logrotate
 %doc README.docker-logrotate
@@ -356,6 +376,13 @@ exit 0
 %{_mandir}/man1/atomic*
 
 %changelog
+* Fri Jan 23 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-25
+- build atomic commit#fcbc57b with fix for install/upgrade/status
+- build docker rhatdan/1.4.1-beta2 commit#f476836
+
+* Fri Jan 23 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-24
+- install dockertarsum from github.com/vbatts/docker-utils
+
 * Fri Jan 23 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-23
 - build rhatdan/atom commit#ef16d40
 - try urlparse from six, else from argparse
