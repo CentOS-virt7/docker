@@ -1,0 +1,22 @@
+From b9b4a4c5d09f59f712d7a795f1df5b14a04b5359 Mon Sep 17 00:00:00 2001
+From: Colin Walters <walters@verbum.org>
+Date: Tue, 27 Jan 2015 14:23:56 -0500
+Subject: [PATCH] atomic: Don't crash in "atomic host ..."
+
+---
+ atomic | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/atomic b/atomic
+index b216e0d..4817514 100755
+--- a/atomic
++++ b/atomic
+@@ -114,7 +114,7 @@ class Atomic:
+         except:
+             pass
+ 
+-        if not self.name:
++        if not self.name and self.image is not None:
+             self.name = self.image.split("/")[-1].split(":")[0]
+             if self.spc:
+                 self.name = self.name + "-spc"

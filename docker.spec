@@ -34,7 +34,7 @@
 
 Name:       docker
 Version:    %{d_version}
-Release:    26%{?dist}
+Release:    27%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
@@ -61,6 +61,7 @@ Patch2:     docker-cert-path.patch
 Patch3:     codegangsta-cli.patch
 Patch4:     urlparse.patch
 Patch5:     docker-py-remove-lock.patch
+Patch6:     dont-crash-in-atomic-host.patch
 BuildRequires:  glibc-static
 BuildRequires:  golang >= 1.3.1
 BuildRequires:  device-mapper-devel
@@ -152,6 +153,9 @@ pushd docker-py-%{dp_version}
 popd
 
 tar zxf %{SOURCE10}
+pushd atom-%{atom_commit}
+%patch6 -p1
+popd
 cp atom-%{atom_commit}/docs/* ./docs/man/.
 
 %build
@@ -377,6 +381,9 @@ exit 0
 %{_mandir}/man1/atomic*
 
 %changelog
+* Tue Jan 27 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-27
+- patch to avoid crash in atomic host
+
 * Tue Jan 27 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-26
 - build docker rhatdan/1.4.1-beta2 commit#0b4cade
 - build atomic rhatdan/master commit#b8c7b9d
