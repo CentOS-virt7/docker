@@ -25,16 +25,16 @@
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global commit      f4768369f318524c3e25fbab203fd59858a1323b
+%global commit      0b4cade8b81cf8980977b5d353d7e6a0c08838b7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
-%global atom_commit fcbc57bb276491de9de66c2f14d625066deec626
+%global atom_commit b8c7b9d5af871be5527235b0d377b555f85dfa26
 
-%global utils_commit    9f8f987a708e2d30560995956f2306dd85c68ade
+%global utils_commit fb94a2822356e0bb7a481a16d553b3c9de669eb8
 
 Name:       docker
 Version:    %{d_version}
-Release:    25%{?dist}
+Release:    26%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
@@ -176,7 +176,7 @@ pushd $(pwd)/_build/src
 # build go-md2man for building manpages
 go build github.com/cpuguy83/go-md2man
 # build dockertarsum and docker-fetch(commented out)
-#go build github.com/vbatts/docker-utils/cmd/docker-fetch
+go build github.com/vbatts/docker-utils/cmd/docker-fetch
 go build github.com/vbatts/docker-utils/cmd/dockertarsum
 popd
 
@@ -205,8 +205,8 @@ popd
 install -d %{buildroot}%{_bindir}
 install -p -m 755 bundles/%{d_version}-dev/dynbinary/docker-%{d_version}-dev %{buildroot}%{_bindir}/docker
 
-# install dockertarsum and docker-fetch (commented out)
-# install -p -m 755 _build/src/docker-fetch %{buildroot}%{_bindir}
+# install dockertarsum and docker-fetch
+install -p -m 755 _build/src/docker-fetch %{buildroot}%{_bindir}
 install -p -m 755 _build/src/dockertarsum %{buildroot}%{_bindir}
 
 # install dockerinit
@@ -356,6 +356,7 @@ exit 0
 %dir %{_datadir}/zsh/site-functions
 %{_datadir}/zsh/site-functions/_docker
 %{_sysconfdir}/docker
+%{_bindir}/docker-fetch
 %{_bindir}/dockertarsum
 
 %files logrotate
@@ -376,6 +377,11 @@ exit 0
 %{_mandir}/man1/atomic*
 
 %changelog
+* Tue Jan 27 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-26
+- build docker rhatdan/1.4.1-beta2 commit#0b4cade
+- build atomic rhatdan/master commit#b8c7b9d
+- build docker-utils vbatts/master commit#fb94a28
+
 * Fri Jan 23 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-25
 - build atomic commit#fcbc57b with fix for install/upgrade/status
 - build docker rhatdan/1.4.1-beta2 commit#f476836
