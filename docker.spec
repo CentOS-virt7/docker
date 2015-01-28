@@ -34,7 +34,7 @@
 
 Name:       docker
 Version:    %{d_version}
-Release:    27%{?dist}
+Release:    28%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
@@ -59,9 +59,11 @@ Source11:   https://github.com/vbatts/docker-utils/archive/%{utils_commit}.tar.g
 Patch1:     go-md2man.patch
 Patch2:     docker-cert-path.patch
 Patch3:     codegangsta-cli.patch
-Patch4:     urlparse.patch
-Patch5:     docker-py-remove-lock.patch
-Patch6:     dont-crash-in-atomic-host.patch
+# Remove once the https://github.com/rhatdan/docker/pull/4 gets merged
+Patch4:     polished-the-addition-of-registry-prepend-replace-flags.patch
+Patch5:     urlparse.patch
+Patch6:     docker-py-remove-lock.patch
+Patch7:     dont-crash-in-atomic-host.patch
 BuildRequires:  glibc-static
 BuildRequires:  golang >= 1.3.1
 BuildRequires:  device-mapper-devel
@@ -134,6 +136,7 @@ Provides:       python-docker = %{dp_version}-%{release}
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 cp %{SOURCE6} .
 
 # untar docker-utils tarball
@@ -143,18 +146,18 @@ tar zxf %{SOURCE11}
 tar zxf %{SOURCE8}
 rm -rf %{w_distname}-%{w_version}/%{w_distname}.egg-info
 pushd %{w_distname}-%{w_version}/websocket
-%patch4 -p1
+%patch5 -p1
 popd
 
 # untar docker-py tarball
 tar zxf %{SOURCE9}
 pushd docker-py-%{dp_version}
-%patch5 -p1
+%patch6 -p1
 popd
 
 tar zxf %{SOURCE10}
 pushd atom-%{atom_commit}
-%patch6 -p1
+%patch7 -p1
 popd
 cp atom-%{atom_commit}/docs/* ./docs/man/.
 
@@ -381,6 +384,9 @@ exit 0
 %{_mandir}/man1/atomic*
 
 %changelog
+* Wed Jan 28 2015 Michal Minar <miminar@redhat.com> - 1.4.1-28
+- patch polished registry-(replace|prepend) flags
+
 * Tue Jan 27 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-27
 - patch to avoid crash in atomic host
 
