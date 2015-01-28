@@ -34,7 +34,7 @@
 
 Name:       docker
 Version:    %{d_version}
-Release:    29%{?dist}
+Release:    30%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
@@ -122,6 +122,7 @@ Requires:       python-requests
 Requires:       python-%{w_distname} >= 0.11.0
 Requires:       python-six >= 1.3.0
 Requires:       python-argparse
+Requires:       python-backports >= 1.0-8
 Provides:       python-docker-py = %{dp_version}-%{release}
 Provides:       python-docker = %{dp_version}-%{release}
 
@@ -382,6 +383,9 @@ exit 0
 %{_mandir}/man1/atomic*
 
 %changelog
+* Wed Jan 28 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-30
+- Require python-backports >= 1.0-8 for docker-python
+
 * Wed Jan 28 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-29
 - build docker rhatdan/1.4.1-beta2 commit#0af307b
 - --registry-replace|prepend flags via Michal Minar <miminar@redhat.com>
