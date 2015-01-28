@@ -34,7 +34,7 @@
 
 Name:       docker
 Version:    %{d_version}
-Release:    28%{?dist}
+Release:    29%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
@@ -382,7 +382,7 @@ exit 0
 %{_mandir}/man1/atomic*
 
 %changelog
-* Wed Jan 28 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-28
+* Wed Jan 28 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-29
 - build docker rhatdan/1.4.1-beta2 commit#0af307b
 - --registry-replace|prepend flags via Michal Minar <miminar@redhat.com>
 - build atomic rhatdan/master commit#37f9be0
