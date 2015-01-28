@@ -25,10 +25,10 @@
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global commit      0b4cade8b81cf8980977b5d353d7e6a0c08838b7
+%global commit      0af307b2b53d3f3efef34f815242f84ba3a2aca7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
-%global atom_commit b8c7b9d5af871be5527235b0d377b555f85dfa26
+%global atom_commit 37f9be0583fabc0bc57315da3827f4d47d24a05c
 
 %global utils_commit fb94a2822356e0bb7a481a16d553b3c9de669eb8
 
@@ -59,11 +59,8 @@ Source11:   https://github.com/vbatts/docker-utils/archive/%{utils_commit}.tar.g
 Patch1:     go-md2man.patch
 Patch2:     docker-cert-path.patch
 Patch3:     codegangsta-cli.patch
-# Remove once the https://github.com/rhatdan/docker/pull/4 gets merged
-Patch4:     polished-the-addition-of-registry-prepend-replace-flags.patch
-Patch5:     urlparse.patch
-Patch6:     docker-py-remove-lock.patch
-Patch7:     dont-crash-in-atomic-host.patch
+Patch4:     urlparse.patch
+Patch5:     docker-py-remove-lock.patch
 BuildRequires:  glibc-static
 BuildRequires:  golang >= 1.3.1
 BuildRequires:  device-mapper-devel
@@ -71,7 +68,7 @@ BuildRequires:  btrfs-progs-devel
 BuildRequires:  sqlite-devel
 BuildRequires:  pkgconfig(systemd)
 # appropriate systemd version as per rhbz#1171054
-Requires:   systemd >= 208-11.el7_0.5
+Requires:   systemd
 # need xz to work with ubuntu images
 Requires:   xz
 Requires:   device-mapper-libs >= 1.02.90-1
@@ -136,7 +133,6 @@ Provides:       python-docker = %{dp_version}-%{release}
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch4 -p1
 cp %{SOURCE6} .
 
 # untar docker-utils tarball
@@ -146,19 +142,17 @@ tar zxf %{SOURCE11}
 tar zxf %{SOURCE8}
 rm -rf %{w_distname}-%{w_version}/%{w_distname}.egg-info
 pushd %{w_distname}-%{w_version}/websocket
-%patch5 -p1
+%patch4 -p1
 popd
 
 # untar docker-py tarball
 tar zxf %{SOURCE9}
 pushd docker-py-%{dp_version}
-%patch6 -p1
+%patch5 -p1
 popd
 
+# untar atom
 tar zxf %{SOURCE10}
-pushd atom-%{atom_commit}
-%patch7 -p1
-popd
 cp atom-%{atom_commit}/docs/* ./docs/man/.
 
 %build
@@ -204,7 +198,7 @@ popd
 
 # build atomic
 pushd atom-%{atom_commit}
-%{__python} setup.py build
+make all
 popd
 
 %install
@@ -305,8 +299,9 @@ pushd docker-py-%{dp_version}
 popd
 
 # install atomic
-install -d %{buildroot}%{_bindir}
-install -p -m 755 atom-%{atom_commit}/build/scripts-2.7/atomic %{buildroot}%{_bindir}
+pushd atom-%{atom_commit}
+make install DESTDIR=%{buildroot}
+popd
 
 %check
 [ ! -e /run/docker.sock ] || {
@@ -378,14 +373,19 @@ exit 0
 
 %files python
 %doc docker-py-%{dp_version}/{LICENSE,README.md}
+%config(noreplace) %{_sysconfdir}/sysconfig/atomic
 %{python_sitelib}/docker
 %{python_sitelib}/docker_py-%{dp_version}-py2*.egg-info
+%{python_sitelib}/atomic*.egg-info
+%{_sysconfdir}/profile.d/atomic.sh
 %{_bindir}/atomic
 %{_mandir}/man1/atomic*
 
 %changelog
-* Wed Jan 28 2015 Michal Minar <miminar@redhat.com> - 1.4.1-28
-- patch polished registry-(replace|prepend) flags
+* Wed Jan 28 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-28
+- build docker rhatdan/1.4.1-beta2 commit#0af307b
+- --registry-replace|prepend flags via Michal Minar <miminar@redhat.com>
+- build atomic rhatdan/master commit#37f9be0
 
 * Tue Jan 27 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-27
 - patch to avoid crash in atomic host
