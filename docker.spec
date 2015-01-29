@@ -117,7 +117,6 @@ BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-tools
 BuildRequires:  python-requests
-BuildRequires:  pylint
 Requires:       docker >= %{d_version}-%{release}
 Requires:       python-requests
 Requires:       python-%{w_distname} >= 0.11.0
@@ -155,6 +154,7 @@ popd
 
 # untar atom
 tar zxf %{SOURCE10}
+sed -i '/pylint/d' atom-%{atom_commit}/Makefile
 cp atom-%{atom_commit}/docs/* ./docs/man/.
 
 %build
@@ -386,7 +386,6 @@ exit 0
 %changelog
 * Thu Jan 29 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-31
 - build atom commit#b9e02ad
-- docker-python buildreqs pylint
 
 * Wed Jan 28 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-30
 - Require python-backports >= 1.0-8 for docker-python
