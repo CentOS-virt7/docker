@@ -28,13 +28,13 @@
 %global commit      0af307b2b53d3f3efef34f815242f84ba3a2aca7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
-%global atom_commit 37f9be0583fabc0bc57315da3827f4d47d24a05c
+%global atom_commit b9e02ad9c7c1559621893cafe10ad7115b6fbff0
 
 %global utils_commit fb94a2822356e0bb7a481a16d553b3c9de669eb8
 
 Name:       docker
 Version:    %{d_version}
-Release:    30%{?dist}
+Release:    31%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
@@ -116,8 +116,9 @@ Summary:        An API client for docker written in Python
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-tools
-Requires:       docker >= %{d_version}-%{release}
 BuildRequires:  python-requests
+BuildRequires:  pylint
+Requires:       docker >= %{d_version}-%{release}
 Requires:       python-requests
 Requires:       python-%{w_distname} >= 0.11.0
 Requires:       python-six >= 1.3.0
@@ -383,6 +384,10 @@ exit 0
 %{_mandir}/man1/atomic*
 
 %changelog
+* Thu Jan 29 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-31
+- build atom commit#b9e02ad
+- docker-python buildreqs pylint
+
 * Wed Jan 28 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-30
 - Require python-backports >= 1.0-8 for docker-python
 
