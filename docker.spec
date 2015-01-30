@@ -25,7 +25,7 @@
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global commit      0af307b2b53d3f3efef34f815242f84ba3a2aca7
+%global commit      b024f0fccbcb12bda93302ab077b12e465137c06
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 %global atom_commit 567c2c8b2d873b7601b4fd2424ee888a80ddb49e
@@ -34,7 +34,7 @@
 
 Name:       docker
 Version:    %{d_version}
-Release:    32%{?dist}
+Release:    33%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
@@ -384,6 +384,10 @@ exit 0
 %{_mandir}/man1/atomic*
 
 %changelog
+* Fri Jan 30 2015 Michal Minar <miminar@redhat.com> - 1.4.1-33
+- build docker rhatdan/1.4.1-beta2 commit#b024f0f
+- --registry-(replace|preprend) replaced with --(add|block)-registry
+
 * Thu Jan 29 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-32
 - build atom commit#567c2c8
 
