@@ -25,16 +25,16 @@
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global commit      b024f0fccbcb12bda93302ab077b12e465137c06
+%global commit      d26b358badf659627988adb88c1ba1d64c6d2f16
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
-%global atom_commit 567c2c8b2d873b7601b4fd2424ee888a80ddb49e
+%global atom_commit 973142bbc44ec2ec0c37ad4f8fc839163bdcc0fa
 
 %global utils_commit fb94a2822356e0bb7a481a16d553b3c9de669eb8
 
 Name:       docker
 Version:    %{d_version}
-Release:    34%{?dist}
+Release:    35%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
@@ -61,9 +61,6 @@ Patch2:     docker-cert-path.patch
 Patch3:     codegangsta-cli.patch
 Patch4:     urlparse.patch
 Patch5:     docker-py-remove-lock.patch
-# TODO: remove this patch once a PR https://github.com/rhatdan/docker/pull/6
-# gets merged
-Patch7:     fix-tagging-issue.patch
 BuildRequires:  glibc-static
 BuildRequires:  golang >= 1.3.1
 BuildRequires:  device-mapper-devel
@@ -137,7 +134,6 @@ Provides:       python-docker = %{dp_version}-%{release}
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch7 -p1
 cp %{SOURCE6} .
 
 # untar docker-utils tarball
@@ -388,6 +384,10 @@ exit 0
 %{_mandir}/man1/atomic*
 
 %changelog
+* Fri Jan 30 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-35
+- build atomic rhatdan/master commit#973142b
+- build docker rhatdan/1.4.1-beta2 commit#d26b358
+
 * Fri Jan 30 2015 Michal Minar <miminar@redhat.com> - 1.4.1-34
 - added patch fixed tagging issue
 
