@@ -28,13 +28,13 @@
 %global commit      d26b358badf659627988adb88c1ba1d64c6d2f16
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
-%global atom_commit 973142bbc44ec2ec0c37ad4f8fc839163bdcc0fa
+%global atom_commit 3d4fd2092b1e8086c75de3db69084820e4f6d075
 
 %global utils_commit fb94a2822356e0bb7a481a16d553b3c9de669eb8
 
 Name:       docker
 Version:    %{d_version}
-Release:    36%{?dist}
+Release:    37%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
@@ -383,6 +383,10 @@ exit 0
 %{_mandir}/man1/atomic*
 
 %changelog
+* Fri Jan 30 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-37
+- add extra options to /etc/sysconfig/docker to add/block registries
+- build atom commit#3d4fd20
+
 * Fri Jan 30 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-36
 - remove dependency on python-backports
 
