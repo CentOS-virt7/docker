@@ -28,13 +28,13 @@
 %global commit      0af307b2b53d3f3efef34f815242f84ba3a2aca7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
-%global atom_commit b9e02ad9c7c1559621893cafe10ad7115b6fbff0
+%global atom_commit 567c2c8b2d873b7601b4fd2424ee888a80ddb49e
 
 %global utils_commit fb94a2822356e0bb7a481a16d553b3c9de669eb8
 
 Name:       docker
 Version:    %{d_version}
-Release:    31%{?dist}
+Release:    32%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
@@ -384,6 +384,9 @@ exit 0
 %{_mandir}/man1/atomic*
 
 %changelog
+* Thu Jan 29 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-32
+- build atom commit#567c2c8
+
 * Thu Jan 29 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-31
 - build atom commit#b9e02ad
 
