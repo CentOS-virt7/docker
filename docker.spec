@@ -34,7 +34,7 @@
 
 Name:       docker
 Version:    %{d_version}
-Release:    33%{?dist}
+Release:    34%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
@@ -61,6 +61,9 @@ Patch2:     docker-cert-path.patch
 Patch3:     codegangsta-cli.patch
 Patch4:     urlparse.patch
 Patch5:     docker-py-remove-lock.patch
+# TODO: remove this patch once a PR https://github.com/rhatdan/docker/pull/6
+# gets merged
+Patch7:     fix-tagging-issue.patch
 BuildRequires:  glibc-static
 BuildRequires:  golang >= 1.3.1
 BuildRequires:  device-mapper-devel
@@ -75,7 +78,7 @@ Requires:   device-mapper-libs >= 1.02.90-1
 Requires:   subscription-manager
 Provides:   lxc-docker = %{d_version}-%{release}
 Provides:   docker = %{d_version}-%{release}
-Provides:	docker-io = %{d_version}-%{release}
+Provides:   docker-io = %{d_version}-%{release}
 
 %description
 Docker is an open-source engine that automates the deployment of any
@@ -134,6 +137,7 @@ Provides:       python-docker = %{dp_version}-%{release}
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch7 -p1
 cp %{SOURCE6} .
 
 # untar docker-utils tarball
@@ -384,6 +388,9 @@ exit 0
 %{_mandir}/man1/atomic*
 
 %changelog
+* Fri Jan 30 2015 Michal Minar <miminar@redhat.com> - 1.4.1-34
+- added patch fixed tagging issue
+
 * Fri Jan 30 2015 Michal Minar <miminar@redhat.com> - 1.4.1-33
 - build docker rhatdan/1.4.1-beta2 commit#b024f0f
 - --registry-(replace|preprend) replaced with --(add|block)-registry

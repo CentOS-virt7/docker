@@ -1,0 +1,32 @@
+From 079cd99b70388ce9a01b1438a4e86979184dee57 Mon Sep 17 00:00:00 2001
+From: Michal Minar <miminar@redhat.com>
+Date: Fri, 30 Jan 2015 13:06:12 +0100
+Subject: [PATCH] Fix tagging issue
+
+Images pulled from official repository would end up in registry with
+a prefix of the first additional registry.
+
+Signed-off-by: Michal Minar <miminar@redhat.com>
+---
+ graph/tags.go | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/graph/tags.go b/graph/tags.go
+index 346a42c..3b80fc4 100644
+--- a/graph/tags.go
++++ b/graph/tags.go
+@@ -222,6 +222,11 @@ func (store *TagStore) Set(repoName, tag, imageName string, force bool) error {
+ 		return err
+ 	}
+ 	var repo Repository
++	// Do not default to the first additional registry if we deal with an image
++	// from the official one which will be missing a hostname.
++	if !registry.RepositoryNameHasIndex(repoName) && registry.IndexServerName() != registry.INDEXSERVER {
++		repoName = fmt.Sprintf("%s/%s", registry.INDEXNAME, repoName)
++	}
+ 	repoName = registry.NormalizeLocalName(repoName)
+ 	if r, exists := store.Repositories[repoName]; exists {
+ 		repo = r
+-- 
+2.1.0
+
