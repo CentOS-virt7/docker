@@ -14,11 +14,11 @@ ADD_REGISTRY='--add-registry registry.access.redhat.com'
 # If you want to block registries from being used, use the
 # BLOCK_REGISTRY option  to list a set of comma separated registries, and uncommenting
 # it. For example adding docker.io will stop users  from downloading images from docker.io
-# BLOCK_REGISTRY='--block-registry '
+# BLOCK_REGISTRY='--block-registry'
 
 # If you have a registry secured with https but do not have proper certs destributed, you can
 # tell docker to not look for full authorization by adding the registry to the
-# INSECURE_REGISTRY line and uncommentin it.
+# INSECURE_REGISTRY line and uncommenting it.
 # INSECURE_REGISTRY='--insecure-registry'
 
 # On an SELinux system, if you remove the --selinux-enabled option, you
