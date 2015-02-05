@@ -28,13 +28,13 @@
 %global commit      d26b358badf659627988adb88c1ba1d64c6d2f16
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
-%global atom_commit ea7ab31110328241a1cf5bb0953476fb5bfc7fb0
+%global atom_commit 98c21fdf8caf06c88dc2bc7003b325ba36ed9922
 
 %global utils_commit fb94a2822356e0bb7a481a16d553b3c9de669eb8
 
 Name:       docker
 Version:    %{d_version}
-Release:    38%{?dist}
+Release:    39%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
@@ -170,7 +170,7 @@ export DOCKER_BUILDTAGS='selinux btrfs_noversion'
 export GOPATH=$(pwd)/_build:$(pwd)/vendor:%{gopath}
 
 # build docker binary
-hack/make.sh dynbinary
+DEBUG=1 hack/make.sh dynbinary
 cp contrib/syntax/vim/LICENSE LICENSE-vim-syntax
 cp contrib/syntax/vim/README.md README-vim-syntax.md
 
@@ -383,6 +383,10 @@ exit 0
 %{_mandir}/man1/atomic*
 
 %changelog
+* Thu Feb 05 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-39
+- LimitCORE=infinity in unitfile
+- build atomic commit#98c21fd
+
 * Mon Feb 02 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-38
 - Resolves: rhbz#1188318
 - atom commit#ea7ab31

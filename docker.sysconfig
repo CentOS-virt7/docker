@@ -33,3 +33,6 @@ ADD_REGISTRY='--add-registry registry.access.redhat.com'
 # Controls the /etc/cron.daily/docker-logrotate cron job status.
 # To disable, uncomment the line below.
 # LOGROTATE=false
+#
+
+GOTRACEBACK='crash'
