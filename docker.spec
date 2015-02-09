@@ -384,7 +384,7 @@ exit 0
 
 %changelog
 * Thu Feb 05 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-39
-- LimitCORE=infinity in unitfile
+- Resolves: rhbz#1187993 - allow core dump with no size limit
 - build atomic commit#98c21fd
 
 * Mon Feb 02 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-38
