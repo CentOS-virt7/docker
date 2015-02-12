@@ -151,6 +151,8 @@ popd
 
 # untar atomic
 tar zxf %{SOURCE10}
+sed -i '/test:/d' atomic-%{atomic_commit}/Makefile
+sed -i '/sh .\/test.sh/d' atomic-%{atomic_commit}/Makefile
 sed -i '/pylint/d' atomic-%{atomic_commit}/Makefile
 cp atomic-%{atomic_commit}/docs/* ./docs/man/.
 
