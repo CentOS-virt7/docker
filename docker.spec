@@ -20,21 +20,21 @@
 %global project         docker
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
-%global d_version       1.4.1
+%global d_version       1.5.0
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global commit      d26b358badf659627988adb88c1ba1d64c6d2f16
+%global commit      a06d3576725864d6679becb0f789032fb4a55434
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
-%global atom_commit 98c21fdf8caf06c88dc2bc7003b325ba36ed9922
+%global atomic_commit d8c35ce6c170a4bff90ff5d609fe3f84de907633
 
 %global utils_commit fb94a2822356e0bb7a481a16d553b3c9de669eb8
 
 Name:       docker
 Version:    %{d_version}
-Release:    39%{?dist}
+Release:    1%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
@@ -53,11 +53,10 @@ Source8:    http://pypi.python.org/packages/source/w/%{w_distname}/%{w_distname}
 # Source9 is the source tarball for docker-py
 Source9:    http://pypi.python.org/packages/source/d/docker-py/docker-py-%{dp_version}.tar.gz
 # Source10 is the source tarball for atomic
-Source10:   https://github.com/rhatdan/atom/archive/%{atom_commit}.tar.gz
+Source10:   https://github.com/projectatomic/atomic/archive/%{atomic_commit}.tar.gz
 # Source11 is the source tarball for dockertarsum and docker-fetch
 Source11:   https://github.com/vbatts/docker-utils/archive/%{utils_commit}.tar.gz
 Patch1:     go-md2man.patch
-Patch2:     docker-cert-path.patch
 Patch3:     codegangsta-cli.patch
 Patch4:     urlparse.patch
 Patch5:     docker-py-remove-lock.patch
@@ -131,7 +130,6 @@ Provides:       python-docker = %{dp_version}-%{release}
 %prep
 %setup -qn docker-%{commit}
 %patch1 -p1
-%patch2 -p1
 %patch3 -p1
 cp %{SOURCE6} .
 
@@ -151,10 +149,10 @@ pushd docker-py-%{dp_version}
 %patch5 -p1
 popd
 
-# untar atom
+# untar atomic
 tar zxf %{SOURCE10}
-sed -i '/pylint/d' atom-%{atom_commit}/Makefile
-cp atom-%{atom_commit}/docs/* ./docs/man/.
+sed -i '/pylint/d' atomic-%{atomic_commit}/Makefile
+cp atomic-%{atomic_commit}/docs/* ./docs/man/.
 
 %build
 mkdir _build
@@ -198,7 +196,7 @@ pushd docker-py-%{dp_version}
 popd
 
 # build atomic
-pushd atom-%{atom_commit}
+pushd atomic-%{atomic_commit}
 make all
 popd
 
@@ -300,7 +298,7 @@ pushd docker-py-%{dp_version}
 popd
 
 # install atomic
-pushd atom-%{atom_commit}
+pushd atomic-%{atomic_commit}
 make install DESTDIR=%{buildroot}
 popd
 
@@ -383,6 +381,10 @@ exit 0
 %{_mandir}/man1/atomic*
 
 %changelog
+* Thu Feb 12 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-1
+- build docker rhatdan/1.5 a06d357
+- build atomic projectaomic/master d8c35ce
+
 * Thu Feb 05 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.4.1-39
 - Resolves: rhbz#1187993 - allow core dump with no size limit
 - build atomic commit#98c21fd
