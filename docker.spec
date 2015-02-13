@@ -9,9 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
+%global w_release 41
 
 # for docker-python, prefix with dp_
 %global dp_version 0.7.1
+%global dp_release 41
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -21,6 +23,7 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.5.0
+%global d_release       2
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
@@ -34,7 +37,7 @@
 
 Name:       docker
 Version:    %{d_version}
-Release:    1%{?dist}
+Release:    %{d_release}%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
@@ -98,6 +101,7 @@ containers for this to work, failures are silently ignored.
 %package -n python-%{w_distname}
 Summary:    WebSocket client for python
 Version:    %{w_version}
+Release:    %{w_release}%{?dist}
 License:    LGPLv2
 BuildArch:  noarch
 
@@ -110,6 +114,7 @@ python-websocket-client supports only hybi-13.
 
 %package python
 Version:        %{dp_version}
+Release:        %{dp_release}%{?dist}
 License:        ASL 2.0
 Summary:        An API client for docker written in Python
 BuildRequires:  python2-devel
@@ -383,6 +388,12 @@ exit 0
 %{_mandir}/man1/atomic*
 
 %changelog
+* Fri Feb 13 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-2
+- Resolves: rhbz#1192312 - custom release numbers for 
+python-websocket-client and docker-py
+- Resolves: rhbz#1192171 - changed options and env vars for
+adding/replacing registries
+
 * Thu Feb 12 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-1
 - build docker rhatdan/1.5 a06d357
 - build atomic projectaomic/master d8c35ce
