@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 41
+%global w_release 42
 
 # for docker-python, prefix with dp_
 %global dp_version 0.7.1
-%global dp_release 41
+%global dp_release 42
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,7 +23,7 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.5.0
-%global d_release       3
+%global d_release       4
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
@@ -390,7 +390,7 @@ exit 0
 %{_mandir}/man1/atomic*
 
 %changelog
-* Mon Feb 16 2015 Michal Minar <miminar@redhat.com> - 1.5.0-3
+* Mon Feb 16 2015 Michal Minar <miminar@redhat.com> - 1.5.0-4
 - Readded --(add|block)-registry flags.
 
 * Fri Feb 13 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-2
