@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 42
+%global w_release 43
 
 # for docker-python, prefix with dp_
-%global dp_version 0.7.1
-%global dp_release 42
+%global dp_version 0.7.2
+%global dp_release 1
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,12 +23,12 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.5.0
-%global d_release       4
+%global d_release       5
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global commit      a06d3576725864d6679becb0f789032fb4a55434
+%global commit      1a4e592f17fc616df29fbcf2a88fae97603e8f75
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 %global atomic_commit d8c35ce6c170a4bff90ff5d609fe3f84de907633
@@ -60,7 +60,6 @@ Source10:   https://github.com/projectatomic/atomic/archive/%{atomic_commit}.tar
 # Source11 is the source tarball for dockertarsum and docker-fetch
 Source11:   https://github.com/vbatts/docker-utils/archive/%{utils_commit}.tar.gz
 Patch1:     go-md2man.patch
-Patch2:     new-add-registry-and-block-registry-flags.patch
 Patch3:     codegangsta-cli.patch
 Patch4:     urlparse.patch
 Patch5:     docker-py-remove-lock.patch
@@ -76,9 +75,9 @@ Requires:   systemd
 Requires:   xz
 Requires:   device-mapper-libs >= 1.02.90-1
 Requires:   subscription-manager
-Provides:   lxc-docker = %{d_version}-%{release}
-Provides:   docker = %{d_version}-%{release}
-Provides:   docker-io = %{d_version}-%{release}
+Provides:   lxc-docker = %{d_version}-%{d_release}
+Provides:   docker = %{d_version}-%{d_release}
+Provides:   docker-io = %{d_version}-%{d_release}
 
 %description
 Docker is an open-source engine that automates the deployment of any
@@ -92,8 +91,8 @@ servers, OpenStack clusters, public instances, or combinations of the above.
 
 %package logrotate
 Summary:    cron job to run logrotate on docker containers
-Requires:   docker = %{version}-%{release}
-Provides:   docker-io-logrotate = %{version}-%{release}
+Requires:   docker = %{d_version}-%{d_release}
+Provides:   docker-io-logrotate = %{d_version}-%{d_release}
 
 %description logrotate
 This package installs %{summary}. logrotate is assumed to be installed on
@@ -122,13 +121,13 @@ BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-tools
 BuildRequires:  python-requests
-Requires:       docker >= %{d_version}-%{release}
+Requires:       docker >= %{d_version}-%{d_release}
 Requires:       python-requests
 Requires:       python-%{w_distname} >= 0.11.0
 Requires:       python-six >= 1.3.0
 Requires:       python-argparse
-Provides:       python-docker-py = %{dp_version}-%{release}
-Provides:       python-docker = %{dp_version}-%{release}
+Provides:       python-docker-py = %{dp_version}-%{dp_release}
+Provides:       python-docker = %{dp_version}-%{dp_release}
 
 %description python
 %{summary}
@@ -136,7 +135,6 @@ Provides:       python-docker = %{dp_version}-%{release}
 %prep
 %setup -qn docker-%{commit}
 %patch1 -p1
-%patch2 -p1
 %patch3 -p1
 cp %{SOURCE6} .
 
@@ -390,6 +388,13 @@ exit 0
 %{_mandir}/man1/atomic*
 
 %changelog
+* Mon Feb 16 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-5
+- use docker rhatdan/1.5.0 commit#1a4e592
+- Complete fix for rhbz#1192171 - patch included in docker tarball
+- use docker-python 0.7.2
+- Resolves: rhbz#1192312 - solve version-release requirements for
+subpackages
+
 * Mon Feb 16 2015 Michal Minar <miminar@redhat.com> - 1.5.0-4
 - Readded --(add|block)-registry flags.
 
