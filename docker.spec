@@ -23,7 +23,7 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.5.0
-%global d_release       2
+%global d_release       3
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
@@ -60,6 +60,7 @@ Source10:   https://github.com/projectatomic/atomic/archive/%{atomic_commit}.tar
 # Source11 is the source tarball for dockertarsum and docker-fetch
 Source11:   https://github.com/vbatts/docker-utils/archive/%{utils_commit}.tar.gz
 Patch1:     go-md2man.patch
+Patch2:     new-add-registry-and-block-registry-flags.patch
 Patch3:     codegangsta-cli.patch
 Patch4:     urlparse.patch
 Patch5:     docker-py-remove-lock.patch
@@ -135,6 +136,7 @@ Provides:       python-docker = %{dp_version}-%{release}
 %prep
 %setup -qn docker-%{commit}
 %patch1 -p1
+%patch2 -p1
 %patch3 -p1
 cp %{SOURCE6} .
 
@@ -388,6 +390,9 @@ exit 0
 %{_mandir}/man1/atomic*
 
 %changelog
+* Mon Feb 16 2015 Michal Minar <miminar@redhat.com> - 1.5.0-3
+- Readded --(add|block)-registry flags.
+
 * Fri Feb 13 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-2
 - Resolves: rhbz#1192312 - custom release numbers for 
 python-websocket-client and docker-py

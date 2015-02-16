@@ -1,0 +1,570 @@
+From bf137137a8014ffa79477a811b76b86fe2cfcb0d Mon Sep 17 00:00:00 2001
+From: Michal Minar <miminar@redhat.com>
+Date: Tue, 20 Jan 2015 09:55:36 -0500
+Subject: [PATCH] Add --add-registry and --block-registry options to docker
+ daemon
+
+    The first option allows to prepend additional registries to a public
+    one. These will be queried one after another - in the same order
+    they were given - when pulling images.
+
+    For example:
+
+        --add-registry=foo.com
+        --add-registry=bar.com
+
+    Would cause a
+
+        docker pull myapp
+
+    to search
+
+        foo.com/myapp
+        bar.com/myapp
+        docker.io/myapp
+
+    The second option builds a list of banned registries. Docker daemon
+    will prevent user from any communication with such registries. This
+    option recognizes a special keyword "public" denoting public Docker
+    registry.
+
+    So for example adding
+
+        --block-registry=public
+
+    to flags of previous example would result in searching the same
+    registries except for `docker.io/myapp`
+
+    Both flags are marked as experimental in man pages.
+
+    This would allow companies and vendors to specify registries which
+    contain content that the companies will not allowed to be stored at
+    docker.io.
+
+    The FROM statement in Dockerfile keeps its old behaviour. If the
+    repository is missing registry, it will be pulled from the official
+    one.
+
+Docker-DCO-1.1-Signed-off-by: Dan Walsh <dwalsh@redhat.com> (github: rhatdan)
+
+Signed-off-by: Michal Minar <miminar@redhat.com>
+
+Conflicts:
+	graph/pull.go
+	registry/config.go
+	registry/service.go
+---
+ api/server/server.go                |  1 +
+ builder/internals.go                |  1 +
+ contrib/completion/bash/docker      |  2 ++
+ contrib/completion/fish/docker.fish |  4 ++-
+ daemon/config.go                    |  7 +++++
+ docker/daemon.go                    | 19 ++++++++++++
+ docker/docker.go                    | 19 ++++--------
+ docker/flags.go                     |  3 --
+ docs/man/docker.1.md                | 14 ++++-----
+ graph/export.go                     |  4 ++-
+ graph/pull.go                       |  7 +++++
+ graph/tags.go                       | 13 +++++++--
+ registry/config.go                  | 58 ++++++++++++++++++++++++++++---------
+ registry/service.go                 | 10 +++----
+ registry/session.go                 | 13 +++++++++
+ 15 files changed, 129 insertions(+), 46 deletions(-)
+
+diff --git a/api/server/server.go b/api/server/server.go
+index 2bcd069..8fec574 100644
+--- a/api/server/server.go
++++ b/api/server/server.go
+@@ -565,6 +565,7 @@ func postImagesCreate(eng *engine.Engine, version version.Version, w http.Respon
+ 		job.SetenvBool("parallel", version.GreaterThan("1.3"))
+ 		job.SetenvJson("metaHeaders", metaHeaders)
+ 		job.SetenvJson("authConfig", authConfig)
++		job.SetenvBool("protectOfficialRegistry", false)
+ 	} else { //import
+ 		if tag == "" {
+ 			repo, tag = parsers.ParseRepositoryTag(repo)
+diff --git a/builder/internals.go b/builder/internals.go
+index 191b221..95700c8 100644
+--- a/builder/internals.go
++++ b/builder/internals.go
+@@ -439,6 +439,7 @@ func (b *Builder) pullImage(name string) (*imagepkg.Image, error) {
+ 	job.SetenvBool("json", b.StreamFormatter.Json())
+ 	job.SetenvBool("parallel", true)
+ 	job.SetenvJson("authConfig", pullRegistryAuth)
++	job.SetenvBool("protectOfficialRegistry", true)
+ 	job.Stdout.Add(ioutils.NopWriteCloser(b.OutOld))
+ 	if err := job.Run(); err != nil {
+ 		return nil, err
+diff --git a/contrib/completion/bash/docker b/contrib/completion/bash/docker
+index a3f5d52..75f6382 100755
+--- a/contrib/completion/bash/docker
++++ b/contrib/completion/bash/docker
+@@ -932,7 +932,9 @@ _docker() {
+ 	)
+ 
+ 	local main_options_with_args="
++		--add-registry
+ 		--bip
++		--block-registry
+ 		--bridge -b
+ 		--dns
+ 		--dns-search
+diff --git a/contrib/completion/fish/docker.fish b/contrib/completion/fish/docker.fish
+index b7bd914..a1cbb8b 100644
+--- a/contrib/completion/fish/docker.fish
++++ b/contrib/completion/fish/docker.fish
+@@ -43,9 +43,11 @@ function __fish_print_docker_repositories --description 'Print a list of docker
+ end
+ 
+ # common options
++complete -c docker -f -n '__fish_docker_no_subcommand' -l add-registry -d 'Query given registry before a public one'
+ complete -c docker -f -n '__fish_docker_no_subcommand' -l api-enable-cors -d 'Enable CORS headers in the remote API'
+ complete -c docker -f -n '__fish_docker_no_subcommand' -s b -l bridge -d 'Attach containers to a pre-existing network bridge'
+ complete -c docker -f -n '__fish_docker_no_subcommand' -l bip -d "Use this CIDR notation address for the network bridge's IP, not compatible with -b"
++complete -c docker -f -n '__fish_docker_no_subcommand' -l block-registry -d "Don't contact given registry"
+ complete -c docker -f -n '__fish_docker_no_subcommand' -s D -l debug -d 'Enable debug mode'
+ complete -c docker -f -n '__fish_docker_no_subcommand' -s d -l daemon -d 'Enable daemon mode'
+ complete -c docker -f -n '__fish_docker_no_subcommand' -l dns -d 'Force Docker to use specific DNS servers'
+@@ -68,7 +70,7 @@ complete -c docker -f -n '__fish_docker_no_subcommand' -s l -l log-level -d 'Set
+ complete -c docker -f -n '__fish_docker_no_subcommand' -l label -d 'Set key=value labels to the daemon (displayed in `docker info`)'
+ complete -c docker -f -n '__fish_docker_no_subcommand' -l mtu -d 'Set the containers network MTU'
+ complete -c docker -f -n '__fish_docker_no_subcommand' -s p -l pidfile -d 'Path to use for daemon PID file'
+-complete -c docker -f -n '__fish_docker_no_subcommand' -l registry-mirror -d 'Specify a preferred Docker registry mirror'
++complete -c docker -f -n '__fish_docker_no_subcommand' -l registry-mirror -d "Specify a preferred Docker registry mirror for pulls from official registry"
+ complete -c docker -f -n '__fish_docker_no_subcommand' -s s -l storage-driver -d 'Force the Docker runtime to use a specific storage driver'
+ complete -c docker -f -n '__fish_docker_no_subcommand' -l selinux-enabled -d 'Enable selinux support. SELinux does not presently support the BTRFS storage driver'
+ complete -c docker -f -n '__fish_docker_no_subcommand' -l storage-opt -d 'Set storage driver options'
+diff --git a/daemon/config.go b/daemon/config.go
+index 67806fc..3667668 100644
+--- a/daemon/config.go
++++ b/daemon/config.go
+@@ -6,6 +6,7 @@ import (
+ 	"github.com/docker/docker/daemon/networkdriver"
+ 	"github.com/docker/docker/opts"
+ 	flag "github.com/docker/docker/pkg/mflag"
++	"github.com/docker/docker/registry"
+ )
+ 
+ const (
+@@ -44,6 +45,8 @@ type Config struct {
+ 	Context                     map[string][]string
+ 	TrustKeyPath                string
+ 	Labels                      []string
++	BlockedRegistries           opts.ListOpts
++	AdditionalRegistries        opts.ListOpts
+ }
+ 
+ // InstallFlags adds command-line options to the top-level flag parser for
+@@ -75,6 +78,10 @@ func (config *Config) InstallFlags() {
+ 	opts.IPListVar(&config.Dns, []string{"#dns", "-dns"}, "DNS server to use")
+ 	opts.DnsSearchListVar(&config.DnsSearch, []string{"-dns-search"}, "DNS search domains to use")
+ 	opts.LabelListVar(&config.Labels, []string{"-label"}, "Set key=value labels to the daemon")
++	config.BlockedRegistries = opts.NewListOpts(registry.ValidateIndexName)
++	flag.Var(&config.BlockedRegistries, []string{"-block-registry"}, "Don't contact given registry")
++	config.AdditionalRegistries = opts.NewListOpts(registry.ValidateIndexName)
++	flag.Var(&config.AdditionalRegistries, []string{"-add-registry"}, "Registry to query before a public one")
+ }
+ 
+ func getDefaultNetworkMtu() int {
+diff --git a/docker/daemon.go b/docker/daemon.go
+index 5e0365f..2298601 100644
+--- a/docker/daemon.go
++++ b/docker/daemon.go
+@@ -80,6 +80,25 @@ func mainDaemon() {
+ 		flag.Usage()
+ 		return
+ 	}
++
++	for _, r := range daemonCfg.BlockedRegistries.GetAll() {
++		if r == "public" {
++			r = registry.INDEXNAME
++		}
++		registry.BlockedRegistries[r] = struct{}{}
++		if r == registry.INDEXNAME {
++			registry.RegistryList = []string{}
++		}
++	}
++
++	newRegistryList := []string{}
++	for _, r := range daemonCfg.AdditionalRegistries.GetAll() {
++		if _, ok := registry.BlockedRegistries[r]; !ok {
++			newRegistryList = append(newRegistryList, r)
++		}
++	}
++	registry.RegistryList = append(newRegistryList, registry.RegistryList...)
++
+ 	eng := engine.New()
+ 	signal.Trap(eng.Shutdown)
+ 
+diff --git a/docker/docker.go b/docker/docker.go
+index 1b3098d..7505cc5 100644
+--- a/docker/docker.go
++++ b/docker/docker.go
+@@ -14,7 +14,6 @@ import (
+ 	"github.com/docker/docker/dockerversion"
+ 	flag "github.com/docker/docker/pkg/mflag"
+ 	"github.com/docker/docker/pkg/reexec"
+-	"github.com/docker/docker/registry"
+ 	"github.com/docker/docker/utils"
+ )
+ 
+@@ -38,19 +37,6 @@ func main() {
+ 		return
+ 	}
+ 
+-	if *flDefaultRegistry != "" {
+-		registry.RegistryList = strings.Split(*flDefaultRegistry, ",")
+-	}
+-
+-	if *flPrependRegistry != "" {
+-		regs := strings.Split(*flPrependRegistry, ",")
+-		for r := range regs {
+-			// TODO: we actually prepend here - reflect this in the option name
+-			// (--registry-prepend)
+-			registry.RegistryList = append([]string{regs[r]}, registry.RegistryList...)
+-		}
+-	}
+-
+ 	if *flLogLevel != "" {
+ 		lvl, err := log.ParseLevel(*flLogLevel)
+ 		if err != nil {
+@@ -93,6 +79,11 @@ func main() {
+ 	}
+ 	protoAddrParts := strings.SplitN(flHosts[0], "://", 2)
+ 
++	for _, lopt := range []string{"-add-registry", "-block-registry"} {
++		if flag.IsSet(lopt) {
++			log.Fatalf("The -%s option is recognized only by Docker daemon.", lopt)
++		}
++	}
+ 	var (
+ 		cli       *client.DockerCli
+ 		tlsConfig tls.Config
+diff --git a/docker/flags.go b/docker/flags.go
+index 7fcd761..49f48b7 100644
+--- a/docker/flags.go
++++ b/docker/flags.go
+@@ -39,9 +39,6 @@ var (
+ 	flHelp      = flag.Bool([]string{"h", "-help"}, false, "Print usage")
+ 	flTlsVerify = flag.Bool([]string{"-tlsverify"}, dockerTlsVerify, "Use TLS and verify the remote")
+ 
+-	flPrependRegistry = flag.String([]string{"#registry-prepend", "-registry-prepend"}, "", "Comma separated list of registries to prepend to default registry. Registries will be searched in reverse order")
+-	flDefaultRegistry = flag.String([]string{"#registry-replace", "-registry-replace"}, "", "Comma separated list of registries to replace the default registry. Registries will be searched in reverse order")
+-
+ 	// these are initialized in init() below since their default values depend on dockerCertPath which isn't fully initialized until init() runs
+ 	flTrustKey *string
+ 	flCa       *string
+diff --git a/docs/man/docker.1.md b/docs/man/docker.1.md
+index 0bd9917..1515218 100644
+--- a/docs/man/docker.1.md
++++ b/docs/man/docker.1.md
+@@ -34,6 +34,9 @@ unix://[/path/to/socket] to use.
+    The socket(s) to bind to in daemon mode specified using one or more
+    tcp://host:port, unix:///path/to/socket, fd://* or fd://socketfd.
+ 
++**--add-registry**=[]
++  **EXPERIMENTAL** Each given registry will be queried before a public Docker registry during image pulls or searches. They will be searched in the order given. Registry mirrors won't apply to them.
++
+ **--api-enable-cors**=*true*|*false*
+   Enable CORS headers in the remote API. Default is false.
+ 
+@@ -43,6 +46,9 @@ unix://[/path/to/socket] to use.
+ **--bip**=""
+   Use the provided CIDR notation address for the dynamically created bridge (docker0); Mutually exclusive of \-b
+ 
++**--block-registry**=[]
++  **EXPERIMENTAL** Prevent Docker daemon from contacting specified registries. Special keyword "public" represents public Docker registry.
++
+ **-d**=*true*|*false*
+   Enable daemon mode. Default is false.
+ 
+@@ -89,7 +95,7 @@ unix://[/path/to/socket] to use.
+   Path to use for daemon PID file. Default is `/var/run/docker.pid`
+ 
+ **--registry-mirror**=<scheme>://<host>
+-  Prepend a registry mirror to be used for image pulls. May be specified multiple times.
++  Prepend a registry mirror to be used for image pulls from public Docker registry. May be specified multiple times.
+ 
+ **-s**=""
+   Force the Docker runtime to use a specific storage driver.
+@@ -100,12 +106,6 @@ unix://[/path/to/socket] to use.
+ **-v**=*true*|*false*
+   Print version information and quit. Default is false.
+ 
+-**--registry-prepend**=""
+-  Comma separated list of registries to prepend to default registry. Registries will be searched in reverse order.
+-
+-**--registry-replace**=""
+-Comma separated list of registries to replace the default registry. Registries will be searched in reverse order
+-
+ **--selinux-enabled**=*true*|*false*
+   Enable selinux support. Default is false. SELinux does not presently support the BTRFS storage driver.
+ 
+diff --git a/graph/export.go b/graph/export.go
+index 3f7ecd3..fcd96a6 100644
+--- a/graph/export.go
++++ b/graph/export.go
+@@ -40,7 +40,9 @@ func (s *TagStore) CmdImageExport(job *engine.Job) engine.Status {
+ 		}
+ 	}
+ 	for _, name := range job.Args {
+-		name = registry.NormalizeLocalName(name)
++		if _, exists := s.Repositories[name]; !exists {
++			name = registry.NormalizeLocalName(name)
++		}
+ 		log.Debugf("Serializing %s", name)
+ 		rootRepo := s.Repositories[name]
+ 		if rootRepo != nil {
+diff --git a/graph/pull.go b/graph/pull.go
+index f2ec06f..72d7852 100644
+--- a/graph/pull.go
++++ b/graph/pull.go
+@@ -28,6 +28,13 @@ func (s *TagStore) CmdRegistryPull(job *engine.Job) engine.Status {
+ 	// the matching image is found.
+ 	if registry.RepositoryNameHasIndex(tmp) {
+ 		registries = []string{""}
++	} else if len(registries) == 0 {
++		return job.Errorf("No configured registry to pull from.")
++	} else if job.GetenvBool("protectOfficialRegistry") && registries[0] != registry.INDEXNAME {
++		// We must ensure that registry missing hostname will be pulled from
++		// official one, if the `protectOfficialRegistry` tells us so.
++		registries = []string{""}
++		tmp = fmt.Sprintf("%s/%s", registry.INDEXNAME, tmp)
+ 	}
+ 	for i, r := range registries {
+ 		if i > 0 {
+diff --git a/graph/tags.go b/graph/tags.go
+index 6bdb296..3b80fc4 100644
+--- a/graph/tags.go
++++ b/graph/tags.go
+@@ -178,7 +178,9 @@ func (store *TagStore) Delete(repoName, tag string) (bool, error) {
+ 	if err := store.reload(); err != nil {
+ 		return false, err
+ 	}
+-	repoName = registry.NormalizeLocalName(repoName)
++	if _, exists := store.Repositories[repoName]; !exists {
++		repoName = registry.NormalizeLocalName(repoName)
++	}
+ 	if r, exists := store.Repositories[repoName]; exists {
+ 		if tag != "" {
+ 			if _, exists2 := r[tag]; exists2 {
+@@ -220,6 +222,11 @@ func (store *TagStore) Set(repoName, tag, imageName string, force bool) error {
+ 		return err
+ 	}
+ 	var repo Repository
++	// Do not default to the first additional registry if we deal with an image
++	// from the official one which will be missing a hostname.
++	if !registry.RepositoryNameHasIndex(repoName) && registry.IndexServerName() != registry.INDEXSERVER {
++		repoName = fmt.Sprintf("%s/%s", registry.INDEXNAME, repoName)
++	}
+ 	repoName = registry.NormalizeLocalName(repoName)
+ 	if r, exists := store.Repositories[repoName]; exists {
+ 		repo = r
+@@ -240,10 +247,12 @@ func (store *TagStore) Get(repoName string) (Repository, error) {
+ 	if err := store.reload(); err != nil {
+ 		return nil, err
+ 	}
+-	repoName = registry.NormalizeLocalName(repoName)
+ 	if r, exists := store.Repositories[repoName]; exists {
+ 		return r, nil
+ 	}
++	if r, exists := store.Repositories[registry.NormalizeLocalName(repoName)]; exists {
++		return r, nil
++	}
+ 	return nil, nil
+ }
+ 
+diff --git a/registry/config.go b/registry/config.go
+index 5bb4b57..b4a1ec9 100644
+--- a/registry/config.go
++++ b/registry/config.go
+@@ -31,38 +31,53 @@ const (
+ )
+ 
+ var (
++	// A set of blocked registries
++	BlockedRegistries map[string]struct{}
++	// List of registries to query.
++	RegistryList             = []string{INDEXNAME}
+ 	ErrInvalidRepositoryName = errors.New("Invalid repository name (ex: \"registry.domain.tld/myrepos\")")
+ 	emptyServiceConfig       = NewServiceConfig(nil)
+ 	validNamespaceChars      = regexp.MustCompile(`^([a-z0-9-_]*)$`)
+ 	validRepo                = regexp.MustCompile(`^([a-z0-9-_.]+)$`)
+ )
+ 
++func init() {
++	BlockedRegistries = make(map[string]struct{})
++}
++
+ // IndexServerName returns the name of default index server.
+ func IndexServerName() string {
++	if len(RegistryList) < 1 {
++		return ""
++	}
+ 	return RegistryList[0]
+ }
+ 
+ // IndexServerAddress returns an index uri for given name. Empty string is
+ // treated the same as a result of IndexServerName().
+ func IndexServerAddress(indexName string) string {
+-	if (indexName == "" && RegistryList[0] == INDEXNAME) || indexName == INDEXNAME || indexName == INDEXSERVER {
++	if (indexName == "" && IndexServerName() == INDEXNAME) || indexName == INDEXNAME || indexName == INDEXSERVER {
+ 		return INDEXSERVER
+ 	} else if indexName != "" {
+ 		return fmt.Sprintf("http://%s/v1/", indexName)
++	} else if IndexServerName() == "" {
++		return ""
+ 	} else {
+-		return fmt.Sprintf("http://%s/v1/", RegistryList[0])
++		return fmt.Sprintf("http://%s/v1/", IndexServerName())
+ 	}
+ }
+ 
+ // RegistryServerAddress returns a registry uri for given index name. Empty string
+ // is treated the same as a result of IndexServerName().
+ func RegistryServerAddress(indexName string) string {
+-	if (indexName == "" && RegistryList[0] == INDEXNAME) || indexName == INDEXNAME {
++	if (indexName == "" && IndexServerName() == INDEXNAME) || indexName == INDEXNAME {
+ 		return REGISTRYSERVER
+ 	} else if indexName != "" {
+ 		return fmt.Sprintf("http://%s/v2/", indexName)
++	} else if IndexServerName() == "" {
++		return ""
+ 	} else {
+-		return fmt.Sprintf("http://%s/v2/", RegistryList[0])
++		return fmt.Sprintf("http://%s/v2/", IndexServerName())
+ 	}
+ }
+ 
+@@ -136,13 +151,21 @@ func NewServiceConfig(options *Options) *ServiceConfig {
+ 		}
+ 	}
+ 
+-	if config.IndexConfigs[IndexServerName()] == nil {
+-		// Configure public registry.
+-		config.IndexConfigs[IndexServerName()] = &IndexInfo{
+-			Name:     IndexServerName(),
+-			Mirrors:  options.Mirrors.GetAll(),
+-			Secure:   IndexServerName() == INDEXNAME,
+-			Official: IndexServerName() == INDEXNAME,
++	for _, r := range RegistryList {
++		var mirrors []string
++		if config.IndexConfigs[r] == nil {
++			// Use mirrors only with official index
++			if r == INDEXNAME {
++				mirrors = options.Mirrors.GetAll()
++			} else {
++				mirrors = make([]string, 0)
++			}
++			config.IndexConfigs[r] = &IndexInfo{
++				Name:     r,
++				Mirrors:  mirrors,
++				Secure:   r == INDEXNAME,
++				Official: r == INDEXNAME,
++			}
+ 		}
+ 	}
+ 
+@@ -219,8 +242,13 @@ func ValidateMirror(val string) (string, error) {
+ // ValidateIndexName validates an index name.
+ func ValidateIndexName(val string) (string, error) {
+ 	// 'index.docker.io' => 'docker.io'
+-	if val == "index."+IndexServerName() {
+-		val = IndexServerName()
++	if val == "index."+INDEXNAME {
++		val = INDEXNAME
++	}
++	for _, r := range RegistryList {
++		if val == "index."+r {
++			val = r
++		}
+ 	}
+ 	// *TODO: Check if valid hostname[:port]/ip[:port]?
+ 	return val, nil
+@@ -358,6 +386,10 @@ func (config *ServiceConfig) NewRepositoryInfo(reposName string) (*RepositoryInf
+ 		RemoteName: remoteName,
+ 	}
+ 
++	if _, ok := BlockedRegistries[indexName]; ok {
++		return nil, fmt.Errorf("Blocked registry \"%s\"", indexName)
++	}
++
+ 	var err error
+ 	repoInfo.Index, err = config.NewIndexInfo(indexName)
+ 	if err != nil {
+diff --git a/registry/service.go b/registry/service.go
+index 3af88ea..f282c01 100644
+--- a/registry/service.go
++++ b/registry/service.go
+@@ -6,10 +6,6 @@ import (
+ 	"github.com/docker/docker/engine"
+ )
+ 
+-// List of indexes to query.
+-// The lower the index, the higher the priority.
+-var RegistryList = []string{INDEXNAME}
+-
+ // Service exposes registry capabilities in the standard Engine
+ // interface. Once installed, it extends the engine with the
+ // following calls:
+@@ -59,6 +55,9 @@ func (s *Service) Auth(job *engine.Job) engine.Status {
+ 		// Use the official registry address if not specified.
+ 		addr = IndexServerAddress("")
+ 	}
++	if addr == "" {
++		return job.Errorf("No configured registry to authenticate to.")
++	}
+ 
+ 	if index, err = ResolveIndexInfo(job, addr); err != nil {
+ 		return job.Error(err)
+@@ -117,7 +116,6 @@ func (s *Service) Search(job *engine.Job) engine.Status {
+ 		if err != nil {
+ 			return err
+ 		}
+-		// *TODO: Search multiple indexes.
+ 		endpoint, err := repoInfo.GetEndpoint()
+ 		if err != nil {
+ 			return err
+@@ -141,6 +139,8 @@ func (s *Service) Search(job *engine.Job) engine.Status {
+ 		if err := doSearch(term); err != nil {
+ 			return job.Error(err)
+ 		}
++	} else if len(RegistryList) < 1 {
++		return job.Errorf("No configured repository to search.")
+ 	} else {
+ 		var (
+ 			err              error
+diff --git a/registry/session.go b/registry/session.go
+index 9905626..cd50cc5 100644
+--- a/registry/session.go
++++ b/registry/session.go
+@@ -200,6 +200,15 @@ func (r *Session) GetRemoteImageLayer(imgID, registry string, token []string, im
+ 	return res.Body, nil
+ }
+ 
++func isEndpointBlocked(endpoint string) bool {
++	if parsedURL, err := url.Parse(endpoint); err == nil {
++		if _, ok := BlockedRegistries[parsedURL.Host]; !ok {
++			return false
++		}
++	}
++	return true
++}
++
+ func (r *Session) GetRemoteTags(registries []string, repository string, token []string) (map[string]string, error) {
+ 	if strings.Count(repository, "/") == 0 {
+ 		// This will be removed once the Registry supports auto-resolution on
+@@ -207,6 +216,10 @@ func (r *Session) GetRemoteTags(registries []string, repository string, token []
+ 		repository = "library/" + repository
+ 	}
+ 	for _, host := range registries {
++		if isEndpointBlocked(host) {
++			log.Errorf("Cannot query blocked registry at %s for remote tags.", host)
++			continue
++		}
+ 		endpoint := fmt.Sprintf("%srepositories/%s/tags", host, repository)
+ 		req, err := r.reqFactory.NewRequest("GET", endpoint, nil)
+ 
+-- 
+2.1.0
+

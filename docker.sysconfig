@@ -5,18 +5,16 @@ OPTIONS='--selinux-enabled'
 
 DOCKER_CERT_PATH=/etc/docker
 
-# If you want to add your own registry to be used for docker search and
-# docker pull in addition to the default registry on Docker Hub, use the
-# REGISTRY_PREPEND option to list a set of comma separated registries.
-# Note the last registry added will be the first regisry searched.
-# REGISTRY_PREPEND='--registry-prepend'
+# If you want to add your own registry to be used for docker search and docker
+# pull use the ADD_REGISTRY option to list a set of registries, each prepended
+# with --add-registry flag. The first registry added will be the first registry
+# searched.
+ADD_REGISTRY='--add-registry registry.access.redhat.com'
 
-# If you want to replace the default registry, use the REGISTRY_REPLACE
-# option  to list a set of comma separated registries, and uncommenting it.
-# For example adding registry.access.redhat.com will only allow users
-# to  download images from this registry while blocking the default Docker
-# Hub registry.
-# REGISTRY_REPLACE='--registry-replace'
+# If you want to block registries from being used, uncomment the BLOCK_REGISTRY
+# option and give it a set of registries, each prepended with --block-registry
+# flag. For example adding docker.io will stop users from downloading images
+# from docker.io BLOCK_REGISTRY='--block-registry'
 
 # If you have a registry secured with https but do not have proper certs
 # distributed, you can tell docker to not look for full authorization by
