@@ -14,7 +14,8 @@ ADD_REGISTRY='--add-registry registry.access.redhat.com'
 # If you want to block registries from being used, uncomment the BLOCK_REGISTRY
 # option and give it a set of registries, each prepended with --block-registry
 # flag. For example adding docker.io will stop users from downloading images
-# from docker.io BLOCK_REGISTRY='--block-registry'
+# from docker.io
+# BLOCK_REGISTRY='--block-registry'
 
 # If you have a registry secured with https but do not have proper certs
 # distributed, you can tell docker to not look for full authorization by
