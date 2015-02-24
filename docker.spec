@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 43
+%global w_release 44
 
 # for docker-python, prefix with dp_
 %global dp_version 0.7.2
-%global dp_release 1
+%global dp_release 2
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -28,10 +28,10 @@
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global commit      1a4e592f17fc616df29fbcf2a88fae97603e8f75
+%global commit      e5d3e082886115b3d5fc83d17a0293ec0c3fd7bf
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
-%global atomic_commit d8c35ce6c170a4bff90ff5d609fe3f84de907633
+%global atomic_commit a7ff4cbc13cf9d603416860f794b56a31aad1859
 
 %global utils_commit fb94a2822356e0bb7a481a16d553b3c9de669eb8
 
@@ -156,10 +156,8 @@ popd
 
 # untar atomic
 tar zxf %{SOURCE10}
-sed -i '/test:/d' atomic-%{atomic_commit}/Makefile
-sed -i '/sh .\/test.sh/d' atomic-%{atomic_commit}/Makefile
 sed -i '/pylint/d' atomic-%{atomic_commit}/Makefile
-cp atomic-%{atomic_commit}/docs/* ./docs/man/.
+sed -i 's/go-md2man/.\/go-md2man/' atomic-%{atomic_commit}/Makefile
 
 %build
 mkdir _build
@@ -188,8 +186,10 @@ go build github.com/vbatts/docker-utils/cmd/dockertarsum
 popd
 
 cp _build/src/go-md2man docs/man/.
+cp _build/src/go-md2man atomic-%{atomic_commit}/.
+
 sed -i 's/go-md2man/.\/go-md2man/' docs/man/md2man-all.sh
-# build manpages
+# build docker manpages
 docs/man/md2man-all.sh
 
 # build python-websocket-client
@@ -318,6 +318,9 @@ popd
     make test
     popd
     popd
+    pushd atomic-%{atomic_commit}
+    make test
+    popd
 }
 
 %pre
@@ -388,6 +391,13 @@ exit 0
 %{_mandir}/man1/atomic*
 
 %changelog
+* Tue Feb 24 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-6
+- build docker rhatdan/1.5.0 commit#e5d3e08
+- docker registers machine with systemd
+- create journal directory so that journal on host can see journal content in
+container
+- build atomic commit#a7ff4cb
+
 * Mon Feb 16 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-5
 - use docker rhatdan/1.5.0 commit#1a4e592
 - Complete fix for rhbz#1192171 - patch included in docker tarball
