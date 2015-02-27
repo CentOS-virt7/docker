@@ -12,8 +12,8 @@
 %global w_release 44
 
 # for docker-python, prefix with dp_
-%global dp_version 0.7.2
-%global dp_release 2
+%global dp_version 1.0.0
+%global dp_release 1
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,17 +23,17 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.5.0
-%global d_release       6
+%global d_release       7
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global commit      e5d3e082886115b3d5fc83d17a0293ec0c3fd7bf
+%global commit      ad45363e8b7ca939ff57cf2d3bd2d7926893e8bb
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 %global atomic_commit a7ff4cbc13cf9d603416860f794b56a31aad1859
 
-%global utils_commit fb94a2822356e0bb7a481a16d553b3c9de669eb8
+%global utils_commit dcb4518b69b2071385089290bc75c63e5251fcba
 
 Name:       docker
 Version:    %{d_version}
@@ -181,7 +181,7 @@ pushd $(pwd)/_build/src
 # build go-md2man for building manpages
 go build github.com/cpuguy83/go-md2man
 # build dockertarsum and docker-fetch(commented out)
-go build github.com/vbatts/docker-utils/cmd/docker-fetch
+#go build github.com/vbatts/docker-utils/cmd/docker-fetch
 go build github.com/vbatts/docker-utils/cmd/dockertarsum
 popd
 
@@ -213,7 +213,7 @@ install -d %{buildroot}%{_bindir}
 install -p -m 755 bundles/%{d_version}-dev/dynbinary/docker-%{d_version}-dev %{buildroot}%{_bindir}/docker
 
 # install dockertarsum and docker-fetch
-install -p -m 755 _build/src/docker-fetch %{buildroot}%{_bindir}
+#install -p -m 755 _build/src/docker-fetch %{buildroot}%{_bindir}
 install -p -m 755 _build/src/dockertarsum %{buildroot}%{_bindir}
 
 # install dockerinit
@@ -367,7 +367,7 @@ exit 0
 %dir %{_datadir}/zsh/site-functions
 %{_datadir}/zsh/site-functions/_docker
 %{_sysconfdir}/docker
-%{_bindir}/docker-fetch
+#_bindir}/docker-fetch
 %{_bindir}/dockertarsum
 
 %files logrotate
@@ -391,6 +391,13 @@ exit 0
 %{_mandir}/man1/atomic*
 
 %changelog
+* Thu Feb 26 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-7
+- Resolves: rhbz#1196709 - fix docker build's authentication issue
+- Resolves: rhbz#1197158 - fix ADD_REGISTRY and BLOCK_REGISTRY in unitfile
+- Build docker-utils commit#dcb4518
+- update docker-python to 1.0.0
+- disable docker-fetch (not compiling currently)
+
 * Tue Feb 24 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-6
 - build docker rhatdan/1.5.0 commit#e5d3e08
 - docker registers machine with systemd

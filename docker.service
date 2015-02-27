@@ -11,8 +11,8 @@ EnvironmentFile=-/etc/sysconfig/docker-network
 ExecStart=/usr/bin/docker -d $OPTIONS \
           $DOCKER_STORAGE_OPTIONS \
           $DOCKER_NETWORK_OPTIONS \
-          $REGISTRY_PREPEND \
-          $REGISTRY_REPLACE \
+          $ADD_REGISTRY \
+          $BLOCK_REGISTRY \
           $INSECURE_REGISTRY
 LimitNOFILE=1048576
 LimitNPROC=1048576
