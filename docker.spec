@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 45
+%global w_release 46
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 2
+%global dp_release 3
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,7 +23,7 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.5.0
-%global d_release       9
+%global d_release       10
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
@@ -63,6 +63,7 @@ Patch1:     go-md2man.patch
 Patch3:     codegangsta-cli.patch
 Patch4:     urlparse.patch
 Patch5:     docker-py-remove-lock.patch
+Patch6:     fixed-and-speeded-up-repository-searching.patch
 BuildRequires:  glibc-static
 BuildRequires:  golang >= 1.3.1
 BuildRequires:  device-mapper-devel
@@ -136,6 +137,7 @@ Provides:       python-docker = %{dp_version}-%{dp_release}
 %setup -qn docker-%{commit}
 %patch1 -p1
 %patch3 -p1
+%patch6 -p1
 cp %{SOURCE6} .
 
 # untar docker-utils tarball
@@ -391,6 +393,9 @@ exit 0
 %{_mandir}/man1/atomic*
 
 %changelog
+* Mon Mar 02 2015 Michal Minar <miminar@redhat.com> - 1.5.0-10
+- Fixed and speeded up repository searching
+
 * Fri Feb 27 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-9
 - increment all release tags
 
