@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 48
+%global w_release 50
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 5
+%global dp_release 7
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,15 +23,15 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.5.0
-%global d_release       12
+%global d_release       13
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global commit      233dc3e37ac46795c1fd9affce07e7d2c750226b
+%global commit      e0fdceb7c2e21b880e6e36e8e2bdd2e554b9bf55
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
-%global atomic_commit c6390c7f827b08b2e914c46c1030ac18d9dc9f0d
+%global atomic_commit ef2b661cc9b594d7bf117d3ac6e6d00df330b813
 
 %global utils_commit dcb4518b69b2071385089290bc75c63e5251fcba
 
@@ -391,6 +391,10 @@ exit 0
 %{_mandir}/man1/atomic*
 
 %changelog
+* Fri Mar 06 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-13
+- build docker, @rhatdan/1.5.0 commit#e0fdceb
+- build atomic, master commit#ef2b661
+
 * Thu Mar 05 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-12
 - Resolves: rhbz#1198630
 - build docker, @rhatdan/1.5.0 commit#233dc3e
