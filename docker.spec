@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 52
+%global w_release 53
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 9
+%global dp_release 10
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,12 +23,12 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.5.0
-%global d_release       15
+%global d_release       16
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global commit      365cf6840a356675a4cd898db2e3b81bf89ef605
+%global commit      867ff5ef585948ef5e4051d01d2678c10cdcdb57
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 %global atomic_commit f175fb6541b4480db2ee9e9d93384641602fe34a
@@ -63,6 +63,7 @@ Patch1:     go-md2man.patch
 Patch3:     codegangsta-cli.patch
 Patch4:     urlparse.patch
 Patch5:     docker-py-remove-lock.patch
+Patch6:     0001-replace-closed-with-fp-isclosed-for-rhel7.patch
 BuildRequires:  glibc-static
 BuildRequires:  golang >= 1.3.1
 BuildRequires:  device-mapper-devel
@@ -152,6 +153,7 @@ popd
 tar zxf %{SOURCE9}
 pushd docker-py-%{dp_version}
 %patch5 -p1
+%patch6 -p1
 popd
 
 # untar atomic
@@ -391,6 +393,13 @@ exit 0
 %{_datadir}/bash-completion/completions/atomic
 
 %changelog
+* Mon Mar 09 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-16
+- build docker @rhatdan/1.5.0 commit#867ff5e
+- build atomic master commit#
+- Resolves: rhbz#1194445 - patch docker-python to make it work with older
+python-requests
+- Resolves: rhbz#1200104 - dns resolution works with selinux enforced
+
 * Mon Mar 09 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-15
 - Resolves: rhbz#1199433 - correct install path for 80-docker.rules
 
