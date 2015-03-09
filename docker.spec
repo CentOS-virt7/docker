@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 51
+%global w_release 52
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 8
+%global dp_release 9
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,7 +23,7 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.5.0
-%global d_release       14
+%global d_release       15
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
@@ -251,8 +251,8 @@ install -d %{buildroot}%{_datadir}/zsh/site-functions
 install -p -m 644 contrib/completion/zsh/_docker %{buildroot}%{_datadir}/zsh/site-functions
 
 # install udev rules
-install -d %{buildroot}%{_sysconfdir}/udev/rules.d
-install -p -m 755 contrib/udev/80-docker.rules %{buildroot}%{_sysconfdir}/udev/rules.d
+install -d %{buildroot}%{_prefix}/lib/udev/rules.d
+install -p -m 755 contrib/udev/80-docker.rules %{buildroot}%{_prefix}/lib/udev/rules.d
 
 # install storage dir
 install -d -m 700 %{buildroot}%{_sharedstatedir}/docker
@@ -354,8 +354,7 @@ exit 0
 %config(noreplace) %{_sysconfdir}/sysconfig/docker-network
 %{_datadir}/bash-completion/completions/docker
 %dir %{_sharedstatedir}/docker
-%dir %{_sysconfdir}/udev/rules.d
-%{_sysconfdir}/udev/rules.d/80-docker.rules
+%{_prefix}/lib/udev/rules.d/80-docker.rules
 %dir %{_datadir}/fish/vendor_completions.d/
 %{_datadir}/fish/vendor_completions.d/docker.fish
 %dir %{_datadir}/vim/vimfiles/doc
@@ -392,6 +391,9 @@ exit 0
 %{_datadir}/bash-completion/completions/atomic
 
 %changelog
+* Mon Mar 09 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-15
+- Resolves: rhbz#1199433 - correct install path for 80-docker.rules
+
 * Mon Mar 09 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-14
 - build docker, @rhatdan/1.5.0 commit#365cf68
 - build atomic, master commit#f175fb6
