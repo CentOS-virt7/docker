@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 55
+%global w_release 56
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 12
+%global dp_release 13
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,7 +23,7 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.5.0
-%global d_release       18
+%global d_release       19
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
@@ -33,7 +33,7 @@
 
 %global atomic_commit f175fb6541b4480db2ee9e9d93384641602fe34a
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 2
+%global atomic_release 3
 
 %global utils_commit dcb4518b69b2071385089290bc75c63e5251fcba
 
@@ -426,7 +426,10 @@ exit 0
 %{python_sitelib}/atomic*.egg-info
 
 %changelog
-* Tue Mar 10 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-17
+* Tue Mar 10 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-19
+- no rpm change, ensure release tags in changelogs are consistent
+
+* Tue Mar 10 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-18
 - handle updates smoothly from a unified docker-python to split out
 docker-python and atomic
 
