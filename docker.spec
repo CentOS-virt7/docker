@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 53
+%global w_release 54
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 10
+%global dp_release 11
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,15 +23,17 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.5.0
-%global d_release       16
+%global d_release       17
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global commit      867ff5ef585948ef5e4051d01d2678c10cdcdb57
+%global commit      d7dfe829c85fe9c7b152b6cf987e24d3fa75b812
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 %global atomic_commit f175fb6541b4480db2ee9e9d93384641602fe34a
+%global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
+%global atomic_release 1
 
 %global utils_commit dcb4518b69b2071385089290bc75c63e5251fcba
 
@@ -132,6 +134,34 @@ Provides:       python-docker = %{dp_version}-%{dp_release}
 
 %description python
 %{summary}
+
+%package -n atomic
+Version: 0
+Release: 0.%{atomic_release}.git%{atomic_shortcommit}%{?dist}
+Summary: Tool for managing ProjectAtomic systems and containers
+License: LGPLv2+
+ExclusiveArch: x86_64
+BuildRequires: python2-devel
+BuildRequires: python-setuptools
+BuildRequires: python-tools
+BuildRequires: python-requests
+BuildRequires: docker
+Requires: docker
+Requires: python-requests
+Requires: python-docker-py
+Requires: python-%{w_distname} >= 0.11.0
+Requires: python-six >= 1.3.0
+
+%description -n atomic
+The goal of Atomic is to provide a high level, coherent entrypoint to the
+system, and fill in gaps.
+
+For Docker, atomic can make it easier to interact with special kinds of
+containers, such as super-privileged debugging tools and the like.
+
+The atomic host subcommand wraps rpm-ostree, currently just providing a
+friendlier name, but in the future Atomic may provide more unified
+management.
 
 %prep
 %setup -qn docker-%{commit}
@@ -383,16 +413,24 @@ exit 0
 
 %files python
 %doc docker-py-%{dp_version}/{LICENSE,README.md}
-%config(noreplace) %{_sysconfdir}/sysconfig/atomic
 %{python_sitelib}/docker
 %{python_sitelib}/docker_py-%{dp_version}-py2*.egg-info
-%{python_sitelib}/atomic*.egg-info
+
+%files -n atomic
+%doc atomic-%{atomic_commit}/COPYING atomic-%{atomic_commit}/README.md
+%config(noreplace) %{_sysconfdir}/sysconfig/atomic
 %{_sysconfdir}/profile.d/atomic.sh
 %{_bindir}/atomic
 %{_mandir}/man1/atomic*
 %{_datadir}/bash-completion/completions/atomic
+%{python_sitelib}/atomic*.egg-info
 
 %changelog
+* Tue Mar 10 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-17
+- build docker @rhatdan/1.5.0 commit#d7dfe82
+- Resolves: rhbz#1198599 - use homedir from /etc/passwd if $HOME isn't set
+- atomic provided in a separate subpackage
+
 * Mon Mar 09 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-16
 - build docker @rhatdan/1.5.0 commit#867ff5e
 - build atomic master commit#
