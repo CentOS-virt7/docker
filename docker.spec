@@ -28,7 +28,7 @@
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global commit      d7dfe829c85fe9c7b152b6cf987e24d3fa75b812
+%global commit      59929011e4edc21b6fed83744664bbc8a2867c96
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 %global atomic_commit f175fb6541b4480db2ee9e9d93384641602fe34a
@@ -427,6 +427,8 @@ exit 0
 
 %changelog
 * Tue Mar 10 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-19
+- Resolves: rhbz#1200394 - don't mount /run as tmpfs if mounted as a volume
+- build docker rhatdan/1.5.0 commit#5992901
 - no rpm change, ensure release tags in changelogs are consistent
 
 * Tue Mar 10 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-18
