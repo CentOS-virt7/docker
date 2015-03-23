@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 58
+%global w_release 59
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 15
+%global dp_release 16
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,7 +23,7 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.5.0
-%global d_release       21
+%global d_release       22
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
@@ -427,6 +427,9 @@ exit 0
 %{python_sitelib}/atomic*.egg-info
 
 %changelog
+* Mon Mar 23 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-22
+- increment release tag (no other changes)
+
 * Sun Mar 22 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-21
 - install cert for redhat.io authentication
 
