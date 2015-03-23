@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 61
+%global w_release 62
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 18
+%global dp_release 19
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,7 +23,7 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.5.0
-%global d_release       24
+%global d_release       25
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
@@ -33,7 +33,7 @@
 
 %global atomic_commit 4ff7dbd69a8b94309efda0683a824c4acf8e2ecc
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 5
+%global atomic_release 6
 
 %global utils_commit dcb4518b69b2071385089290bc75c63e5251fcba
 
@@ -205,6 +205,7 @@ export DOCKER_BUILDTAGS='selinux btrfs_noversion'
 export GOPATH=$(pwd)/_build:$(pwd)/vendor:%{gopath}
 
 # build docker binary
+sed -i '/rm -r autogen/d' hack/make.sh
 DEBUG=1 hack/make.sh dynbinary
 cp contrib/syntax/vim/LICENSE LICENSE-vim-syntax
 cp contrib/syntax/vim/README.md README-vim-syntax.md
@@ -213,7 +214,7 @@ pushd $(pwd)/_build/src
 # build go-md2man for building manpages
 go build github.com/cpuguy83/go-md2man
 # build dockertarsum and docker-fetch(commented out, doesn't build)
-#go build github.com/vbatts/docker-utils/cmd/docker-fetch
+go build github.com/vbatts/docker-utils/cmd/docker-fetch
 go build github.com/vbatts/docker-utils/cmd/dockertarsum
 popd
 
@@ -245,7 +246,7 @@ install -d %{buildroot}%{_bindir}
 install -p -m 755 bundles/%{d_version}-dev/dynbinary/docker-%{d_version}-dev %{buildroot}%{_bindir}/docker
 
 # install dockertarsum and docker-fetch
-#install -p -m 755 _build/src/docker-fetch %{buildroot}%{_bindir}
+install -p -m 755 _build/src/docker-fetch %{buildroot}%{_bindir}
 install -p -m 755 _build/src/dockertarsum %{buildroot}%{_bindir}
 
 # install dockerinit
@@ -399,7 +400,7 @@ exit 0
 %dir %{_datadir}/zsh/site-functions
 %{_datadir}/zsh/site-functions/_docker
 %{_sysconfdir}/docker
-#{_bindir}/docker-fetch
+%{_bindir}/docker-fetch
 %{_bindir}/dockertarsum
 
 %files logrotate
@@ -427,6 +428,10 @@ exit 0
 %{python_sitelib}/atomic*.egg-info
 
 %changelog
+* Mon Mar 23 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-25
+- don't delete autogen in hack/make.sh
+- re-enable docker-fetch
+
 * Mon Mar 23 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-24
 - bump release tags for all
 
