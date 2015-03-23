@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 60
+%global w_release 61
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 17
+%global dp_release 18
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,7 +23,7 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.5.0
-%global d_release       23
+%global d_release       24
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
@@ -33,7 +33,7 @@
 
 %global atomic_commit 4ff7dbd69a8b94309efda0683a824c4acf8e2ecc
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 4
+%global atomic_release 5
 
 %global utils_commit dcb4518b69b2071385089290bc75c63e5251fcba
 
@@ -427,6 +427,9 @@ exit 0
 %{python_sitelib}/atomic*.egg-info
 
 %changelog
+* Mon Mar 23 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-24
+- bump release tags for all
+
 * Mon Mar 23 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-23
 - Resolves: rhbz#1204260 - do not delete linkgraph.db before starting service
 
