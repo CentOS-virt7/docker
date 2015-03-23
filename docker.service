@@ -8,7 +8,6 @@ Type=notify
 EnvironmentFile=-/etc/sysconfig/docker
 EnvironmentFile=-/etc/sysconfig/docker-storage
 EnvironmentFile=-/etc/sysconfig/docker-network
-ExecStartPre=-/usr/bin/rm /var/lib/docker/linkgraph.db
 ExecStart=/usr/bin/docker -d $OPTIONS \
           $DOCKER_STORAGE_OPTIONS \
           $DOCKER_NETWORK_OPTIONS \
