@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 63
+%global w_release 64
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 20
+%global dp_release 21
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,17 +23,17 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.5.0
-%global d_release       26
+%global d_release       27
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global commit      74310f16deb3d66444bb461c29a09966170367db
+%global commit      fc0329baa1cc2f73349d564fb3d32e0112c51385
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 %global atomic_commit 4ff7dbd69a8b94309efda0683a824c4acf8e2ecc
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 7
+%global atomic_release 8
 
 %global utils_commit dcb4518b69b2071385089290bc75c63e5251fcba
 
@@ -429,6 +429,10 @@ exit 0
 %{python_sitelib}/atomic*.egg-info
 
 %changelog
+* Wed Mar 25 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-27
+- revert rhatdan/docker commit 72a9000fcfa2ec5a2c4a29fb62a17c34e6dd186f
+- Resolves: rhbz#1205276
+
 * Tue Mar 24 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-26
 - revert rhatdan/docker commit 74310f16deb3d66444bb461c29a09966170367db
 
