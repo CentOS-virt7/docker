@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 64
+%global w_release 65
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 21
+%global dp_release 22
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,7 +23,7 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.5.0
-%global d_release       27
+%global d_release       28
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
@@ -33,7 +33,7 @@
 
 %global atomic_commit 4ff7dbd69a8b94309efda0683a824c4acf8e2ecc
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 8
+%global atomic_release 9
 
 %global utils_commit dcb4518b69b2071385089290bc75c63e5251fcba
 
@@ -67,6 +67,7 @@ Patch3:     codegangsta-cli.patch
 Patch4:     urlparse.patch
 Patch5:     docker-py-remove-lock.patch
 Patch6:     0001-replace-closed-with-fp-isclosed-for-rhel7.patch
+Patch7:     cve.patch
 BuildRequires:  glibc-static
 BuildRequires:  golang >= 1.3.1
 BuildRequires:  device-mapper-devel
@@ -168,6 +169,7 @@ management.
 %setup -qn docker-%{commit}
 %patch1 -p1
 %patch3 -p1
+%patch7 -p1
 cp %{SOURCE6} .
 
 # untar docker-utils tarball
@@ -429,6 +431,9 @@ exit 0
 %{python_sitelib}/atomic*.egg-info
 
 %changelog
+* Fri Mar 27 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-28
+- Resolves: rhbz#1206443 - CVE-2015-1843
+
 * Wed Mar 25 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-27
 - revert rhatdan/docker commit 72a9000fcfa2ec5a2c4a29fb62a17c34e6dd186f
 - Resolves: rhbz#1205276

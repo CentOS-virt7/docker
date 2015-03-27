@@ -1,0 +1,27 @@
+commit 4146cc61a6bd0a26f3b58db9be5b167006dd110c
+Author: Dan Walsh <dwalsh@redhat.com>
+Date:   Fri Mar 27 10:22:48 2015
+
+    Do not fallback to HTTP unless registry is insecure
+    
+    Do not consider additional registries as insecure. Refuse to fallback to
+    HTTP unless additional registry is also passed with
+    `--insecure-registry` flag.
+    
+    Signed-off-by: Michal Minar <miminar@redhat.com>
+    
+    Docker-DCO-1.1-Signed-off-by: Dan Walsh <dwalsh@redhat.com> (github: rhatdan)
+
+diff --git a/registry/config.go b/registry/config.go
+index 7cf8e77..5aae180 100644
+--- a/registry/config.go
++++ b/registry/config.go
+@@ -161,7 +161,7 @@ func NewServiceConfig(options *Options) *ServiceConfig {
+ 			config.IndexConfigs[r] = &IndexInfo{
+ 				Name:     r,
+ 				Mirrors:  mirrors,
+-				Secure:   r == INDEXNAME,
++				Secure:   true,
+ 				Official: r == INDEXNAME,
+ 			}
+ 		}
