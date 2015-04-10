@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 66
+%global w_release 67
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 23
+%global dp_release 24
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,17 +23,17 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.5.0
-%global d_release       29
+%global d_release       30
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global commit      2d06cf9eb9bce9e3f364047154ea1065351db5e7
+%global commit      24bc1b9e1aaaf13251065290f0cbce227543db7e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 %global atomic_commit 4ff7dbd69a8b94309efda0683a824c4acf8e2ecc
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 10
+%global atomic_release 11
 
 %global utils_commit dcb4518b69b2071385089290bc75c63e5251fcba
 
@@ -46,8 +46,8 @@ URL:        http://www.docker.com
 # only x86_64 for now: https://github.com/docker/docker/issues/136
 ExclusiveArch:  x86_64
 #Source0:    https://%{import_path}/archive/v%{version}.tar.gz
-# Branch used available at https://github.com/lsm5/docker/commits/1.5.0
-Source0:    https://github.com/lsm5/docker/archive/%{commit}.tar.gz
+# Branch used available at https://github.com/rhatdan/docker/commits/1.6
+Source0:    https://github.com/rhatdan/docker/archive/%{commit}.tar.gz
 Source1:    docker.service
 Source3:    docker.sysconfig
 Source4:    docker-storage.sysconfig
@@ -429,6 +429,9 @@ exit 0
 %{python_sitelib}/atomic*.egg-info
 
 %changelog
+* Fri Apr 10 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-30
+- use docker @rhatdan/1.6 commit#24bc1b9
+
 * Fri Mar 27 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-29
 - use docker @rhatdan/1.6 commit#2d06cf9
 
