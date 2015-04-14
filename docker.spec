@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 67
+%global w_release 68
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 24
+%global dp_release 25
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -22,18 +22,18 @@
 %global project         docker
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
-%global d_version       1.5.0
-%global d_release       30
+%global d_version       1.6.0
+%global d_release       1
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global commit      24bc1b9e1aaaf13251065290f0cbce227543db7e
+%global commit      a8ccea479e7f9d14ab46972db8277c79e6ca01d5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 %global atomic_commit 4ff7dbd69a8b94309efda0683a824c4acf8e2ecc
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 11
+%global atomic_release 12
 
 %global utils_commit dcb4518b69b2071385089290bc75c63e5251fcba
 
@@ -46,7 +46,7 @@ URL:        http://www.docker.com
 # only x86_64 for now: https://github.com/docker/docker/issues/136
 ExclusiveArch:  x86_64
 #Source0:    https://%{import_path}/archive/v%{version}.tar.gz
-# Branch used available at https://github.com/rhatdan/docker/commits/1.6
+# Branch used available at https://github.com/rhatdan/docker/commits/rhel7-1.6
 Source0:    https://github.com/rhatdan/docker/archive/%{commit}.tar.gz
 Source1:    docker.service
 Source3:    docker.sysconfig
@@ -244,7 +244,7 @@ popd
 %install
 # install binary
 install -d %{buildroot}%{_bindir}
-install -p -m 755 bundles/%{d_version}-dev/dynbinary/docker-%{d_version}-dev %{buildroot}%{_bindir}/docker
+install -p -m 755 bundles/%{d_version}-rc6/dynbinary/docker-%{d_version}-rc6 %{buildroot}%{_bindir}/docker
 
 # install dockertarsum and docker-fetch
 install -p -m 755 _build/src/docker-fetch %{buildroot}%{_bindir}
@@ -252,7 +252,7 @@ install -p -m 755 _build/src/dockertarsum %{buildroot}%{_bindir}
 
 # install dockerinit
 install -d %{buildroot}%{_libexecdir}/docker
-install -p -m 755 bundles/%{d_version}-dev/dynbinary/dockerinit-%{d_version}-dev %{buildroot}%{_libexecdir}/docker/dockerinit
+install -p -m 755 bundles/%{d_version}-rc6/dynbinary/dockerinit-%{d_version}-rc6 %{buildroot}%{_libexecdir}/docker/dockerinit
 
 # install manpages
 install -d %{buildroot}%{_mandir}/man1
@@ -429,6 +429,9 @@ exit 0
 %{python_sitelib}/atomic*.egg-info
 
 %changelog
+* Tue Apr 14 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.0-1
+- use docker @rhatdan/rhel7-1.6 commit#a8ccea4
+
 * Fri Apr 10 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-30
 - use docker @rhatdan/1.6 commit#24bc1b9
 
