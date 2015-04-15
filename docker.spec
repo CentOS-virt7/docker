@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 68
+%global w_release 69
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 25
+%global dp_release 26
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,17 +23,17 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.6.0
-%global d_release       1
+%global d_release       2
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global commit      a8ccea479e7f9d14ab46972db8277c79e6ca01d5
+%global commit      fed6da1ec1b32c831ab0b5fe281545a9b851a348
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
-%global atomic_commit 4ff7dbd69a8b94309efda0683a824c4acf8e2ecc
+%global atomic_commit e5734c48df7bb1948657b2687488ca63cca9aafc
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 12
+%global atomic_release 13
 
 %global utils_commit dcb4518b69b2071385089290bc75c63e5251fcba
 
@@ -429,6 +429,12 @@ exit 0
 %{python_sitelib}/atomic*.egg-info
 
 %changelog
+* Wed Apr 15 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.0-2
+- Resolves: rhbz#1211292 - move GOTRACEBACK=crash to unitfile
+- Resolves: rhbz#1207839 - specify min device-mapper-libs version
+- build docker @rhatdan/rhel7-1.6 commit#fed6da1
+- build atomic master commit#e5734c4
+
 * Tue Apr 14 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.0-1
 - use docker @rhatdan/rhel7-1.6 commit#a8ccea4
 
@@ -471,6 +477,8 @@ exit 0
 
 * Tue Mar 10 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.5.0-19
 - Resolves: rhbz#1200394 - don't mount /run as tmpfs if mounted as a volume
+- Resolves: rhbz#1187603 - 'atomic run' no longer ignores new image if
+container still exists
 - build docker rhatdan/1.5.0 commit#5992901
 - no rpm change, ensure release tags in changelogs are consistent
 
