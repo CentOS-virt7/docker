@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 69
+%global w_release 70
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 26
+%global dp_release 27
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,7 +23,7 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.6.0
-%global d_release       2
+%global d_release       3
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
@@ -33,7 +33,7 @@
 
 %global atomic_commit e5734c48df7bb1948657b2687488ca63cca9aafc
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 13
+%global atomic_release 14
 
 %global utils_commit dcb4518b69b2071385089290bc75c63e5251fcba
 
@@ -67,6 +67,8 @@ Patch3:     codegangsta-cli.patch
 Patch4:     urlparse.patch
 Patch5:     docker-py-remove-lock.patch
 Patch6:     0001-replace-closed-with-fp-isclosed-for-rhel7.patch
+# Resolves rhbz#1212188
+Patch7:     0001-Fixed-login-command.patch
 BuildRequires:  glibc-static
 BuildRequires:  golang >= 1.3.1
 BuildRequires:  device-mapper-devel
@@ -168,6 +170,7 @@ management.
 %setup -qn docker-%{commit}
 %patch1 -p1
 %patch3 -p1
+%patch7 -p1
 cp %{SOURCE6} .
 
 # untar docker-utils tarball
@@ -429,6 +432,10 @@ exit 0
 %{python_sitelib}/atomic*.egg-info
 
 %changelog
+* Thu Apr 16 2015 Michal Minar <miminar@redhat.com> - 1.6.0-3
+- Fixed login command
+- Resolves: rhbz#1212188
+
 * Wed Apr 15 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.0-2
 - Resolves: rhbz#1211292 - move GOTRACEBACK=crash to unitfile
 - Resolves: rhbz#1207839 - specify min device-mapper-libs version
