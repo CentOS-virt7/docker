@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 70
+%global w_release 71
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 27
+%global dp_release 28
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,19 +23,38 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.6.0
-%global d_release       3
+%global d_release       4
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global commit      fed6da1ec1b32c831ab0b5fe281545a9b851a348
+%global commit      c1a573cb209504438c8506c3a0f92f9ac7812d6e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 %global atomic_commit e5734c48df7bb1948657b2687488ca63cca9aafc
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 14
+%global atomic_release 15
 
 %global utils_commit dcb4518b69b2071385089290bc75c63e5251fcba
+
+# docker-selinux stuff (prefix with ds_ for version/release etc.)
+# Some bits borrowed from the openstack-selinux package
+%global ds_commit 4421e0d80866b4b03f6a16c5b6bfabdf4c8bfa7c
+%global ds_shortcommit %(c=%{ds_commit}; echo ${c:0:7})
+%global selinuxtype targeted
+%global moduletype services
+%global modulenames %{repo}
+
+# Usage: _format var format
+# Expand 'modulenames' into various formats as needed
+# Format must contain '$x' somewhere to do anything useful
+%global _format() export %1=""; for x in %{modulenames}; do %1+=%2; %1+=" "; done;
+
+# Relabel files
+%global relabel_files() %{_sbindir}/restorecon -R %{_bindir}/%{repo} %{_localstatedir}/run/%{repo}.sock %{_localstatedir}/run/%{repo}.pid %{_sharedstatedir}/%{repo} %{_sysconfdir}/%{repo} %{_localstatedir}/log/%{repo} %{_localstatedir}/log/lxc %{_localstatedir}/lock/lxc %{_unitdir}/%{repo}.service %{_sysconfdir}/%{repo} &> /dev/null || :
+
+# Version of SELinux we were using
+%global selinux_policyver 3.13.1-23
 
 Name:       docker
 Version:    %{d_version}
@@ -62,13 +81,13 @@ Source9:    http://pypi.python.org/packages/source/d/docker-py/docker-py-%{dp_ve
 Source10:   https://github.com/projectatomic/atomic/archive/%{atomic_commit}.tar.gz
 # Source11 is the source tarball for dockertarsum and docker-fetch
 Source11:   https://github.com/vbatts/docker-utils/archive/%{utils_commit}.tar.gz
+# Source12 is the source tarball for docker-selinux
+Source12: https://github.com/fedora-cloud/%{repo}-selinux/archive/%{ds_commit}/%{repo}-selinux-%{ds_shortcommit}.tar.gz
 Patch1:     go-md2man.patch
 Patch3:     codegangsta-cli.patch
 Patch4:     urlparse.patch
 Patch5:     docker-py-remove-lock.patch
 Patch6:     0001-replace-closed-with-fp-isclosed-for-rhel7.patch
-# Resolves rhbz#1212188
-Patch7:     0001-Fixed-login-command.patch
 BuildRequires:  glibc-static
 BuildRequires:  golang >= 1.3.1
 BuildRequires:  device-mapper-devel
@@ -84,6 +103,10 @@ Requires:   subscription-manager
 Provides:   lxc-docker = %{d_version}-%{d_release}
 Provides:   docker = %{d_version}-%{d_release}
 Provides:   docker-io = %{d_version}-%{d_release}
+
+# RE: rhbz#1195804 - ensure min NVR for selinux-policy
+Requires: selinux-policy >= 3.13.1-23
+Requires(pre): %{repo}-selinux >= %{version}-%{release}
 
 %description
 Docker is an open-source engine that automates the deployment of any
@@ -166,12 +189,28 @@ The atomic host subcommand wraps rpm-ostree, currently just providing a
 friendlier name, but in the future Atomic may provide more unified
 management.
 
+%package selinux
+Summary: SELinux policies for Docker
+BuildRequires: selinux-policy
+BuildRequires: selinux-policy-devel
+Requires(post): selinux-policy-base >= %{selinux_policyver}
+Requires(post): selinux-policy-targeted >= %{selinux_policyver}
+Requires(post): policycoreutils
+Requires(post): policycoreutils-python
+Requires(post): libselinux-utils
+Provides: %{repo}-io-selinux
+
+%description selinux
+SELinux policy modules for use with Docker.
+
 %prep
 %setup -qn docker-%{commit}
 %patch1 -p1
 %patch3 -p1
-%patch7 -p1
 cp %{SOURCE6} .
+
+# unpack %{repo}-selinux
+tar zxf %{SOURCE12}
 
 # untar docker-utils tarball
 tar zxf %{SOURCE11}
@@ -213,6 +252,11 @@ sed -i '/rm -r autogen/d' hack/make.sh
 DEBUG=1 hack/make.sh dynbinary
 cp contrib/syntax/vim/LICENSE LICENSE-vim-syntax
 cp contrib/syntax/vim/README.md README-vim-syntax.md
+
+# build %{repo}-selinux
+pushd %{repo}-selinux-%{ds_commit}
+make SHARE="%{_datadir}" TARGETS="%{modulenames}"
+popd
 
 pushd $(pwd)/_build/src
 # build go-md2man for building manpages
@@ -304,6 +348,19 @@ install -p -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/sysconfig/docker
 install -p -m 644 %{SOURCE4} %{buildroot}%{_sysconfdir}/sysconfig/docker-storage
 install -p -m 644 %{SOURCE7} %{buildroot}%{_sysconfdir}/sysconfig/docker-network
 
+# install SELinux interfaces
+%_format INTERFACES $x.if
+install -d %{buildroot}%{_datadir}/selinux/devel/include/%{moduletype}
+install -p -m 644 %{repo}-selinux-%{ds_commit}/$INTERFACES %{buildroot}%{_datadir}/selinux/devel/include/%{moduletype}
+
+# install policy modules
+%_format MODULES $x.pp.bz2
+install -d %{buildroot}%{_datadir}/selinux/packages
+install -m 0644 %{repo}-selinux-%{ds_commit}/$MODULES %{buildroot}%{_datadir}/selinux/packages
+
+# remove %{repo}-selinux rpm spec file
+rm -rf %{repo}-selinux-%{ds_commit}/%{repo}-selinux.spec
+
 # install secrets dir
 install -d -p -m 750 %{buildroot}/%{_datadir}/rhel/secrets
 # rhbz#1110876 - update symlinks for subscription management
@@ -368,11 +425,29 @@ exit 0
 %post
 %systemd_post docker.service
 
+%post selinux
+# Install all modules in a single transaction
+%_format MODULES %{_datadir}/selinux/packages/$x.pp.bz2
+%{_sbindir}/semodule -n -s %{selinuxtype} -i $MODULES
+if %{_sbindir}/selinuxenabled ; then
+%{_sbindir}/load_policy
+%relabel_files
+fi
+
 %preun
 %systemd_preun docker.service
 
 %postun
 %systemd_postun_with_restart docker.service
+
+%postun selinux
+if [ $1 -eq 0 ]; then
+%{_sbindir}/semodule -n -r %{modulenames} &> /dev/null || :
+if %{_sbindir}/selinuxenabled ; then
+%{_sbindir}/load_policy
+%relabel_files
+fi
+fi
 
 %files
 %doc AUTHORS CHANGELOG.md CONTRIBUTING.md MAINTAINERS NOTICE
@@ -431,7 +506,15 @@ exit 0
 %{_datadir}/bash-completion/completions/atomic
 %{python_sitelib}/atomic*.egg-info
 
+%files selinux
+%doc %{repo}-selinux-%{ds_commit}/README.md
+%{_datadir}/selinux/*
+
 %changelog
+* Thu Apr 16 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.0-4
+- build docker @rhatdan/rhel7-1.6 commit#c1a573c
+- include docker-selinux @fedora-cloud/master commit#4421e0d
+
 * Thu Apr 16 2015 Michal Minar <miminar@redhat.com> - 1.6.0-3
 - Fixed login command
 - Resolves: rhbz#1212188
