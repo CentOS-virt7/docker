@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 71
+%global w_release 72
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 28
+%global dp_release 29
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,23 +23,23 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.6.0
-%global d_release       4
+%global d_release       5
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global commit      c1a573cb209504438c8506c3a0f92f9ac7812d6e
+%global commit      9c42d443f1f89cea07c6b0c7feb0533792d55bff
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 %global atomic_commit e5734c48df7bb1948657b2687488ca63cca9aafc
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 15
+%global atomic_release 16
 
 %global utils_commit dcb4518b69b2071385089290bc75c63e5251fcba
 
 # docker-selinux stuff (prefix with ds_ for version/release etc.)
 # Some bits borrowed from the openstack-selinux package
-%global ds_commit 4421e0d80866b4b03f6a16c5b6bfabdf4c8bfa7c
+%global ds_commit d59539be7eba77297e044fdc5de871f7ceaf15a3
 %global ds_shortcommit %(c=%{ds_commit}; echo ${c:0:7})
 %global selinuxtype targeted
 %global moduletype services
@@ -291,7 +291,7 @@ popd
 %install
 # install binary
 install -d %{buildroot}%{_bindir}
-install -p -m 755 bundles/%{d_version}-rc6/dynbinary/docker-%{d_version}-rc6 %{buildroot}%{_bindir}/docker
+install -p -m 755 bundles/%{d_version}/dynbinary/docker-%{d_version} %{buildroot}%{_bindir}/docker
 
 # install dockertarsum and docker-fetch
 install -p -m 755 _build/src/docker-fetch %{buildroot}%{_bindir}
@@ -299,7 +299,7 @@ install -p -m 755 _build/src/dockertarsum %{buildroot}%{_bindir}
 
 # install dockerinit
 install -d %{buildroot}%{_libexecdir}/docker
-install -p -m 755 bundles/%{d_version}-rc6/dynbinary/dockerinit-%{d_version}-rc6 %{buildroot}%{_libexecdir}/docker/dockerinit
+install -p -m 755 bundles/%{d_version}/dynbinary/dockerinit-%{d_version} %{buildroot}%{_libexecdir}/docker/dockerinit
 
 # install manpages
 install -d %{buildroot}%{_mandir}/man1
@@ -511,9 +511,15 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Fri Apr 17 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.0-5
+- build docker @rhatdan/rhel7-1.6 commit#9c42d44
+- build docker-selinux master commit#d59539b
+- Resolves: rhbz#1212813
+
 * Thu Apr 16 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.0-4
 - build docker @rhatdan/rhel7-1.6 commit#c1a573c
-- include docker-selinux @fedora-cloud/master commit#4421e0d
+- includes 1.6.0 release + redhat patches
+- include docker-selinux @fedora-cloud/master commit#d74079c
 
 * Thu Apr 16 2015 Michal Minar <miminar@redhat.com> - 1.6.0-3
 - Fixed login command
