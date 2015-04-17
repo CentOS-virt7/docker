@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 72
+%global w_release 73
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 29
+%global dp_release 30
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,7 +23,7 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.6.0
-%global d_release       5
+%global d_release       6
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
@@ -33,7 +33,7 @@
 
 %global atomic_commit e5734c48df7bb1948657b2687488ca63cca9aafc
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 16
+%global atomic_release 17
 
 %global utils_commit dcb4518b69b2071385089290bc75c63e5251fcba
 
@@ -89,7 +89,7 @@ Patch4:     urlparse.patch
 Patch5:     docker-py-remove-lock.patch
 Patch6:     0001-replace-closed-with-fp-isclosed-for-rhel7.patch
 BuildRequires:  glibc-static
-BuildRequires:  golang >= 1.3.1
+BuildRequires:  golang >= 1.4.2
 BuildRequires:  device-mapper-devel
 BuildRequires:  btrfs-progs-devel
 BuildRequires:  sqlite-devel
@@ -511,10 +511,14 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Fri Apr 17 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.0-6
+- Rebuilt with golang 1.4.2
+- Resolves: rhbz#1212813
+
 * Fri Apr 17 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.0-5
 - build docker @rhatdan/rhel7-1.6 commit#9c42d44
 - build docker-selinux master commit#d59539b
-- Resolves: rhbz#1212813
+- Resolves: rhbz#1211750
 
 * Thu Apr 16 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.0-4
 - build docker @rhatdan/rhel7-1.6 commit#c1a573c
