@@ -28,8 +28,8 @@
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global commit      9c42d443f1f89cea07c6b0c7feb0533792d55bff
-%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global d_commit      9c42d443f1f89cea07c6b0c7feb0533792d55bff
+%global d_shortcommit %(c=%{commit}; echo ${c:0:7})
 
 %global atomic_commit e5734c48df7bb1948657b2687488ca63cca9aafc
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
@@ -66,7 +66,7 @@ URL:        http://www.docker.com
 ExclusiveArch:  x86_64
 #Source0:    https://%{import_path}/archive/v%{version}.tar.gz
 # Branch used available at https://github.com/rhatdan/docker/commits/rhel7-1.6
-Source0:    https://github.com/rhatdan/docker/archive/%{commit}.tar.gz
+Source0:    https://github.com/rhatdan/docker/archive/%{d_commit}.tar.gz
 Source1:    docker.service
 Source3:    docker.sysconfig
 Source4:    docker-storage.sysconfig
@@ -204,7 +204,7 @@ Provides: %{repo}-io-selinux
 SELinux policy modules for use with Docker.
 
 %prep
-%setup -qn docker-%{commit}
+%setup -qn docker-%{d_commit}
 %patch1 -p1
 %patch3 -p1
 cp %{SOURCE6} .
