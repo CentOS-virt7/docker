@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 74
+%global w_release 75
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 31
+%global dp_release 32
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,17 +23,17 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.6.0
-%global d_release       7
+%global d_release       8
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global d_commit      c3721ce14c4606299e9842fb8577b46358a9786c
+%global d_commit      7bd22165fffd3ece2d298f44c5f289ac1809ee41
 %global d_shortcommit %(c=%{commit}; echo ${c:0:7})
 
 %global atomic_commit 7b136161e4dbb224053d5292ce1ae50ceb2eb094
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 18
+%global atomic_release 19
 
 %global utils_commit dcb4518b69b2071385089290bc75c63e5251fcba
 
@@ -511,6 +511,9 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Wed Apr 22 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.0-8
+- build docker @rhatdan/rhel7-1.6 commit#7bd2216
+
 * Tue Apr 21 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.0-7
 - build docker @rhatdan/rhel7-1.6 commit#c3721ce
 - build atomic master commit#7b136161
