@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 75
+%global w_release 76
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 32
+%global dp_release 33
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,17 +23,17 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.6.0
-%global d_release       8
+%global d_release       9
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global d_commit      7bd22165fffd3ece2d298f44c5f289ac1809ee41
+%global d_commit      6a57386b3f7771cdef057a72cc79d4ae1a5ccaf4
 %global d_shortcommit %(c=%{commit}; echo ${c:0:7})
 
 %global atomic_commit 7b136161e4dbb224053d5292ce1ae50ceb2eb094
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 19
+%global atomic_release 20
 
 %global utils_commit dcb4518b69b2071385089290bc75c63e5251fcba
 
@@ -511,6 +511,10 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Fri Apr 24 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.0-9
+- build docker @rhatdan/rhel7-1.6 commit#6a57386
+- fix registry unit test
+
 * Wed Apr 22 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.0-8
 - build docker @rhatdan/rhel7-1.6 commit#7bd2216
 
