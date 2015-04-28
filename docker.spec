@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 76
+%global w_release 77
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 33
+%global dp_release 34
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,17 +23,17 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.6.0
-%global d_release       9
+%global d_release       10
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global d_commit      6a57386b3f7771cdef057a72cc79d4ae1a5ccaf4
-%global d_shortcommit %(c=%{commit}; echo ${c:0:7})
+%global d_commit      08529373512e383421ebf9ec4b868e05816b4bd3
+%global d_shortcommit %(c=%{d_commit}; echo ${c:0:7})
 
 %global atomic_commit 7b136161e4dbb224053d5292ce1ae50ceb2eb094
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 20
+%global atomic_release 21
 
 %global utils_commit dcb4518b69b2071385089290bc75c63e5251fcba
 
@@ -243,7 +243,7 @@ pushd _build
   ln -s $(dirs +1 -l)/docker-utils-%{utils_commit} src/github.com/vbatts/docker-utils
 popd
 
-export DOCKER_GITCOMMIT="%{shortcommit}/%{d_version}"
+export DOCKER_GITCOMMIT="%{d_shortcommit}/%{d_version}"
 export DOCKER_BUILDTAGS='selinux btrfs_noversion'
 export GOPATH=$(pwd)/_build:$(pwd)/vendor:%{gopath}
 
@@ -511,6 +511,10 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Tue Apr 28 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.0-10
+- Resolves: rhbz#1215768
+- build docker @rhatdan/rhel7-1.6 commit#0852937
+
 * Fri Apr 24 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.0-9
 - build docker @rhatdan/rhel7-1.6 commit#6a57386
 - fix registry unit test
