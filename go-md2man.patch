@@ -1,77 +1,85 @@
-From 626f83f8fff1c8ec87c96ec283a3cf2f99978d39 Mon Sep 17 00:00:00 2001
+From 4e3b8e37a34c9b6678320e6fcdad686fb481a58f Mon Sep 17 00:00:00 2001
 From: Lokesh Mandvekar <lsm5@fedoraproject.org>
-Date: Thu, 13 Nov 2014 11:24:09 -0800
-Subject: [PATCH] include vendor repos for manpage gen
+Date: Thu, 30 Apr 2015 10:35:34 -0400
+Subject: [PATCH] include updated go-md2man and deps
 
 Signed-off-by: Lokesh Mandvekar <lsm5@fedoraproject.org>
 ---
- vendor/src/github.com/cpuguy83/go-md2man/README.md |   12 +
- .../github.com/cpuguy83/go-md2man/mangen/mangen.go |  269 ++++
+ .../src/github.com/cpuguy83/go-md2man/LICENSE.md   |   21 +
+ vendor/src/github.com/cpuguy83/go-md2man/README.md |   11 +
+ .../github.com/cpuguy83/go-md2man/go-md2man.1.md   |   21 +
+ .../github.com/cpuguy83/go-md2man/mangen/mangen.go |  272 ++++
  vendor/src/github.com/cpuguy83/go-md2man/md2man.go |   55 +
- .../src/github.com/russross/blackfriday/.gitignore |    8 +
- .../src/github.com/russross/blackfriday/README.md  |  255 ++++
- .../src/github.com/russross/blackfriday/block.go   | 1315 ++++++++++++++++++++
- .../github.com/russross/blackfriday/block_test.go  | 1063 ++++++++++++++++
- vendor/src/github.com/russross/blackfriday/html.go |  899 +++++++++++++
- .../src/github.com/russross/blackfriday/inline.go  | 1078 ++++++++++++++++
- .../github.com/russross/blackfriday/inline_test.go |  796 ++++++++++++
+ .../github.com/russross/blackfriday/.travis.yml    |   17 +
+ .../github.com/russross/blackfriday/LICENSE.txt    |   29 +
+ .../src/github.com/russross/blackfriday/README.md  |  246 ++++
+ .../src/github.com/russross/blackfriday/block.go   | 1339 ++++++++++++++++++++
+ .../github.com/russross/blackfriday/block_test.go  | 1296 +++++++++++++++++++
+ vendor/src/github.com/russross/blackfriday/html.go |  922 ++++++++++++++
+ .../src/github.com/russross/blackfriday/inline.go  | 1096 ++++++++++++++++
+ .../github.com/russross/blackfriday/inline_test.go |  958 ++++++++++++++
  .../src/github.com/russross/blackfriday/latex.go   |  332 +++++
- .../github.com/russross/blackfriday/markdown.go    |  845 +++++++++++++
- .../github.com/russross/blackfriday/sanitize.go    |  154 +++
- .../russross/blackfriday/sanitize_test.go          |  199 +++
- .../github.com/russross/blackfriday/smartypants.go |  376 ++++++
- .../upskirtref/Amps and angle encoding.html        |   17 +
- .../upskirtref/Amps and angle encoding.text        |   21 +
- .../blackfriday/upskirtref/Auto links.html         |   18 +
- .../blackfriday/upskirtref/Auto links.text         |   13 +
- .../blackfriday/upskirtref/Backslash escapes.html  |  123 ++
- .../blackfriday/upskirtref/Backslash escapes.text  |  126 ++
- .../upskirtref/Blockquotes with code blocks.html   |   15 +
- .../upskirtref/Blockquotes with code blocks.text   |   11 +
- .../blackfriday/upskirtref/Code Blocks.html        |   18 +
- .../blackfriday/upskirtref/Code Blocks.text        |   14 +
- .../blackfriday/upskirtref/Code Spans.html         |    5 +
- .../blackfriday/upskirtref/Code Spans.text         |    6 +
+ .../github.com/russross/blackfriday/markdown.go    |  838 ++++++++++++
+ .../github.com/russross/blackfriday/ref_test.go    |  128 ++
+ .../github.com/russross/blackfriday/smartypants.go |  398 ++++++
+ .../testdata/Amps and angle encoding.html          |   17 +
+ .../testdata/Amps and angle encoding.text          |   21 +
+ .../russross/blackfriday/testdata/Auto links.html  |   18 +
+ .../russross/blackfriday/testdata/Auto links.text  |   13 +
+ .../blackfriday/testdata/Backslash escapes.html    |  123 ++
+ .../blackfriday/testdata/Backslash escapes.text    |  126 ++
+ .../testdata/Blockquotes with code blocks.html     |   15 +
+ .../testdata/Blockquotes with code blocks.text     |   11 +
+ .../russross/blackfriday/testdata/Code Blocks.html |   18 +
+ .../russross/blackfriday/testdata/Code Blocks.text |   14 +
+ .../russross/blackfriday/testdata/Code Spans.html  |    5 +
+ .../russross/blackfriday/testdata/Code Spans.text  |    6 +
  ...list-like lines no empty line before block.html |   14 +
  ...list-like lines no empty line before block.text |    8 +
  ...rd-wrapped paragraphs with list-like lines.html |    8 +
  ...rd-wrapped paragraphs with list-like lines.text |    8 +
- .../blackfriday/upskirtref/Horizontal rules.html   |   71 ++
- .../blackfriday/upskirtref/Horizontal rules.text   |   67 +
- .../upskirtref/Inline HTML (Advanced).html         |   15 +
- .../upskirtref/Inline HTML (Advanced).text         |   15 +
- .../upskirtref/Inline HTML (Simple).html           |   72 ++
- .../upskirtref/Inline HTML (Simple).text           |   69 +
- .../upskirtref/Inline HTML comments.html           |   13 +
- .../upskirtref/Inline HTML comments.text           |   13 +
- .../upskirtref/Links, inline style.html            |   11 +
- .../upskirtref/Links, inline style.text            |   12 +
- .../upskirtref/Links, reference style.html         |   52 +
- .../upskirtref/Links, reference style.text         |   71 ++
- .../upskirtref/Links, shortcut references.html     |    9 +
- .../upskirtref/Links, shortcut references.text     |   20 +
- .../upskirtref/Literal quotes in titles.html       |    3 +
- .../upskirtref/Literal quotes in titles.text       |    7 +
- .../Markdown Documentation - Basics.html           |  314 +++++
- .../Markdown Documentation - Basics.text           |  306 +++++
- .../Markdown Documentation - Syntax.html           |  946 ++++++++++++++
- .../Markdown Documentation - Syntax.text           |  888 +++++++++++++
- .../blackfriday/upskirtref/Nested blockquotes.html |    9 +
- .../blackfriday/upskirtref/Nested blockquotes.text |    5 +
- .../upskirtref/Ordered and unordered lists.html    |  166 +++
- .../upskirtref/Ordered and unordered lists.text    |  131 ++
- .../upskirtref/Strong and em together.html         |    7 +
- .../upskirtref/Strong and em together.text         |    7 +
- .../russross/blackfriday/upskirtref/Tabs.html      |   26 +
- .../russross/blackfriday/upskirtref/Tabs.text      |   21 +
- .../russross/blackfriday/upskirtref/Tidyness.html  |    9 +
- .../russross/blackfriday/upskirtref/Tidyness.text  |    5 +
- .../russross/blackfriday/upskirtref_test.go        |  128 ++
- 62 files changed, 11569 insertions(+)
+ .../blackfriday/testdata/Horizontal rules.html     |   71 ++
+ .../blackfriday/testdata/Horizontal rules.text     |   67 +
+ .../testdata/Inline HTML (Advanced).html           |   15 +
+ .../testdata/Inline HTML (Advanced).text           |   15 +
+ .../blackfriday/testdata/Inline HTML (Simple).html |   72 ++
+ .../blackfriday/testdata/Inline HTML (Simple).text |   69 +
+ .../blackfriday/testdata/Inline HTML comments.html |   13 +
+ .../blackfriday/testdata/Inline HTML comments.text |   13 +
+ .../blackfriday/testdata/Links, inline style.html  |   11 +
+ .../blackfriday/testdata/Links, inline style.text  |   12 +
+ .../testdata/Links, reference style.html           |   52 +
+ .../testdata/Links, reference style.text           |   71 ++
+ .../testdata/Links, shortcut references.html       |    9 +
+ .../testdata/Links, shortcut references.text       |   20 +
+ .../testdata/Literal quotes in titles.html         |    3 +
+ .../testdata/Literal quotes in titles.text         |    7 +
+ .../testdata/Markdown Documentation - Basics.html  |  314 +++++
+ .../testdata/Markdown Documentation - Basics.text  |  306 +++++
+ .../testdata/Markdown Documentation - Syntax.html  |  946 ++++++++++++++
+ .../testdata/Markdown Documentation - Syntax.text  |  888 +++++++++++++
+ .../blackfriday/testdata/Nested blockquotes.html   |    9 +
+ .../blackfriday/testdata/Nested blockquotes.text   |    5 +
+ .../testdata/Ordered and unordered lists.html      |  166 +++
+ .../testdata/Ordered and unordered lists.text      |  131 ++
+ .../testdata/Strong and em together.html           |    7 +
+ .../testdata/Strong and em together.text           |    7 +
+ .../russross/blackfriday/testdata/Tabs.html        |   26 +
+ .../russross/blackfriday/testdata/Tabs.text        |   21 +
+ .../russross/blackfriday/testdata/Tidyness.html    |    9 +
+ .../russross/blackfriday/testdata/Tidyness.text    |    5 +
+ .../shurcooL/sanitized_anchor_name/.travis.yml     |   10 +
+ .../shurcooL/sanitized_anchor_name/README.md       |   25 +
+ .../shurcooL/sanitized_anchor_name/main.go         |   29 +
+ .../shurcooL/sanitized_anchor_name/main_test.go    |   35 +
+ 67 files changed, 11863 insertions(+)
+ create mode 100644 vendor/src/github.com/cpuguy83/go-md2man/LICENSE.md
  create mode 100644 vendor/src/github.com/cpuguy83/go-md2man/README.md
+ create mode 100644 vendor/src/github.com/cpuguy83/go-md2man/go-md2man.1.md
  create mode 100644 vendor/src/github.com/cpuguy83/go-md2man/mangen/mangen.go
  create mode 100644 vendor/src/github.com/cpuguy83/go-md2man/md2man.go
- create mode 100644 vendor/src/github.com/russross/blackfriday/.gitignore
+ create mode 100644 vendor/src/github.com/russross/blackfriday/.travis.yml
+ create mode 100644 vendor/src/github.com/russross/blackfriday/LICENSE.txt
  create mode 100644 vendor/src/github.com/russross/blackfriday/README.md
  create mode 100644 vendor/src/github.com/russross/blackfriday/block.go
  create mode 100644 vendor/src/github.com/russross/blackfriday/block_test.go
@@ -80,81 +88,136 @@ Signed-off-by: Lokesh Mandvekar <lsm5@fedoraproject.org>
  create mode 100644 vendor/src/github.com/russross/blackfriday/inline_test.go
  create mode 100644 vendor/src/github.com/russross/blackfriday/latex.go
  create mode 100644 vendor/src/github.com/russross/blackfriday/markdown.go
- create mode 100644 vendor/src/github.com/russross/blackfriday/sanitize.go
- create mode 100644 vendor/src/github.com/russross/blackfriday/sanitize_test.go
+ create mode 100644 vendor/src/github.com/russross/blackfriday/ref_test.go
  create mode 100644 vendor/src/github.com/russross/blackfriday/smartypants.go
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Amps and angle encoding.html
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Amps and angle encoding.text
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Auto links.html
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Auto links.text
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Backslash escapes.html
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Backslash escapes.text
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Blockquotes with code blocks.html
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Blockquotes with code blocks.text
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Code Blocks.html
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Code Blocks.text
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Code Spans.html
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Code Spans.text
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Hard-wrapped paragraphs with list-like lines no empty line before block.html
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Hard-wrapped paragraphs with list-like lines no empty line before block.text
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Hard-wrapped paragraphs with list-like lines.html
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Hard-wrapped paragraphs with list-like lines.text
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Horizontal rules.html
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Horizontal rules.text
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Inline HTML (Advanced).html
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Inline HTML (Advanced).text
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Inline HTML (Simple).html
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Inline HTML (Simple).text
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Inline HTML comments.html
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Inline HTML comments.text
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Links, inline style.html
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Links, inline style.text
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Links, reference style.html
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Links, reference style.text
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Links, shortcut references.html
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Links, shortcut references.text
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Literal quotes in titles.html
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Literal quotes in titles.text
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Markdown Documentation - Basics.html
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Markdown Documentation - Basics.text
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Markdown Documentation - Syntax.html
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Markdown Documentation - Syntax.text
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Nested blockquotes.html
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Nested blockquotes.text
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Ordered and unordered lists.html
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Ordered and unordered lists.text
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Strong and em together.html
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Strong and em together.text
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Tabs.html
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Tabs.text
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Tidyness.html
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref/Tidyness.text
- create mode 100644 vendor/src/github.com/russross/blackfriday/upskirtref_test.go
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Amps and angle encoding.html
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Amps and angle encoding.text
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Auto links.html
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Auto links.text
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Backslash escapes.html
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Backslash escapes.text
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Blockquotes with code blocks.html
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Blockquotes with code blocks.text
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Code Blocks.html
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Code Blocks.text
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Code Spans.html
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Code Spans.text
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Hard-wrapped paragraphs with list-like lines no empty line before block.html
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Hard-wrapped paragraphs with list-like lines no empty line before block.text
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Hard-wrapped paragraphs with list-like lines.html
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Hard-wrapped paragraphs with list-like lines.text
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Horizontal rules.html
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Horizontal rules.text
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Inline HTML (Advanced).html
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Inline HTML (Advanced).text
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Inline HTML (Simple).html
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Inline HTML (Simple).text
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Inline HTML comments.html
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Inline HTML comments.text
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Links, inline style.html
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Links, inline style.text
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Links, reference style.html
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Links, reference style.text
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Links, shortcut references.html
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Links, shortcut references.text
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Literal quotes in titles.html
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Literal quotes in titles.text
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Markdown Documentation - Basics.html
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Markdown Documentation - Basics.text
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Markdown Documentation - Syntax.html
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Markdown Documentation - Syntax.text
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Nested blockquotes.html
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Nested blockquotes.text
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Ordered and unordered lists.html
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Ordered and unordered lists.text
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Strong and em together.html
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Strong and em together.text
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Tabs.html
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Tabs.text
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Tidyness.html
+ create mode 100644 vendor/src/github.com/russross/blackfriday/testdata/Tidyness.text
+ create mode 100644 vendor/src/github.com/shurcooL/sanitized_anchor_name/.travis.yml
+ create mode 100644 vendor/src/github.com/shurcooL/sanitized_anchor_name/README.md
+ create mode 100644 vendor/src/github.com/shurcooL/sanitized_anchor_name/main.go
+ create mode 100644 vendor/src/github.com/shurcooL/sanitized_anchor_name/main_test.go
 
+diff --git a/vendor/src/github.com/cpuguy83/go-md2man/LICENSE.md b/vendor/src/github.com/cpuguy83/go-md2man/LICENSE.md
+new file mode 100644
+index 0000000..1cade6c
+--- /dev/null
++++ b/vendor/src/github.com/cpuguy83/go-md2man/LICENSE.md
+@@ -0,0 +1,21 @@
++The MIT License (MIT)
++
++Copyright (c) 2014 Brian Goff
++
++Permission is hereby granted, free of charge, to any person obtaining a copy
++of this software and associated documentation files (the "Software"), to deal
++in the Software without restriction, including without limitation the rights
++to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++copies of the Software, and to permit persons to whom the Software is
++furnished to do so, subject to the following conditions:
++
++The above copyright notice and this permission notice shall be included in all
++copies or substantial portions of the Software.
++
++THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++SOFTWARE.
 diff --git a/vendor/src/github.com/cpuguy83/go-md2man/README.md b/vendor/src/github.com/cpuguy83/go-md2man/README.md
 new file mode 100644
-index 0000000..58e36e9
+index 0000000..8eb4b2e
 --- /dev/null
 +++ b/vendor/src/github.com/cpuguy83/go-md2man/README.md
-@@ -0,0 +1,12 @@
+@@ -0,0 +1,11 @@
 +go-md2man
 +=========
 +
 +** Work in Progress **
 +This still needs a lot of help to be complete, or even usable!
 +
-+Uses blackfirday to process markdown
++Uses blackfriday to process markdown into man pages.
 +
 +### Usage
 +
 +./md2man -in /path/to/markdownfile.md -out /manfile/output/path
+diff --git a/vendor/src/github.com/cpuguy83/go-md2man/go-md2man.1.md b/vendor/src/github.com/cpuguy83/go-md2man/go-md2man.1.md
+new file mode 100644
+index 0000000..1f7096a
+--- /dev/null
++++ b/vendor/src/github.com/cpuguy83/go-md2man/go-md2man.1.md
+@@ -0,0 +1,21 @@
++go-md2man 1 "January 2015" go-md2man "User Manual"
++==================================================
++
++# NAME
++  go-md2man - Convert mardown files into manpages
++
++# SYNOPSIS
++  go-md2man -in=[/path/to/md/file] -out=[/path/to/output]
++
++# Description
++  go-md2man converts standard markdown formatted documents into manpages. It is
++  written purely in Go so as to reduce dependencies on 3rd party libs.
++
++# Example
++  Convert the markdown file "go-md2man.1.md" into a manpage.
++
++    go-md2man -in=README.md -out=go-md2man.1.out
++
++# HISTORY
++  January 2015, Originally compiled by Brian Goff( cpuguy83@gmail.com )
 +
 diff --git a/vendor/src/github.com/cpuguy83/go-md2man/mangen/mangen.go b/vendor/src/github.com/cpuguy83/go-md2man/mangen/mangen.go
 new file mode 100644
-index 0000000..eb24957
+index 0000000..d436eed
 --- /dev/null
 +++ b/vendor/src/github.com/cpuguy83/go-md2man/mangen/mangen.go
-@@ -0,0 +1,269 @@
+@@ -0,0 +1,272 @@
 +package mangen
 +
 +import (
@@ -196,7 +259,7 @@ index 0000000..eb24957
 +func (m *Man) BlockCode(out *bytes.Buffer, text []byte, lang string) {
 +	out.WriteString("\n.PP\n.RS\n\n.nf\n")
 +	escapeSpecialChars(out, text)
-+	out.WriteString("\n.fi\n")
++	out.WriteString("\n.fi\n.RE\n")
 +}
 +
 +func (m *Man) BlockQuote(out *bytes.Buffer, text []byte) {
@@ -206,7 +269,6 @@ index 0000000..eb24957
 +}
 +
 +func (m *Man) BlockHtml(out *bytes.Buffer, text []byte) {
-+	// a pretty lame thing to do...
 +	fmt.Errorf("man: BlockHtml not supported")
 +	out.Write(text)
 +}
@@ -214,14 +276,18 @@ index 0000000..eb24957
 +func (m *Man) Header(out *bytes.Buffer, text func() bool, level int, id string) {
 +	marker := out.Len()
 +
-+	switch level {
-+	case 1:
++	switch {
++	case marker == 0:
++		// This is the doc header
++		out.WriteString(".TH ")
++	case level == 1:
++		out.WriteString("\n\n.SH ")
++	case level == 2:
 +		out.WriteString("\n.SH ")
-+	case 2:
-+		out.WriteString(".SH ")
 +	default:
-+		out.WriteString(".SS ")
++		out.WriteString("\n.SS ")
 +	}
++
 +	if !text() {
 +		out.Truncate(marker)
 +		return
@@ -344,7 +410,7 @@ index 0000000..eb24957
 +}
 +
 +func (m *Man) RawHtmlTag(out *bytes.Buffer, tag []byte) {
-+	fmt.Errorf("man: Raw HTML not supported")
++	out.Write(tag)
 +}
 +
 +func (m *Man) TripleEmphasis(out *bytes.Buffer, text []byte) {
@@ -396,7 +462,7 @@ index 0000000..eb24957
 +}
 +
 +func needsBackslash(c byte) bool {
-+	for _, r := range []byte("-_{}$&\\~") {
++	for _, r := range []byte("-_{}&\\~") {
 +		if c == r {
 +			return true
 +		}
@@ -485,27 +551,71 @@ index 0000000..f8b1722
 +		os.Exit(1)
 +	}
 +}
-diff --git a/vendor/src/github.com/russross/blackfriday/.gitignore b/vendor/src/github.com/russross/blackfriday/.gitignore
+diff --git a/vendor/src/github.com/russross/blackfriday/.travis.yml b/vendor/src/github.com/russross/blackfriday/.travis.yml
 new file mode 100644
-index 0000000..75623dc
+index 0000000..4dd7a1c
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/.gitignore
-@@ -0,0 +1,8 @@
-+*.out
-+*.swp
-+*.8
-+*.6
-+_obj
-+_test*
-+markdown
-+tags
++++ b/vendor/src/github.com/russross/blackfriday/.travis.yml
+@@ -0,0 +1,17 @@
++# Travis CI (http://travis-ci.org/) is a continuous integration service for
++# open source projects. This file configures it to run unit tests for
++# blackfriday.
++
++language: go
++
++go:
++    - 1.2
++    - 1.3
++    - 1.4
++
++install:
++    - go get -d -t -v ./...
++    - go build -v ./...
++
++script:
++    - go test -v ./...
+diff --git a/vendor/src/github.com/russross/blackfriday/LICENSE.txt b/vendor/src/github.com/russross/blackfriday/LICENSE.txt
+new file mode 100644
+index 0000000..2885af3
+--- /dev/null
++++ b/vendor/src/github.com/russross/blackfriday/LICENSE.txt
+@@ -0,0 +1,29 @@
++Blackfriday is distributed under the Simplified BSD License:
++
++> Copyright © 2011 Russ Ross
++> All rights reserved.
++>
++> Redistribution and use in source and binary forms, with or without
++> modification, are permitted provided that the following conditions
++> are met:
++>
++> 1.  Redistributions of source code must retain the above copyright
++>     notice, this list of conditions and the following disclaimer.
++>
++> 2.  Redistributions in binary form must reproduce the above
++>     copyright notice, this list of conditions and the following
++>     disclaimer in the documentation and/or other materials provided with
++>     the distribution.
++>
++> THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
++> "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
++> LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
++> FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
++> COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
++> INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
++> BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
++> LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
++> CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
++> LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
++> ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
++> POSSIBILITY OF SUCH DAMAGE.
 diff --git a/vendor/src/github.com/russross/blackfriday/README.md b/vendor/src/github.com/russross/blackfriday/README.md
 new file mode 100644
-index 0000000..55270d8
+index 0000000..1bb985d
 --- /dev/null
 +++ b/vendor/src/github.com/russross/blackfriday/README.md
-@@ -0,0 +1,255 @@
-+Blackfriday
+@@ -0,0 +1,246 @@
++Blackfriday [![Build Status](https://travis-ci.org/russross/blackfriday.svg?branch=master)](https://travis-ci.org/russross/blackfriday)
 +===========
 +
 +Blackfriday is a [Markdown][1] processor implemented in [Go][2]. It
@@ -517,7 +627,7 @@ index 0000000..55270d8
 +HTML output is currently supported, along with Smartypants
 +extensions. An experimental LaTeX output engine is also included.
 +
-+It started as a translation from C of [upskirt][3].
++It started as a translation from C of [Sundown][3].
 +
 +
 +Installation
@@ -533,13 +643,12 @@ index 0000000..55270d8
 +    go get github.com/russross/blackfriday
 +
 +will download, compile, and install the package into your `$GOPATH`
-+directory hierarchy. Alternatively, you can import it into a
-+project:
++directory hierarchy. Alternatively, you can achieve the same if you
++import it into a project:
 +
 +    import "github.com/russross/blackfriday"
 +
-+and when you build that project with `go build`, blackfriday will be
-+downloaded and installed automatically.
++and `go get` without parameters.
 +
 +Usage
 +-----
@@ -553,6 +662,28 @@ index 0000000..55270d8
 +feature set, use this instead:
 +
 +    output := blackfriday.MarkdownCommon(input)
++
++### Sanitize untrusted content
++
++Blackfriday itself does nothing to protect against malicious content. If you are
++dealing with user-supplied markdown, we recommend running blackfriday's output
++through HTML sanitizer such as
++[Bluemonday](https://github.com/microcosm-cc/bluemonday).
++
++Here's an example of simple usage of blackfriday together with bluemonday:
++
++``` go
++import (
++    "github.com/microcosm-cc/bluemonday"
++    "github.com/russross/blackfriday"
++)
++
++// ...
++unsafe := blackfriday.MarkdownCommon(input)
++html := bluemonday.UGCPolicy().SanitizeBytes(unsafe)
++```
++
++### Custom options
 +
 +If you want to customize the set of options, first get a renderer
 +(currently either the HTML or LaTeX output engines), then use it to
@@ -583,7 +714,7 @@ index 0000000..55270d8
 +Features
 +--------
 +
-+All features of upskirt are supported, including:
++All features of Sundown are supported, including:
 +
 +*   **Compatibility**. The Markdown v1.0.3 test suite passes with
 +    the `--tidy` option.  Without `--tidy`, the differences are
@@ -599,10 +730,9 @@ index 0000000..55270d8
 +    known inputs that make it crash.  If you find one, please let me
 +    know and send me the input that does it.
 +
-+    NOTE: "safety" in this context means *runtime safety only*. It is
-+    not bullet proof against JavaScript injections, though we're working
-+    on it (https://github.com/russross/blackfriday/issues/11 tracks the
-+    progress).
++    NOTE: "safety" in this context means *runtime safety only*. In order to
++    protect yourself agains JavaScript injection in untrusted content, see
++    [this example](https://github.com/russross/blackfriday#sanitize-untrusted-content).
 +
 +*   **Fast processing**. It is fast enough to render on-demand in
 +    most web applications without having to cache the output.
@@ -716,7 +846,6 @@ index 0000000..55270d8
 +----
 +
 +*   More unit testing
-+*   Markdown pretty-printer output engine
 +*   Improve unicode support. It does not understand all unicode
 +    rules (about what constitutes a letter, a punctuation symbol,
 +    etc.), so it may fail to detect word boundaries correctly in
@@ -726,46 +855,18 @@ index 0000000..55270d8
 +License
 +-------
 +
-+Blackfriday is distributed under the Simplified BSD License:
-+
-+> Copyright © 2011 Russ Ross
-+> All rights reserved.
-+> 
-+> Redistribution and use in source and binary forms, with or without
-+> modification, are permitted provided that the following conditions
-+> are met:
-+> 
-+> 1.  Redistributions of source code must retain the above copyright
-+>     notice, this list of conditions and the following disclaimer.
-+> 
-+> 2.  Redistributions in binary form must reproduce the above
-+>     copyright notice, this list of conditions and the following
-+>     disclaimer in the documentation and/or other materials provided with
-+>     the distribution.
-+> 
-+> THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-+> "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-+> LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-+> FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-+> COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-+> INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-+> BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-+> LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-+> CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-+> LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-+> ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-+> POSSIBILITY OF SUCH DAMAGE.
++[Blackfriday is distributed under the Simplified BSD License](LICENSE.txt)
 +
 +
 +   [1]: http://daringfireball.net/projects/markdown/ "Markdown"
 +   [2]: http://golang.org/ "Go Language"
-+   [3]: http://github.com/tanoku/upskirt "Upskirt"
++   [3]: https://github.com/vmg/sundown "Sundown"
 diff --git a/vendor/src/github.com/russross/blackfriday/block.go b/vendor/src/github.com/russross/blackfriday/block.go
 new file mode 100644
-index 0000000..d21a0e6
+index 0000000..59c6d28
 --- /dev/null
 +++ b/vendor/src/github.com/russross/blackfriday/block.go
-@@ -0,0 +1,1315 @@
+@@ -0,0 +1,1339 @@
 +//
 +// Blackfriday Markdown Processor
 +// Available at http://github.com/russross/blackfriday
@@ -781,7 +882,11 @@ index 0000000..d21a0e6
 +
 +package blackfriday
 +
-+import "bytes"
++import (
++	"bytes"
++
++	"github.com/shurcooL/sanitized_anchor_name"
++)
 +
 +// Parse block-level data.
 +// Note: this function and many that it calls assume that
@@ -991,6 +1096,9 @@ index 0000000..d21a0e6
 +		end--
 +	}
 +	if end > i {
++		if id == "" && p.flags&EXTENSION_AUTO_HEADER_IDS != 0 {
++			id = sanitized_anchor_name.Create(string(data[i:end]))
++		}
 +		work := func() bool {
 +			p.inline(out, data[i:end])
 +			return true
@@ -1317,8 +1425,11 @@ index 0000000..d21a0e6
 +	skip = 0
 +
 +	// skip up to three spaces
-+	for i < 3 && data[i] == ' ' {
++	for i < len(data) && i < 3 && data[i] == ' ' {
 +		i++
++	}
++	if i >= len(data) {
++		return
 +	}
 +
 +	// check for the marker characters: ~ or `
@@ -1329,9 +1440,13 @@ index 0000000..d21a0e6
 +	c := data[i]
 +
 +	// the whole line must be the same char or whitespace
-+	for data[i] == c {
++	for i < len(data) && data[i] == c {
 +		size++
 +		i++
++	}
++
++	if i >= len(data) {
++		return
 +	}
 +
 +	// the marker char must occur at least 3 times
@@ -1348,8 +1463,12 @@ index 0000000..d21a0e6
 +	if syntax != nil {
 +		syn := 0
 +
-+		for data[i] == ' ' {
++		for i < len(data) && data[i] == ' ' {
 +			i++
++		}
++
++		if i >= len(data) {
++			return
 +		}
 +
 +		syntaxStart := i
@@ -1358,12 +1477,12 @@ index 0000000..d21a0e6
 +			i++
 +			syntaxStart++
 +
-+			for data[i] != '}' && data[i] != '\n' {
++			for i < len(data) && data[i] != '}' && data[i] != '\n' {
 +				syn++
 +				i++
 +			}
 +
-+			if data[i] != '}' {
++			if i >= len(data) || data[i] != '}' {
 +				return
 +			}
 +
@@ -1380,7 +1499,7 @@ index 0000000..d21a0e6
 +
 +			i++
 +		} else {
-+			for !isspace(data[i]) {
++			for i < len(data) && !isspace(data[i]) {
 +				syn++
 +				i++
 +			}
@@ -1390,10 +1509,10 @@ index 0000000..d21a0e6
 +		*syntax = &language
 +	}
 +
-+	for data[i] == ' ' {
++	for i < len(data) && data[i] == ' ' {
 +		i++
 +	}
-+	if data[i] != '\n' {
++	if i >= len(data) || data[i] != '\n' {
 +		return
 +	}
 +
@@ -1422,7 +1541,7 @@ index 0000000..d21a0e6
 +
 +		// copy the current line
 +		end := beg
-+		for data[end] != '\n' {
++		for end < len(data) && data[end] != '\n' {
 +			end++
 +		}
 +		end++
@@ -2035,7 +2154,13 @@ index 0000000..d21a0e6
 +						return true
 +					}
 +				}(out, p, data[prev:eol])
-+				p.r.Header(out, work, level, "")
++
++				id := ""
++				if p.flags&EXTENSION_AUTO_HEADER_IDS != 0 {
++					id = sanitized_anchor_name.Create(string(data[prev:eol]))
++				}
++
++				p.r.Header(out, work, level, id)
 +
 +				// find the end of the underline
 +				for data[i] != '\n' {
@@ -2083,10 +2208,10 @@ index 0000000..d21a0e6
 +}
 diff --git a/vendor/src/github.com/russross/blackfriday/block_test.go b/vendor/src/github.com/russross/blackfriday/block_test.go
 new file mode 100644
-index 0000000..c9d4a88
+index 0000000..b726c07
 --- /dev/null
 +++ b/vendor/src/github.com/russross/blackfriday/block_test.go
-@@ -0,0 +1,1063 @@
+@@ -0,0 +1,1296 @@
 +//
 +// Blackfriday Markdown Processor
 +// Available at http://github.com/russross/blackfriday
@@ -2106,16 +2231,35 @@ index 0000000..c9d4a88
 +	"testing"
 +)
 +
++func runMarkdownBlockWithRenderer(input string, extensions int, renderer Renderer) string {
++	return string(Markdown([]byte(input), renderer, extensions))
++}
++
 +func runMarkdownBlock(input string, extensions int) string {
 +	htmlFlags := 0
 +	htmlFlags |= HTML_USE_XHTML
 +
 +	renderer := HtmlRenderer(htmlFlags, "", "")
 +
-+	return string(Markdown([]byte(input), renderer, extensions))
++	return runMarkdownBlockWithRenderer(input, extensions, renderer)
++}
++
++func runnerWithRendererParameters(parameters HtmlRendererParameters) func(string, int) string {
++	return func(input string, extensions int) string {
++		htmlFlags := 0
++		htmlFlags |= HTML_USE_XHTML
++
++		renderer := HtmlRendererWithParameters(htmlFlags, "", "", parameters)
++
++		return runMarkdownBlockWithRenderer(input, extensions, renderer)
++	}
 +}
 +
 +func doTestsBlock(t *testing.T, tests []string, extensions int) {
++	doTestsBlockWithRunner(t, tests, extensions, runMarkdownBlock)
++}
++
++func doTestsBlockWithRunner(t *testing.T, tests []string, extensions int, runner func(string, int) string) {
 +	// catch and report panics
 +	var candidate string
 +	defer func() {
@@ -2128,7 +2272,7 @@ index 0000000..c9d4a88
 +		input := tests[i]
 +		candidate = input
 +		expected := tests[i+1]
-+		actual := runMarkdownBlock(candidate, extensions)
++		actual := runner(candidate, extensions)
 +		if actual != expected {
 +			t.Errorf("\nInput   [%#v]\nExpected[%#v]\nActual  [%#v]",
 +				candidate, expected, actual)
@@ -2326,6 +2470,170 @@ index 0000000..c9d4a88
 +	doTestsBlock(t, tests, EXTENSION_HEADER_IDS)
 +}
 +
++func TestPrefixHeaderIdExtensionWithPrefixAndSuffix(t *testing.T) {
++	var tests = []string{
++		"# header 1 {#someid}\n",
++		"<h1 id=\"PRE:someid:POST\">header 1</h1>\n",
++
++		"## header 2 {#someid}\n",
++		"<h2 id=\"PRE:someid:POST\">header 2</h2>\n",
++
++		"### header 3 {#someid}\n",
++		"<h3 id=\"PRE:someid:POST\">header 3</h3>\n",
++
++		"#### header 4 {#someid}\n",
++		"<h4 id=\"PRE:someid:POST\">header 4</h4>\n",
++
++		"##### header 5 {#someid}\n",
++		"<h5 id=\"PRE:someid:POST\">header 5</h5>\n",
++
++		"###### header 6 {#someid}\n",
++		"<h6 id=\"PRE:someid:POST\">header 6</h6>\n",
++
++		"####### header 7 {#someid}\n",
++		"<h6 id=\"PRE:someid:POST\"># header 7</h6>\n",
++
++		"# header 1 # {#someid}\n",
++		"<h1 id=\"PRE:someid:POST\">header 1</h1>\n",
++
++		"## header 2 ## {#someid}\n",
++		"<h2 id=\"PRE:someid:POST\">header 2</h2>\n",
++
++		"* List\n# Header {#someid}\n* List\n",
++		"<ul>\n<li><p>List</p>\n\n<h1 id=\"PRE:someid:POST\">Header</h1></li>\n\n<li><p>List</p></li>\n</ul>\n",
++
++		"* List\n#Header {#someid}\n* List\n",
++		"<ul>\n<li><p>List</p>\n\n<h1 id=\"PRE:someid:POST\">Header</h1></li>\n\n<li><p>List</p></li>\n</ul>\n",
++
++		"*   List\n    * Nested list\n    # Nested header {#someid}\n",
++		"<ul>\n<li><p>List</p>\n\n<ul>\n<li><p>Nested list</p>\n\n" +
++			"<h1 id=\"PRE:someid:POST\">Nested header</h1></li>\n</ul></li>\n</ul>\n",
++	}
++
++	parameters := HtmlRendererParameters{
++		HeaderIDPrefix: "PRE:",
++		HeaderIDSuffix: ":POST",
++	}
++
++	doTestsBlockWithRunner(t, tests, EXTENSION_HEADER_IDS, runnerWithRendererParameters(parameters))
++}
++
++func TestPrefixAutoHeaderIdExtension(t *testing.T) {
++	var tests = []string{
++		"# Header 1\n",
++		"<h1 id=\"header-1\">Header 1</h1>\n",
++
++		"# Header 1   \n",
++		"<h1 id=\"header-1\">Header 1</h1>\n",
++
++		"## Header 2\n",
++		"<h2 id=\"header-2\">Header 2</h2>\n",
++
++		"### Header 3\n",
++		"<h3 id=\"header-3\">Header 3</h3>\n",
++
++		"#### Header 4\n",
++		"<h4 id=\"header-4\">Header 4</h4>\n",
++
++		"##### Header 5\n",
++		"<h5 id=\"header-5\">Header 5</h5>\n",
++
++		"###### Header 6\n",
++		"<h6 id=\"header-6\">Header 6</h6>\n",
++
++		"####### Header 7\n",
++		"<h6 id=\"header-7\"># Header 7</h6>\n",
++
++		"Hello\n# Header 1\nGoodbye\n",
++		"<p>Hello</p>\n\n<h1 id=\"header-1\">Header 1</h1>\n\n<p>Goodbye</p>\n",
++
++		"* List\n# Header\n* List\n",
++		"<ul>\n<li><p>List</p>\n\n<h1 id=\"header\">Header</h1></li>\n\n<li><p>List</p></li>\n</ul>\n",
++
++		"* List\n#Header\n* List\n",
++		"<ul>\n<li><p>List</p>\n\n<h1 id=\"header\">Header</h1></li>\n\n<li><p>List</p></li>\n</ul>\n",
++
++		"*   List\n    * Nested list\n    # Nested header\n",
++		"<ul>\n<li><p>List</p>\n\n<ul>\n<li><p>Nested list</p>\n\n" +
++			"<h1 id=\"nested-header\">Nested header</h1></li>\n</ul></li>\n</ul>\n",
++
++		"# Header\n\n# Header\n",
++		"<h1 id=\"header\">Header</h1>\n\n<h1 id=\"header-1\">Header</h1>\n",
++
++		"# Header 1\n\n# Header 1",
++		"<h1 id=\"header-1\">Header 1</h1>\n\n<h1 id=\"header-1-1\">Header 1</h1>\n",
++
++		"# Header\n\n# Header 1\n\n# Header\n\n# Header",
++		"<h1 id=\"header\">Header</h1>\n\n<h1 id=\"header-1\">Header 1</h1>\n\n<h1 id=\"header-1-1\">Header</h1>\n\n<h1 id=\"header-1-2\">Header</h1>\n",
++	}
++	doTestsBlock(t, tests, EXTENSION_AUTO_HEADER_IDS)
++}
++
++func TestPrefixAutoHeaderIdExtensionWithPrefixAndSuffix(t *testing.T) {
++	var tests = []string{
++		"# Header 1\n",
++		"<h1 id=\"PRE:header-1:POST\">Header 1</h1>\n",
++
++		"# Header 1   \n",
++		"<h1 id=\"PRE:header-1:POST\">Header 1</h1>\n",
++
++		"## Header 2\n",
++		"<h2 id=\"PRE:header-2:POST\">Header 2</h2>\n",
++
++		"### Header 3\n",
++		"<h3 id=\"PRE:header-3:POST\">Header 3</h3>\n",
++
++		"#### Header 4\n",
++		"<h4 id=\"PRE:header-4:POST\">Header 4</h4>\n",
++
++		"##### Header 5\n",
++		"<h5 id=\"PRE:header-5:POST\">Header 5</h5>\n",
++
++		"###### Header 6\n",
++		"<h6 id=\"PRE:header-6:POST\">Header 6</h6>\n",
++
++		"####### Header 7\n",
++		"<h6 id=\"PRE:header-7:POST\"># Header 7</h6>\n",
++
++		"Hello\n# Header 1\nGoodbye\n",
++		"<p>Hello</p>\n\n<h1 id=\"PRE:header-1:POST\">Header 1</h1>\n\n<p>Goodbye</p>\n",
++
++		"* List\n# Header\n* List\n",
++		"<ul>\n<li><p>List</p>\n\n<h1 id=\"PRE:header:POST\">Header</h1></li>\n\n<li><p>List</p></li>\n</ul>\n",
++
++		"* List\n#Header\n* List\n",
++		"<ul>\n<li><p>List</p>\n\n<h1 id=\"PRE:header:POST\">Header</h1></li>\n\n<li><p>List</p></li>\n</ul>\n",
++
++		"*   List\n    * Nested list\n    # Nested header\n",
++		"<ul>\n<li><p>List</p>\n\n<ul>\n<li><p>Nested list</p>\n\n" +
++			"<h1 id=\"PRE:nested-header:POST\">Nested header</h1></li>\n</ul></li>\n</ul>\n",
++
++		"# Header\n\n# Header\n",
++		"<h1 id=\"PRE:header:POST\">Header</h1>\n\n<h1 id=\"PRE:header-1:POST\">Header</h1>\n",
++
++		"# Header 1\n\n# Header 1",
++		"<h1 id=\"PRE:header-1:POST\">Header 1</h1>\n\n<h1 id=\"PRE:header-1-1:POST\">Header 1</h1>\n",
++
++		"# Header\n\n# Header 1\n\n# Header\n\n# Header",
++		"<h1 id=\"PRE:header:POST\">Header</h1>\n\n<h1 id=\"PRE:header-1:POST\">Header 1</h1>\n\n<h1 id=\"PRE:header-1-1:POST\">Header</h1>\n\n<h1 id=\"PRE:header-1-2:POST\">Header</h1>\n",
++	}
++
++	parameters := HtmlRendererParameters{
++		HeaderIDPrefix: "PRE:",
++		HeaderIDSuffix: ":POST",
++	}
++
++	doTestsBlockWithRunner(t, tests, EXTENSION_AUTO_HEADER_IDS, runnerWithRendererParameters(parameters))
++}
++
++func TestPrefixMultipleHeaderExtensions(t *testing.T) {
++	var tests = []string{
++		"# Header\n\n# Header {#header}\n\n# Header 1",
++		"<h1 id=\"header\">Header</h1>\n\n<h1 id=\"header-1\">Header</h1>\n\n<h1 id=\"header-1-1\">Header 1</h1>\n",
++	}
++	doTestsBlock(t, tests, EXTENSION_AUTO_HEADER_IDS|EXTENSION_HEADER_IDS)
++}
++
 +func TestUnderlineHeaders(t *testing.T) {
 +	var tests = []string{
 +		"Header 1\n========\n",
@@ -2374,6 +2682,56 @@ index 0000000..c9d4a88
 +		"<h1>Double underline</h1>\n\n<p>=====</p>\n",
 +	}
 +	doTestsBlock(t, tests, 0)
++}
++
++func TestUnderlineHeadersAutoIDs(t *testing.T) {
++	var tests = []string{
++		"Header 1\n========\n",
++		"<h1 id=\"header-1\">Header 1</h1>\n",
++
++		"Header 2\n--------\n",
++		"<h2 id=\"header-2\">Header 2</h2>\n",
++
++		"A\n=\n",
++		"<h1 id=\"a\">A</h1>\n",
++
++		"B\n-\n",
++		"<h2 id=\"b\">B</h2>\n",
++
++		"Paragraph\nHeader\n=\n",
++		"<p>Paragraph</p>\n\n<h1 id=\"header\">Header</h1>\n",
++
++		"Header\n===\nParagraph\n",
++		"<h1 id=\"header\">Header</h1>\n\n<p>Paragraph</p>\n",
++
++		"Header\n===\nAnother header\n---\n",
++		"<h1 id=\"header\">Header</h1>\n\n<h2 id=\"another-header\">Another header</h2>\n",
++
++		"   Header\n======\n",
++		"<h1 id=\"header\">Header</h1>\n",
++
++		"Header with *inline*\n=====\n",
++		"<h1 id=\"header-with-inline\">Header with <em>inline</em></h1>\n",
++
++		"Paragraph\n\n\n\n\nHeader\n===\n",
++		"<p>Paragraph</p>\n\n<h1 id=\"header\">Header</h1>\n",
++
++		"Trailing space \n====        \n\n",
++		"<h1 id=\"trailing-space\">Trailing space</h1>\n",
++
++		"Trailing spaces\n====        \n\n",
++		"<h1 id=\"trailing-spaces\">Trailing spaces</h1>\n",
++
++		"Double underline\n=====\n=====\n",
++		"<h1 id=\"double-underline\">Double underline</h1>\n\n<p>=====</p>\n",
++
++		"Header\n======\n\nHeader\n======\n",
++		"<h1 id=\"header\">Header</h1>\n\n<h1 id=\"header-1\">Header</h1>\n",
++
++		"Header 1\n========\n\nHeader 1\n========\n",
++		"<h1 id=\"header-1\">Header 1</h1>\n\n<h1 id=\"header-1-1\">Header 1</h1>\n",
++	}
++	doTestsBlock(t, tests, EXTENSION_AUTO_HEADER_IDS)
 +}
 +
 +func TestHorizontalRule(t *testing.T) {
@@ -2727,25 +3085,25 @@ index 0000000..c9d4a88
 +func TestFencedCodeBlock(t *testing.T) {
 +	var tests = []string{
 +		"``` go\nfunc foo() bool {\n\treturn true;\n}\n```\n",
-+		"<pre><code class=\"go\">func foo() bool {\n\treturn true;\n}\n</code></pre>\n",
++		"<pre><code class=\"language-go\">func foo() bool {\n\treturn true;\n}\n</code></pre>\n",
 +
 +		"``` c\n/* special & char < > \" escaping */\n```\n",
-+		"<pre><code class=\"c\">/* special &amp; char &lt; &gt; &quot; escaping */\n</code></pre>\n",
++		"<pre><code class=\"language-c\">/* special &amp; char &lt; &gt; &quot; escaping */\n</code></pre>\n",
 +
 +		"``` c\nno *inline* processing ~~of text~~\n```\n",
-+		"<pre><code class=\"c\">no *inline* processing ~~of text~~\n</code></pre>\n",
++		"<pre><code class=\"language-c\">no *inline* processing ~~of text~~\n</code></pre>\n",
 +
 +		"```\nNo language\n```\n",
 +		"<pre><code>No language\n</code></pre>\n",
 +
 +		"``` {ocaml}\nlanguage in braces\n```\n",
-+		"<pre><code class=\"ocaml\">language in braces\n</code></pre>\n",
++		"<pre><code class=\"language-ocaml\">language in braces\n</code></pre>\n",
 +
 +		"```    {ocaml}      \nwith extra whitespace\n```\n",
-+		"<pre><code class=\"ocaml\">with extra whitespace\n</code></pre>\n",
++		"<pre><code class=\"language-ocaml\">with extra whitespace\n</code></pre>\n",
 +
 +		"```{   ocaml   }\nwith extra whitespace\n```\n",
-+		"<pre><code class=\"ocaml\">with extra whitespace\n</code></pre>\n",
++		"<pre><code class=\"language-ocaml\">with extra whitespace\n</code></pre>\n",
 +
 +		"~ ~~ java\nWith whitespace\n~~~\n",
 +		"<p>~ ~~ java\nWith whitespace\n~~~</p>\n",
@@ -2754,7 +3112,7 @@ index 0000000..c9d4a88
 +		"<p>~~\nonly two\n~~</p>\n",
 +
 +		"```` python\nextra\n````\n",
-+		"<pre><code class=\"python\">extra\n</code></pre>\n",
++		"<pre><code class=\"language-python\">extra\n</code></pre>\n",
 +
 +		"~~~ perl\nthree to start, four to end\n~~~~\n",
 +		"<p>~~~ perl\nthree to start, four to end\n~~~~</p>\n",
@@ -2763,7 +3121,7 @@ index 0000000..c9d4a88
 +		"<p>~~~~ perl\nfour to start, three to end\n~~~</p>\n",
 +
 +		"~~~ bash\ntildes\n~~~\n",
-+		"<pre><code class=\"bash\">tildes\n</code></pre>\n",
++		"<pre><code class=\"language-bash\">tildes\n</code></pre>\n",
 +
 +		"``` lisp\nno ending\n",
 +		"<p>``` lisp\nno ending</p>\n",
@@ -2778,34 +3136,34 @@ index 0000000..c9d4a88
 +		"<p>~~~\nmismatched begin and end\n```</p>\n",
 +
 +		"   ``` oz\nleading spaces\n```\n",
-+		"<pre><code class=\"oz\">leading spaces\n</code></pre>\n",
++		"<pre><code class=\"language-oz\">leading spaces\n</code></pre>\n",
 +
 +		"  ``` oz\nleading spaces\n ```\n",
-+		"<pre><code class=\"oz\">leading spaces\n</code></pre>\n",
++		"<pre><code class=\"language-oz\">leading spaces\n</code></pre>\n",
 +
 +		" ``` oz\nleading spaces\n  ```\n",
-+		"<pre><code class=\"oz\">leading spaces\n</code></pre>\n",
++		"<pre><code class=\"language-oz\">leading spaces\n</code></pre>\n",
 +
 +		"``` oz\nleading spaces\n   ```\n",
-+		"<pre><code class=\"oz\">leading spaces\n</code></pre>\n",
++		"<pre><code class=\"language-oz\">leading spaces\n</code></pre>\n",
 +
 +		"    ``` oz\nleading spaces\n    ```\n",
 +		"<pre><code>``` oz\n</code></pre>\n\n<p>leading spaces\n    ```</p>\n",
 +
 +		"Bla bla\n\n``` oz\ncode blocks breakup paragraphs\n```\n\nBla Bla\n",
-+		"<p>Bla bla</p>\n\n<pre><code class=\"oz\">code blocks breakup paragraphs\n</code></pre>\n\n<p>Bla Bla</p>\n",
++		"<p>Bla bla</p>\n\n<pre><code class=\"language-oz\">code blocks breakup paragraphs\n</code></pre>\n\n<p>Bla Bla</p>\n",
 +
 +		"Some text before a fenced code block\n``` oz\ncode blocks breakup paragraphs\n```\nAnd some text after a fenced code block",
-+		"<p>Some text before a fenced code block</p>\n\n<pre><code class=\"oz\">code blocks breakup paragraphs\n</code></pre>\n\n<p>And some text after a fenced code block</p>\n",
++		"<p>Some text before a fenced code block</p>\n\n<pre><code class=\"language-oz\">code blocks breakup paragraphs\n</code></pre>\n\n<p>And some text after a fenced code block</p>\n",
 +
 +		"`",
 +		"<p>`</p>\n",
 +
 +		"Bla bla\n\n``` oz\ncode blocks breakup paragraphs\n```\n\nBla Bla\n\n``` oz\nmultiple code blocks work okay\n```\n\nBla Bla\n",
-+		"<p>Bla bla</p>\n\n<pre><code class=\"oz\">code blocks breakup paragraphs\n</code></pre>\n\n<p>Bla Bla</p>\n\n<pre><code class=\"oz\">multiple code blocks work okay\n</code></pre>\n\n<p>Bla Bla</p>\n",
++		"<p>Bla bla</p>\n\n<pre><code class=\"language-oz\">code blocks breakup paragraphs\n</code></pre>\n\n<p>Bla Bla</p>\n\n<pre><code class=\"language-oz\">multiple code blocks work okay\n</code></pre>\n\n<p>Bla Bla</p>\n",
 +
 +		"Some text before a fenced code block\n``` oz\ncode blocks breakup paragraphs\n```\nSome text in between\n``` oz\nmultiple code blocks work okay\n```\nAnd some text after a fenced code block",
-+		"<p>Some text before a fenced code block</p>\n\n<pre><code class=\"oz\">code blocks breakup paragraphs\n</code></pre>\n\n<p>Some text in between</p>\n\n<pre><code class=\"oz\">multiple code blocks work okay\n</code></pre>\n\n<p>And some text after a fenced code block</p>\n",
++		"<p>Some text before a fenced code block</p>\n\n<pre><code class=\"language-oz\">code blocks breakup paragraphs\n</code></pre>\n\n<p>Some text in between</p>\n\n<pre><code class=\"language-oz\">multiple code blocks work okay\n</code></pre>\n\n<p>And some text after a fenced code block</p>\n",
 +	}
 +	doTestsBlock(t, tests, EXTENSION_FENCED_CODE)
 +}
@@ -3067,25 +3425,25 @@ index 0000000..c9d4a88
 +func TestFencedCodeBlock_EXTENSION_NO_EMPTY_LINE_BEFORE_BLOCK(t *testing.T) {
 +	var tests = []string{
 +		"``` go\nfunc foo() bool {\n\treturn true;\n}\n```\n",
-+		"<pre><code class=\"go\">func foo() bool {\n\treturn true;\n}\n</code></pre>\n",
++		"<pre><code class=\"language-go\">func foo() bool {\n\treturn true;\n}\n</code></pre>\n",
 +
 +		"``` c\n/* special & char < > \" escaping */\n```\n",
-+		"<pre><code class=\"c\">/* special &amp; char &lt; &gt; &quot; escaping */\n</code></pre>\n",
++		"<pre><code class=\"language-c\">/* special &amp; char &lt; &gt; &quot; escaping */\n</code></pre>\n",
 +
 +		"``` c\nno *inline* processing ~~of text~~\n```\n",
-+		"<pre><code class=\"c\">no *inline* processing ~~of text~~\n</code></pre>\n",
++		"<pre><code class=\"language-c\">no *inline* processing ~~of text~~\n</code></pre>\n",
 +
 +		"```\nNo language\n```\n",
 +		"<pre><code>No language\n</code></pre>\n",
 +
 +		"``` {ocaml}\nlanguage in braces\n```\n",
-+		"<pre><code class=\"ocaml\">language in braces\n</code></pre>\n",
++		"<pre><code class=\"language-ocaml\">language in braces\n</code></pre>\n",
 +
 +		"```    {ocaml}      \nwith extra whitespace\n```\n",
-+		"<pre><code class=\"ocaml\">with extra whitespace\n</code></pre>\n",
++		"<pre><code class=\"language-ocaml\">with extra whitespace\n</code></pre>\n",
 +
 +		"```{   ocaml   }\nwith extra whitespace\n```\n",
-+		"<pre><code class=\"ocaml\">with extra whitespace\n</code></pre>\n",
++		"<pre><code class=\"language-ocaml\">with extra whitespace\n</code></pre>\n",
 +
 +		"~ ~~ java\nWith whitespace\n~~~\n",
 +		"<p>~ ~~ java\nWith whitespace\n~~~</p>\n",
@@ -3094,7 +3452,7 @@ index 0000000..c9d4a88
 +		"<p>~~\nonly two\n~~</p>\n",
 +
 +		"```` python\nextra\n````\n",
-+		"<pre><code class=\"python\">extra\n</code></pre>\n",
++		"<pre><code class=\"language-python\">extra\n</code></pre>\n",
 +
 +		"~~~ perl\nthree to start, four to end\n~~~~\n",
 +		"<p>~~~ perl\nthree to start, four to end\n~~~~</p>\n",
@@ -3103,7 +3461,7 @@ index 0000000..c9d4a88
 +		"<p>~~~~ perl\nfour to start, three to end\n~~~</p>\n",
 +
 +		"~~~ bash\ntildes\n~~~\n",
-+		"<pre><code class=\"bash\">tildes\n</code></pre>\n",
++		"<pre><code class=\"language-bash\">tildes\n</code></pre>\n",
 +
 +		"``` lisp\nno ending\n",
 +		"<p>``` lisp\nno ending</p>\n",
@@ -3118,16 +3476,16 @@ index 0000000..c9d4a88
 +		"<p>~~~\nmismatched begin and end\n```</p>\n",
 +
 +		"   ``` oz\nleading spaces\n```\n",
-+		"<pre><code class=\"oz\">leading spaces\n</code></pre>\n",
++		"<pre><code class=\"language-oz\">leading spaces\n</code></pre>\n",
 +
 +		"  ``` oz\nleading spaces\n ```\n",
-+		"<pre><code class=\"oz\">leading spaces\n</code></pre>\n",
++		"<pre><code class=\"language-oz\">leading spaces\n</code></pre>\n",
 +
 +		" ``` oz\nleading spaces\n  ```\n",
-+		"<pre><code class=\"oz\">leading spaces\n</code></pre>\n",
++		"<pre><code class=\"language-oz\">leading spaces\n</code></pre>\n",
 +
 +		"``` oz\nleading spaces\n   ```\n",
-+		"<pre><code class=\"oz\">leading spaces\n</code></pre>\n",
++		"<pre><code class=\"language-oz\">leading spaces\n</code></pre>\n",
 +
 +		"    ``` oz\nleading spaces\n    ```\n",
 +		"<pre><code>``` oz\n</code></pre>\n\n<p>leading spaces</p>\n\n<pre><code>```\n</code></pre>\n",
@@ -3152,10 +3510,10 @@ index 0000000..c9d4a88
 +}
 diff --git a/vendor/src/github.com/russross/blackfriday/html.go b/vendor/src/github.com/russross/blackfriday/html.go
 new file mode 100644
-index 0000000..982131c
+index 0000000..3655a10
 --- /dev/null
 +++ b/vendor/src/github.com/russross/blackfriday/html.go
-@@ -0,0 +1,899 @@
+@@ -0,0 +1,922 @@
 +//
 +// Blackfriday Markdown Processor
 +// Available at http://github.com/russross/blackfriday
@@ -3183,23 +3541,23 @@ index 0000000..982131c
 +
 +// Html renderer configuration options.
 +const (
-+	HTML_SKIP_HTML                = 1 << iota // skip preformatted HTML blocks
-+	HTML_SKIP_STYLE                           // skip embedded <style> elements
-+	HTML_SKIP_IMAGES                          // skip embedded images
-+	HTML_SKIP_LINKS                           // skip all links
-+	HTML_SANITIZE_OUTPUT                      // strip output of everything that's not known to be safe
-+	HTML_SAFELINK                             // only link to trusted protocols
-+	HTML_NOFOLLOW_LINKS                       // only link with rel="nofollow"
-+	HTML_HREF_TARGET_BLANK                    // add a blank target
-+	HTML_TOC                                  // generate a table of contents
-+	HTML_OMIT_CONTENTS                        // skip the main contents (for a standalone table of contents)
-+	HTML_COMPLETE_PAGE                        // generate a complete HTML page
-+	HTML_GITHUB_BLOCKCODE                     // use github fenced code rendering rules
-+	HTML_USE_XHTML                            // generate XHTML output instead of HTML
-+	HTML_USE_SMARTYPANTS                      // enable smart punctuation substitutions
-+	HTML_SMARTYPANTS_FRACTIONS                // enable smart fractions (with HTML_USE_SMARTYPANTS)
-+	HTML_SMARTYPANTS_LATEX_DASHES             // enable LaTeX-style dashes (with HTML_USE_SMARTYPANTS)
-+	HTML_FOOTNOTE_RETURN_LINKS                // generate a link at the end of a footnote to return to the source
++	HTML_SKIP_HTML                 = 1 << iota // skip preformatted HTML blocks
++	HTML_SKIP_STYLE                            // skip embedded <style> elements
++	HTML_SKIP_IMAGES                           // skip embedded images
++	HTML_SKIP_LINKS                            // skip all links
++	HTML_SAFELINK                              // only link to trusted protocols
++	HTML_NOFOLLOW_LINKS                        // only link with rel="nofollow"
++	HTML_NOREFERRER_LINKS                      // only link with rel="noreferrer"
++	HTML_HREF_TARGET_BLANK                     // add a blank target
++	HTML_TOC                                   // generate a table of contents
++	HTML_OMIT_CONTENTS                         // skip the main contents (for a standalone table of contents)
++	HTML_COMPLETE_PAGE                         // generate a complete HTML page
++	HTML_USE_XHTML                             // generate XHTML output instead of HTML
++	HTML_USE_SMARTYPANTS                       // enable smart punctuation substitutions
++	HTML_SMARTYPANTS_FRACTIONS                 // enable smart fractions (with HTML_USE_SMARTYPANTS)
++	HTML_SMARTYPANTS_LATEX_DASHES              // enable LaTeX-style dashes (with HTML_USE_SMARTYPANTS)
++	HTML_SMARTYPANTS_ANGLED_QUOTES             // enable angled double quotes (with HTML_USE_SMARTYPANTS) for double quotes rendering
++	HTML_FOOTNOTE_RETURN_LINKS                 // generate a link at the end of a footnote to return to the source
 +)
 +
 +var (
@@ -3222,6 +3580,11 @@ index 0000000..982131c
 +	// HTML_FOOTNOTE_RETURN_LINKS flag is enabled. If blank, the string
 +	// <sup>[return]</sup> is used.
 +	FootnoteReturnLinkContents string
++	// If set, add this text to the front of each Header ID, to ensure
++	// uniqueness.
++	HeaderIDPrefix string
++	// If set, add this text to the back of each Header ID, to ensure uniqueness.
++	HeaderIDSuffix string
 +}
 +
 +// Html is a type that implements the Renderer interface for HTML output.
@@ -3240,6 +3603,9 @@ index 0000000..982131c
 +	headerCount  int
 +	currentLevel int
 +	toc          *bytes.Buffer
++
++	// Track header IDs to prevent ID collision in a single generation.
++	headerIDs map[string]int
 +
 +	smartypants *smartypantsRenderer
 +}
@@ -3282,6 +3648,8 @@ index 0000000..982131c
 +		headerCount:  0,
 +		currentLevel: 0,
 +		toc:          new(bytes.Buffer),
++
++		headerIDs: make(map[string]int),
 +
 +		smartypants: smartypants(flags),
 +	}
@@ -3350,11 +3718,22 @@ index 0000000..982131c
 +	marker := out.Len()
 +	doubleSpace(out)
 +
++	if id == "" && options.flags&HTML_TOC != 0 {
++		id = fmt.Sprintf("toc_%d", options.headerCount)
++	}
++
 +	if id != "" {
++		id = options.ensureUniqueHeaderID(id)
++
++		if options.parameters.HeaderIDPrefix != "" {
++			id = options.parameters.HeaderIDPrefix + id
++		}
++
++		if options.parameters.HeaderIDSuffix != "" {
++			id = id + options.parameters.HeaderIDSuffix
++		}
++
 +		out.WriteString(fmt.Sprintf("<h%d id=\"%s\">", level, id))
-+	} else if options.flags&HTML_TOC != 0 {
-+		// headerCount is incremented in htmlTocHeader
-+		out.WriteString(fmt.Sprintf("<h%d id=\"toc_%d\">", level, options.headerCount))
 +	} else {
 +		out.WriteString(fmt.Sprintf("<h%d>", level))
 +	}
@@ -3367,7 +3746,7 @@ index 0000000..982131c
 +
 +	// are we building a table of contents?
 +	if options.flags&HTML_TOC != 0 {
-+		options.TocHeader(out.Bytes()[tocMarker:], level)
++		options.TocHeaderWithAnchor(out.Bytes()[tocMarker:], level, id)
 +	}
 +
 +	out.WriteString(fmt.Sprintf("</h%d>\n", level))
@@ -3390,14 +3769,6 @@ index 0000000..982131c
 +}
 +
 +func (options *Html) BlockCode(out *bytes.Buffer, text []byte, lang string) {
-+	if options.flags&HTML_GITHUB_BLOCKCODE != 0 {
-+		options.BlockCodeGithub(out, text, lang)
-+	} else {
-+		options.BlockCodeNormal(out, text, lang)
-+	}
-+}
-+
-+func (options *Html) BlockCodeNormal(out *bytes.Buffer, text []byte, lang string) {
 +	doubleSpace(out)
 +
 +	// parse out the language names/classes
@@ -3410,7 +3781,7 @@ index 0000000..982131c
 +			continue
 +		}
 +		if count == 0 {
-+			out.WriteString("<pre><code class=\"")
++			out.WriteString("<pre><code class=\"language-")
 +		} else {
 +			out.WriteByte(' ')
 +		}
@@ -3422,49 +3793,6 @@ index 0000000..982131c
 +		out.WriteString("<pre><code>")
 +	} else {
 +		out.WriteString("\">")
-+	}
-+
-+	attrEscape(out, text)
-+	out.WriteString("</code></pre>\n")
-+}
-+
-+// GitHub style code block:
-+//
-+//              <pre lang="LANG"><code>
-+//              ...
-+//              </code></pre>
-+//
-+// Unlike other parsers, we store the language identifier in the <pre>,
-+// and don't let the user generate custom classes.
-+//
-+// The language identifier in the <pre> block gets postprocessed and all
-+// the code inside gets syntax highlighted with Pygments. This is much safer
-+// than letting the user specify a CSS class for highlighting.
-+//
-+// Note that we only generate HTML for the first specifier.
-+// E.g.
-+//              ~~~~ {.python .numbered}        =>      <pre lang="python"><code>
-+func (options *Html) BlockCodeGithub(out *bytes.Buffer, text []byte, lang string) {
-+	doubleSpace(out)
-+
-+	// parse out the language name
-+	count := 0
-+	for _, elt := range strings.Fields(lang) {
-+		if elt[0] == '.' {
-+			elt = elt[1:]
-+		}
-+		if len(elt) == 0 {
-+			continue
-+		}
-+		out.WriteString("<pre lang=\"")
-+		attrEscape(out, []byte(elt))
-+		out.WriteString("\"><code>")
-+		count++
-+		break
-+	}
-+
-+	if count == 0 {
-+		out.WriteString("<pre><code>")
 +	}
 +
 +	attrEscape(out, text)
@@ -3618,9 +3946,17 @@ index 0000000..982131c
 +
 +	entityEscapeWithSkip(out, link, skipRanges)
 +
++	var relAttrs []string
 +	if options.flags&HTML_NOFOLLOW_LINKS != 0 && !isRelativeLink(link) {
-+		out.WriteString("\" rel=\"nofollow")
++		relAttrs = append(relAttrs, "nofollow")
 +	}
++	if options.flags&HTML_NOREFERRER_LINKS != 0 && !isRelativeLink(link) {
++		relAttrs = append(relAttrs, "noreferrer")
++	}
++	if len(relAttrs) > 0 {
++		out.WriteString(fmt.Sprintf("\" rel=\"%s", strings.Join(relAttrs, " ")))
++	}
++
 +	// blank target only add to external link
 +	if options.flags&HTML_HREF_TARGET_BLANK != 0 && !isRelativeLink(link) {
 +		out.WriteString("\" target=\"_blank")
@@ -3665,7 +4001,7 @@ index 0000000..982131c
 +}
 +
 +func (options *Html) maybeWriteAbsolutePrefix(out *bytes.Buffer, link []byte) {
-+	if options.parameters.AbsolutePrefix != "" && isRelativeLink(link) {
++	if options.parameters.AbsolutePrefix != "" && isRelativeLink(link) && link[0] != '.' {
 +		out.WriteString(options.parameters.AbsolutePrefix)
 +		if link[0] != '/' {
 +			out.WriteByte('/')
@@ -3724,9 +4060,17 @@ index 0000000..982131c
 +		out.WriteString("\" title=\"")
 +		attrEscape(out, title)
 +	}
++	var relAttrs []string
 +	if options.flags&HTML_NOFOLLOW_LINKS != 0 && !isRelativeLink(link) {
-+		out.WriteString("\" rel=\"nofollow")
++		relAttrs = append(relAttrs, "nofollow")
 +	}
++	if options.flags&HTML_NOREFERRER_LINKS != 0 && !isRelativeLink(link) {
++		relAttrs = append(relAttrs, "noreferrer")
++	}
++	if len(relAttrs) > 0 {
++		out.WriteString(fmt.Sprintf("\" rel=\"%s", strings.Join(relAttrs, " ")))
++	}
++
 +	// blank target only add to external link
 +	if options.flags&HTML_HREF_TARGET_BLANK != 0 && !isRelativeLink(link) {
 +		out.WriteString("\" target=\"_blank")
@@ -3904,7 +4248,7 @@ index 0000000..982131c
 +
 +}
 +
-+func (options *Html) TocHeader(text []byte, level int) {
++func (options *Html) TocHeaderWithAnchor(text []byte, level int, anchor string) {
 +	for level > options.currentLevel {
 +		switch {
 +		case bytes.HasSuffix(options.toc.Bytes(), []byte("</li>\n")):
@@ -3930,14 +4274,23 @@ index 0000000..982131c
 +		options.currentLevel--
 +	}
 +
-+	options.toc.WriteString("<li><a href=\"#toc_")
-+	options.toc.WriteString(strconv.Itoa(options.headerCount))
++	options.toc.WriteString("<li><a href=\"#")
++	if anchor != "" {
++		options.toc.WriteString(anchor)
++	} else {
++		options.toc.WriteString("toc_")
++		options.toc.WriteString(strconv.Itoa(options.headerCount))
++	}
 +	options.toc.WriteString("\">")
 +	options.headerCount++
 +
 +	options.toc.Write(text)
 +
 +	options.toc.WriteString("</a></li>\n")
++}
++
++func (options *Html) TocHeader(text []byte, level int) {
++	options.TocHeaderWithAnchor(text, level, "")
 +}
 +
 +func (options *Html) TocFinalize() {
@@ -4037,30 +4390,58 @@ index 0000000..982131c
 +}
 +
 +func isRelativeLink(link []byte) (yes bool) {
-+	yes = false
-+
 +	// a tag begin with '#'
 +	if link[0] == '#' {
-+		yes = true
++		return true
 +	}
 +
 +	// link begin with '/' but not '//', the second maybe a protocol relative link
 +	if len(link) >= 2 && link[0] == '/' && link[1] != '/' {
-+		yes = true
++		return true
 +	}
 +
 +	// only the root '/'
 +	if len(link) == 1 && link[0] == '/' {
-+		yes = true
++		return true
 +	}
-+	return
++
++	// current directory : begin with "./"
++	if bytes.HasPrefix(link, []byte("./")) {
++		return true
++	}
++
++	// parent directory : begin with "../"
++	if bytes.HasPrefix(link, []byte("../")) {
++		return true
++	}
++
++	return false
++}
++
++func (options *Html) ensureUniqueHeaderID(id string) string {
++	for count, found := options.headerIDs[id]; found; count, found = options.headerIDs[id] {
++		tmp := fmt.Sprintf("%s-%d", id, count+1)
++
++		if _, tmpFound := options.headerIDs[tmp]; !tmpFound {
++			options.headerIDs[id] = count + 1
++			id = tmp
++		} else {
++			id = id + "-1"
++		}
++	}
++
++	if _, found := options.headerIDs[id]; !found {
++		options.headerIDs[id] = 0
++	}
++
++	return id
 +}
 diff --git a/vendor/src/github.com/russross/blackfriday/inline.go b/vendor/src/github.com/russross/blackfriday/inline.go
 new file mode 100644
-index 0000000..8197110
+index 0000000..b3ec847
 --- /dev/null
 +++ b/vendor/src/github.com/russross/blackfriday/inline.go
-@@ -0,0 +1,1078 @@
+@@ -0,0 +1,1096 @@
 +//
 +// Blackfriday Markdown Processor
 +// Available at http://github.com/russross/blackfriday
@@ -4229,11 +4610,18 @@ index 0000000..8197110
 +	}
 +	out.Truncate(eol)
 +
++	precededByTwoSpaces := offset >= 2 && data[offset-2] == ' ' && data[offset-1] == ' '
++	precededByBackslash := offset >= 1 && data[offset-1] == '\\' // see http://spec.commonmark.org/0.18/#example-527
++	precededByBackslash = precededByBackslash && p.flags&EXTENSION_BACKSLASH_LINE_BREAK != 0
++
 +	// should there be a hard line break here?
-+	if p.flags&EXTENSION_HARD_LINE_BREAK == 0 && end-eol < 2 {
++	if p.flags&EXTENSION_HARD_LINE_BREAK == 0 && !precededByTwoSpaces && !precededByBackslash {
 +		return 0
 +	}
 +
++	if precededByBackslash && eol > 0 {
++		out.Truncate(eol - 1)
++	}
 +	p.r.LineBreak(out)
 +	return 1
 +}
@@ -4409,7 +4797,7 @@ index 0000000..8197110
 +		i++
 +
 +	// reference style link
-+	case i < len(data) && data[i] == '[':
++	case i < len(data)-1 && data[i] == '[' && data[i+1] != '^':
 +		var id []byte
 +
 +		// look for the id
@@ -4818,9 +5206,20 @@ index 0000000..8197110
 +	return isspace(char) || char == '<'
 +}
 +
-+var validUris = [][]byte{[]byte("http://"), []byte("https://"), []byte("ftp://"), []byte("mailto://"), []byte("/")}
++var validUris = [][]byte{[]byte("http://"), []byte("https://"), []byte("ftp://"), []byte("mailto://")}
++var validPaths = [][]byte{[]byte("/"), []byte("./"), []byte("../")}
 +
 +func isSafeLink(link []byte) bool {
++	for _, path := range validPaths {
++		if len(link) >= len(path) && bytes.Equal(link[:len(path)], path) {
++			if len(link) == len(path) {
++				return true
++			} else if isalnum(link[len(path)]) {
++				return true
++			}
++		}
++	}
++
 +	for _, prefix := range validUris {
 +		// TODO: handle unicode here
 +		// case-insensitive prefix test
@@ -5009,7 +5408,7 @@ index 0000000..8197110
 +			i++
 +			for i < len(data) && data[i] != cc {
 +				if tmpI == 0 && data[i] == c {
-+					tmpI = i
++					return i
 +				}
 +				i++
 +			}
@@ -5141,10 +5540,10 @@ index 0000000..8197110
 +}
 diff --git a/vendor/src/github.com/russross/blackfriday/inline_test.go b/vendor/src/github.com/russross/blackfriday/inline_test.go
 new file mode 100644
-index 0000000..eab7698
+index 0000000..4e67d5c
 --- /dev/null
 +++ b/vendor/src/github.com/russross/blackfriday/inline_test.go
-@@ -0,0 +1,796 @@
+@@ -0,0 +1,958 @@
 +//
 +// Blackfriday Markdown Processor
 +// Available at http://github.com/russross/blackfriday
@@ -5189,6 +5588,7 @@ index 0000000..eab7698
 +	params := HtmlRendererParameters{AbsolutePrefix: prefix}
 +	transformTests := transformLinks(tests, prefix)
 +	doTestsInlineParam(t, transformTests, 0, 0, params)
++	doTestsInlineParam(t, transformTests, 0, commonHtmlFlags, params)
 +}
 +
 +func doSafeTestsInline(t *testing.T, tests []string) {
@@ -5218,6 +5618,7 @@ index 0000000..eab7698
 +		input := tests[i]
 +		candidate = input
 +		expected := tests[i+1]
++
 +		actual := runMarkdownInline(candidate, extensions, htmlFlags, params)
 +		if actual != expected {
 +			t.Errorf("\nInput   [%#v]\nExpected[%#v]\nActual  [%#v]",
@@ -5385,6 +5786,23 @@ index 0000000..eab7698
 +	doTestsInline(t, tests)
 +}
 +
++func TestEmphasisLink(t *testing.T) {
++	var tests = []string{
++		"[first](before) *text[second] (inside)text* [third](after)\n",
++		"<p><a href=\"before\">first</a> <em>text<a href=\"inside\">second</a>text</em> <a href=\"after\">third</a></p>\n",
++
++		"*incomplete [link] definition*\n",
++		"<p><em>incomplete [link] definition</em></p>\n",
++
++		"*it's [emphasis*] (not link)\n",
++		"<p><em>it's [emphasis</em>] (not link)</p>\n",
++
++		"*it's [emphasis*] and *[asterisk]\n",
++		"<p><em>it's [emphasis</em>] and *[asterisk]</p>\n",
++	}
++	doTestsInline(t, tests)
++}
++
 +func TestStrikeThrough(t *testing.T) {
 +	var tests = []string{
 +		"nothing inline\n",
@@ -5460,10 +5878,34 @@ index 0000000..eab7698
 +		"this line \ndoes not\n",
 +		"<p>this line\ndoes not</p>\n",
 +
++		"this line\\\ndoes not\n",
++		"<p>this line\\\ndoes not</p>\n",
++
++		"this line\\ \ndoes not\n",
++		"<p>this line\\\ndoes not</p>\n",
++
 +		"this has an   \nextra space\n",
 +		"<p>this has an<br />\nextra space</p>\n",
 +	}
 +	doTestsInline(t, tests)
++
++	tests = []string{
++		"this line  \nhas a break\n",
++		"<p>this line<br />\nhas a break</p>\n",
++
++		"this line \ndoes not\n",
++		"<p>this line\ndoes not</p>\n",
++
++		"this line\\\nhas a break\n",
++		"<p>this line<br />\nhas a break</p>\n",
++
++		"this line\\ \ndoes not\n",
++		"<p>this line\\\ndoes not</p>\n",
++
++		"this has an   \nextra space\n",
++		"<p>this has an<br />\nextra space</p>\n",
++	}
++	doTestsInlineParam(t, tests, EXTENSION_BACKSLASH_LINE_BREAK, 0, HtmlRendererParameters{})
 +}
 +
 +func TestInlineLink(t *testing.T) {
@@ -5500,6 +5942,12 @@ index 0000000..eab7698
 +
 +		"![foo with a title](/bar/ title with no quotes)\n",
 +		"<p><img src=\"/bar/ title with no quotes\" alt=\"foo with a title\" />\n</p>\n",
++
++		"![](img.jpg)\n",
++		"<p><img src=\"img.jpg\" alt=\"\" />\n</p>\n",
++
++		"[link](url)\n",
++		"<p><a href=\"url\">link</a></p>\n",
 +
 +		"![foo]()\n",
 +		"<p>![foo]()</p>\n",
@@ -5563,24 +6011,62 @@ index 0000000..eab7698
 +
 +		"[[t]](/t)\n",
 +		"<p><a href=\"/t\">[t]</a></p>\n",
++
++		"[link](</>)\n",
++		"<p><a href=\"/\">link</a></p>\n",
++
++		"[link](<./>)\n",
++		"<p><a href=\"./\">link</a></p>\n",
++
++		"[link](<../>)\n",
++		"<p><a href=\"../\">link</a></p>\n",
 +	}
 +	doLinkTestsInline(t, tests)
 +
 +}
 +
-+func TestNofollowLink(t *testing.T) {
-+	var tests = []string{
++func TestRelAttrLink(t *testing.T) {
++	var nofollowTests = []string{
 +		"[foo](http://bar.com/foo/)\n",
 +		"<p><a href=\"http://bar.com/foo/\" rel=\"nofollow\">foo</a></p>\n",
++
++		"[foo](/bar/)\n",
++		"<p><a href=\"/bar/\">foo</a></p>\n",
++
++		"[foo](/)\n",
++		"<p><a href=\"/\">foo</a></p>\n",
++
++		"[foo](./)\n",
++		"<p><a href=\"./\">foo</a></p>\n",
++
++		"[foo](../)\n",
++		"<p><a href=\"../\">foo</a></p>\n",
++
++		"[foo](../bar)\n",
++		"<p><a href=\"../bar\">foo</a></p>\n",
 +	}
-+	doTestsInlineParam(t, tests, 0, HTML_SAFELINK|HTML_NOFOLLOW_LINKS|HTML_SANITIZE_OUTPUT,
++	doTestsInlineParam(t, nofollowTests, 0, HTML_SAFELINK|HTML_NOFOLLOW_LINKS,
 +		HtmlRendererParameters{})
-+	// HTML_SANITIZE_OUTPUT won't allow relative links, so test that separately:
-+	tests = []string{
++
++	var noreferrerTests = []string{
++		"[foo](http://bar.com/foo/)\n",
++		"<p><a href=\"http://bar.com/foo/\" rel=\"noreferrer\">foo</a></p>\n",
++
 +		"[foo](/bar/)\n",
 +		"<p><a href=\"/bar/\">foo</a></p>\n",
 +	}
-+	doTestsInlineParam(t, tests, 0, HTML_SAFELINK|HTML_NOFOLLOW_LINKS, HtmlRendererParameters{})
++	doTestsInlineParam(t, noreferrerTests, 0, HTML_SAFELINK|HTML_NOREFERRER_LINKS,
++		HtmlRendererParameters{})
++
++	var nofollownoreferrerTests = []string{
++		"[foo](http://bar.com/foo/)\n",
++		"<p><a href=\"http://bar.com/foo/\" rel=\"nofollow noreferrer\">foo</a></p>\n",
++
++		"[foo](/bar/)\n",
++		"<p><a href=\"/bar/\">foo</a></p>\n",
++	}
++	doTestsInlineParam(t, nofollownoreferrerTests, 0, HTML_SAFELINK|HTML_NOFOLLOW_LINKS|HTML_NOREFERRER_LINKS,
++		HtmlRendererParameters{})
 +}
 +
 +func TestHrefTargetBlank(t *testing.T) {
@@ -5588,6 +6074,21 @@ index 0000000..eab7698
 +		// internal link
 +		"[foo](/bar/)\n",
 +		"<p><a href=\"/bar/\">foo</a></p>\n",
++
++		"[foo](/)\n",
++		"<p><a href=\"/\">foo</a></p>\n",
++
++		"[foo](./)\n",
++		"<p><a href=\"./\">foo</a></p>\n",
++
++		"[foo](./bar)\n",
++		"<p><a href=\"./bar\">foo</a></p>\n",
++
++		"[foo](../)\n",
++		"<p><a href=\"../\">foo</a></p>\n",
++
++		"[foo](../bar)\n",
++		"<p><a href=\"../bar\">foo</a></p>\n",
 +
 +		"[foo](http://example.com)\n",
 +		"<p><a href=\"http://example.com\" target=\"_blank\">foo</a></p>\n",
@@ -5599,6 +6100,15 @@ index 0000000..eab7698
 +	var tests = []string{
 +		"[foo](/bar/)\n",
 +		"<p><a href=\"/bar/\">foo</a></p>\n",
++
++		"[foo](/)\n",
++		"<p><a href=\"/\">foo</a></p>\n",
++
++		"[foo](./)\n",
++		"<p><a href=\"./\">foo</a></p>\n",
++
++		"[foo](../)\n",
++		"<p><a href=\"../\">foo</a></p>\n",
 +
 +		"[foo](http://bar/)\n",
 +		"<p><a href=\"http://bar/\">foo</a></p>\n",
@@ -5647,6 +6157,9 @@ index 0000000..eab7698
 +
 +		"[ref]\n   [ref]: /url/ \"title\"\n",
 +		"<p><a href=\"/url/\" title=\"title\">ref</a></p>\n",
++
++		"[ref]\n   [ref]: ../url/ \"title\"\n",
++		"<p><a href=\"../url/\" title=\"title\">ref</a></p>\n",
 +	}
 +	doLinkTestsInline(t, tests)
 +}
@@ -5911,6 +6424,12 @@ index 0000000..eab7698
 +
 +	"empty footnote[^]\n\n[^]: fn text",
 +	"<p>empty footnote<sup class=\"footnote-ref\" id=\"fnref:\"><a rel=\"footnote\" href=\"#fn:\">1</a></sup></p>\n<div class=\"footnotes\">\n\n<hr />\n\n<ol>\n<li id=\"fn:\">fn text\n</li>\n</ol>\n</div>\n",
++
++	"Some text.[^note1]\n\n[^note1]: fn1",
++	"<p>Some text.<sup class=\"footnote-ref\" id=\"fnref:note1\"><a rel=\"footnote\" href=\"#fn:note1\">1</a></sup></p>\n<div class=\"footnotes\">\n\n<hr />\n\n<ol>\n<li id=\"fn:note1\">fn1\n</li>\n</ol>\n</div>\n",
++
++	"Some text.[^note1][^note2]\n\n[^note1]: fn1\n[^note2]: fn2\n",
++	"<p>Some text.<sup class=\"footnote-ref\" id=\"fnref:note1\"><a rel=\"footnote\" href=\"#fn:note1\">1</a></sup><sup class=\"footnote-ref\" id=\"fnref:note2\"><a rel=\"footnote\" href=\"#fn:note2\">2</a></sup></p>\n<div class=\"footnotes\">\n\n<hr />\n\n<ol>\n<li id=\"fn:note1\">fn1\n</li>\n<li id=\"fn:note2\">fn2\n</li>\n</ol>\n</div>\n",
 +}
 +
 +func TestFootnotes(t *testing.T) {
@@ -5940,6 +6459,48 @@ index 0000000..eab7698
 +	}
 +
 +	doTestsInlineParam(t, tests, EXTENSION_FOOTNOTES, HTML_FOOTNOTE_RETURN_LINKS, params)
++}
++
++func TestSmartDoubleQuotes(t *testing.T) {
++	var tests = []string{
++		"this should be normal \"quoted\" text.\n",
++		"<p>this should be normal &ldquo;quoted&rdquo; text.</p>\n",
++		"this \" single double\n",
++		"<p>this &ldquo; single double</p>\n",
++		"two pair of \"some\" quoted \"text\".\n",
++		"<p>two pair of &ldquo;some&rdquo; quoted &ldquo;text&rdquo;.</p>\n"}
++
++	doTestsInlineParam(t, tests, 0, HTML_USE_SMARTYPANTS, HtmlRendererParameters{})
++}
++
++func TestSmartAngledDoubleQuotes(t *testing.T) {
++	var tests = []string{
++		"this should be angled \"quoted\" text.\n",
++		"<p>this should be angled &laquo;quoted&raquo; text.</p>\n",
++		"this \" single double\n",
++		"<p>this &laquo; single double</p>\n",
++		"two pair of \"some\" quoted \"text\".\n",
++		"<p>two pair of &laquo;some&raquo; quoted &laquo;text&raquo;.</p>\n"}
++
++	doTestsInlineParam(t, tests, 0, HTML_USE_SMARTYPANTS|HTML_SMARTYPANTS_ANGLED_QUOTES, HtmlRendererParameters{})
++}
++
++func TestSmartFractions(t *testing.T) {
++	var tests = []string{
++		"1/2, 1/4 and 3/4; 1/4th and 3/4ths\n",
++		"<p>&frac12;, &frac14; and &frac34;; &frac14;th and &frac34;ths</p>\n",
++		"1/2/2015, 1/4/2015, 3/4/2015; 2015/1/2, 2015/1/4, 2015/3/4.\n",
++		"<p>1/2/2015, 1/4/2015, 3/4/2015; 2015/1/2, 2015/1/4, 2015/3/4.</p>\n"}
++
++	doTestsInlineParam(t, tests, 0, HTML_USE_SMARTYPANTS, HtmlRendererParameters{})
++
++	tests = []string{
++		"1/2, 2/3, 81/100 and 1000000/1048576.\n",
++		"<p><sup>1</sup>&frasl;<sub>2</sub>, <sup>2</sup>&frasl;<sub>3</sub>, <sup>81</sup>&frasl;<sub>100</sub> and <sup>1000000</sup>&frasl;<sub>1048576</sub>.</p>\n",
++		"1/2/2015, 1/4/2015, 3/4/2015; 2015/1/2, 2015/1/4, 2015/3/4.\n",
++		"<p>1/2/2015, 1/4/2015, 3/4/2015; 2015/1/2, 2015/1/4, 2015/3/4.</p>\n"}
++
++	doTestsInlineParam(t, tests, 0, HTML_USE_SMARTYPANTS|HTML_SMARTYPANTS_FRACTIONS, HtmlRendererParameters{})
 +}
 diff --git a/vendor/src/github.com/russross/blackfriday/latex.go b/vendor/src/github.com/russross/blackfriday/latex.go
 new file mode 100644
@@ -6281,10 +6842,10 @@ index 0000000..8562746
 +}
 diff --git a/vendor/src/github.com/russross/blackfriday/markdown.go b/vendor/src/github.com/russross/blackfriday/markdown.go
 new file mode 100644
-index 0000000..023c056
+index 0000000..e2cd95b
 --- /dev/null
 +++ b/vendor/src/github.com/russross/blackfriday/markdown.go
-@@ -0,0 +1,845 @@
+@@ -0,0 +1,838 @@
 +//
 +// Blackfriday Markdown Processor
 +// Available at http://github.com/russross/blackfriday
@@ -6328,6 +6889,24 @@ index 0000000..023c056
 +	EXTENSION_NO_EMPTY_LINE_BEFORE_BLOCK             // No need to insert an empty line to start a (code, quote, order list, unorder list)block
 +	EXTENSION_HEADER_IDS                             // specify header IDs  with {#id}
 +	EXTENSION_TITLEBLOCK                             // Titleblock ala pandoc
++	EXTENSION_AUTO_HEADER_IDS                        // Create the header ID from the text
++	EXTENSION_BACKSLASH_LINE_BREAK                   // translate trailing backslashes into line breaks
++
++	commonHtmlFlags = 0 |
++		HTML_USE_XHTML |
++		HTML_USE_SMARTYPANTS |
++		HTML_SMARTYPANTS_FRACTIONS |
++		HTML_SMARTYPANTS_LATEX_DASHES
++
++	commonExtensions = 0 |
++		EXTENSION_NO_INTRA_EMPHASIS |
++		EXTENSION_TABLES |
++		EXTENSION_FENCED_CODE |
++		EXTENSION_AUTOLINK |
++		EXTENSION_STRIKETHROUGH |
++		EXTENSION_SPACE_HEADERS |
++		EXTENSION_HEADER_IDS |
++		EXTENSION_BACKSLASH_LINE_BREAK
 +)
 +
 +// These are the possible flag values for the link renderer.
@@ -6520,25 +7099,8 @@ index 0000000..023c056
 +// * Custom Header IDs
 +func MarkdownCommon(input []byte) []byte {
 +	// set up the HTML renderer
-+	htmlFlags := 0
-+	htmlFlags |= HTML_USE_XHTML
-+	htmlFlags |= HTML_USE_SMARTYPANTS
-+	htmlFlags |= HTML_SMARTYPANTS_FRACTIONS
-+	htmlFlags |= HTML_SMARTYPANTS_LATEX_DASHES
-+	htmlFlags |= HTML_SANITIZE_OUTPUT
-+	renderer := HtmlRenderer(htmlFlags, "", "")
-+
-+	// set up the parser
-+	extensions := 0
-+	extensions |= EXTENSION_NO_INTRA_EMPHASIS
-+	extensions |= EXTENSION_TABLES
-+	extensions |= EXTENSION_FENCED_CODE
-+	extensions |= EXTENSION_AUTOLINK
-+	extensions |= EXTENSION_STRIKETHROUGH
-+	extensions |= EXTENSION_SPACE_HEADERS
-+	extensions |= EXTENSION_HEADER_IDS
-+
-+	return Markdown(input, renderer, extensions)
++	renderer := HtmlRenderer(commonHtmlFlags, "", "")
++	return Markdown(input, renderer, commonExtensions)
 +}
 +
 +// Markdown is the main rendering function.
@@ -6585,11 +7147,6 @@ index 0000000..023c056
 +
 +	first := firstPass(p, input)
 +	second := secondPass(p, first)
-+
-+	if renderer.GetFlags()&HTML_SANITIZE_OUTPUT != 0 {
-+		second = sanitizeHtmlSafe(second)
-+	}
-+
 +	return second
 +}
 +
@@ -6620,10 +7177,7 @@ index 0000000..023c056
 +			if p.flags&EXTENSION_FENCED_CODE != 0 {
 +				// when last line was none blank and a fenced code block comes after
 +				if beg >= lastFencedCodeBlockEnd {
-+					// tmp var so we don't modify beyond bounds of `input`
-+					var tmp = make([]byte, len(input[beg:]), len(input[beg:])+1)
-+					copy(tmp, input[beg:])
-+					if i := p.fencedCode(&out, append(tmp, '\n'), false); i > 0 {
++					if i := p.fencedCode(&out, input[beg:], false); i > 0 {
 +						if !lastLineWasBlank {
 +							out.WriteByte('\n') // need to inject additional linebreak
 +						}
@@ -7130,377 +7684,146 @@ index 0000000..023c056
 +	}
 +	return out[a : b+1]
 +}
-diff --git a/vendor/src/github.com/russross/blackfriday/sanitize.go b/vendor/src/github.com/russross/blackfriday/sanitize.go
+diff --git a/vendor/src/github.com/russross/blackfriday/ref_test.go b/vendor/src/github.com/russross/blackfriday/ref_test.go
 new file mode 100644
-index 0000000..ce6ef7b
+index 0000000..770439c
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/sanitize.go
-@@ -0,0 +1,154 @@
++++ b/vendor/src/github.com/russross/blackfriday/ref_test.go
+@@ -0,0 +1,128 @@
++//
++// Blackfriday Markdown Processor
++// Available at http://github.com/russross/blackfriday
++//
++// Copyright © 2011 Russ Ross <russ@russross.com>.
++// Distributed under the Simplified BSD License.
++// See README.md for details.
++//
++
++//
++// Markdown 1.0.3 reference tests
++//
++
 +package blackfriday
 +
 +import (
-+	"bufio"
-+	"bytes"
-+	"code.google.com/p/go.net/html"
-+	"fmt"
-+	"io"
-+)
-+
-+// Whitelisted element tags, attributes on particular tags, attributes that are
-+// interpreted as protocols (again on particular tags), and allowed protocols.
-+var (
-+	whitelistTags      map[string]bool
-+	whitelistAttrs     map[string]map[string]bool
-+	protocolAttrs      map[string]map[string]bool
-+	whitelistProtocols [][]byte
-+)
-+
-+func init() {
-+	whitelistTags = toSet([]string{
-+		// Headings
-+		"h1", "h2", "h3", "h4", "h5", "h6",
-+		// Block elements
-+		"p", "pre", "blockquote", "hr", "div", "header", "article", "aside", "footer",
-+		"section", "main", "mark", "figure", "figcaption",
-+		// Inline elements
-+		"a", "br", "cite", "code", "img",
-+		// Lists
-+		"ol", "ul", "li",
-+		// Tables
-+		"table", "tbody", "td", "tfoot", "th", "thead", "tr", "colgroup", "col", "caption",
-+		// Formatting
-+		"u", "i", "em", "small", "strike", "b", "strong", "sub", "sup", "q",
-+		// Definition lists
-+		"dd", "dl", "dt",
-+	})
-+	whitelistAttrs = map[string]map[string]bool{
-+		"a":   toSet([]string{"href", "title", "rel"}),
-+		"img": toSet([]string{"src", "alt", "title"}),
-+		"td":  toSet([]string{"align"}),
-+		"th":  toSet([]string{"align"}),
-+	}
-+	protocolAttrs = map[string]map[string]bool{
-+		"a":   toSet([]string{"href"}),
-+		"img": toSet([]string{"src"}),
-+	}
-+	whitelistProtocols = [][]byte{
-+		[]byte("http://"),
-+		[]byte("https://"),
-+		[]byte("ftp://"),
-+		[]byte("mailto:"),
-+	}
-+}
-+
-+func toSet(keys []string) map[string]bool {
-+	m := make(map[string]bool, len(keys))
-+	for _, k := range keys {
-+		m[k] = true
-+	}
-+	return m
-+}
-+
-+// Sanitizes the given input by parsing it as HTML5, then whitelisting known to
-+// be safe elements and attributes. All other HTML is escaped, unsafe attributes
-+// are stripped.
-+func sanitizeHtmlSafe(input []byte) []byte {
-+	r := bytes.NewReader(input)
-+	var w bytes.Buffer
-+	tokenizer := html.NewTokenizer(r)
-+	wr := bufio.NewWriter(&w)
-+
-+	// Iterate through all tokens in the input stream and sanitize them.
-+	for t := tokenizer.Next(); t != html.ErrorToken; t = tokenizer.Next() {
-+		switch t {
-+		case html.TextToken:
-+			// Text is written escaped.
-+			wr.WriteString(tokenizer.Token().String())
-+		case html.SelfClosingTagToken, html.StartTagToken:
-+			// HTML tags are escaped unless whitelisted.
-+			tag, hasAttributes := tokenizer.TagName()
-+			tagName := string(tag)
-+			if whitelistTags[tagName] {
-+				wr.WriteString("<")
-+				wr.Write(tag)
-+				for hasAttributes {
-+					var key, val []byte
-+					key, val, hasAttributes = tokenizer.TagAttr()
-+					attrName := string(key)
-+					// Only include whitelisted attributes for the given tagName.
-+					tagWhitelistedAttrs, ok := whitelistAttrs[tagName]
-+					if ok && tagWhitelistedAttrs[attrName] {
-+						// For whitelisted attributes, if it's an attribute that requires
-+						// protocol checking, do so and strip it if it's not known to be safe.
-+						tagProtocolAttrs, ok := protocolAttrs[tagName]
-+						if ok && tagProtocolAttrs[attrName] {
-+							if !isRelativeLink(val) && !protocolAllowed(val) {
-+								continue
-+							}
-+						}
-+						wr.WriteByte(' ')
-+						wr.Write(key)
-+						wr.WriteString(`="`)
-+						wr.WriteString(html.EscapeString(string(val)))
-+						wr.WriteByte('"')
-+					}
-+				}
-+				if t == html.SelfClosingTagToken {
-+					wr.WriteString("/>")
-+				} else {
-+					wr.WriteString(">")
-+				}
-+			} else {
-+				wr.WriteString(html.EscapeString(string(tokenizer.Raw())))
-+			}
-+			// Make sure that tags like <script> that switch the parser into raw mode
-+			// do not destroy the parse mode for following HTML text (the point is to
-+			// escape them anyway). For that, switch off raw mode in the tokenizer.
-+			tokenizer.NextIsNotRawText()
-+		case html.EndTagToken:
-+			// Whitelisted tokens can be written in raw.
-+			tag, _ := tokenizer.TagName()
-+			if whitelistTags[string(tag)] {
-+				wr.Write(tokenizer.Raw())
-+			} else {
-+				wr.WriteString(html.EscapeString(string(tokenizer.Raw())))
-+			}
-+		case html.CommentToken:
-+			// Comments are not really expected, but harmless.
-+			wr.Write(tokenizer.Raw())
-+		case html.DoctypeToken:
-+			// Escape DOCTYPES, entities etc can be dangerous
-+			wr.WriteString(html.EscapeString(string(tokenizer.Raw())))
-+		default:
-+			tokenizer.Token()
-+			panic(fmt.Errorf("Unexpected token type %v", t))
-+		}
-+	}
-+	err := tokenizer.Err()
-+	if err != nil && err != io.EOF {
-+		panic(tokenizer.Err())
-+	}
-+	wr.Flush()
-+	return w.Bytes()
-+}
-+
-+func protocolAllowed(attr []byte) bool {
-+	for _, prefix := range whitelistProtocols {
-+		if bytes.HasPrefix(attr, prefix) {
-+			return true
-+		}
-+	}
-+	return false
-+}
-diff --git a/vendor/src/github.com/russross/blackfriday/sanitize_test.go b/vendor/src/github.com/russross/blackfriday/sanitize_test.go
-new file mode 100644
-index 0000000..6d248c1
---- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/sanitize_test.go
-@@ -0,0 +1,199 @@
-+package blackfriday
-+
-+import (
++	"io/ioutil"
++	"path/filepath"
 +	"testing"
 +)
 +
-+func doTestsSanitize(t *testing.T, tests []string) {
-+	doTestsInlineParam(t, tests, 0, HTML_SKIP_STYLE|HTML_SANITIZE_OUTPUT, HtmlRendererParameters{})
++func runMarkdownReference(input string, flag int) string {
++	renderer := HtmlRenderer(0, "", "")
++	return string(Markdown([]byte(input), renderer, flag))
 +}
 +
-+func TestSanitizeRawHtmlTag(t *testing.T) {
-+	tests := []string{
-+		"zz <style>p {}</style>\n",
-+		"<p>zz &lt;style&gt;p {}&lt;/style&gt;</p>\n",
++func doTestsReference(t *testing.T, files []string, flag int) {
++	// catch and report panics
++	var candidate string
++	defer func() {
++		if err := recover(); err != nil {
++			t.Errorf("\npanic while processing [%#v]\n", candidate)
++		}
++	}()
 +
-+		"zz <STYLE>p {}</STYLE>\n",
-+		"<p>zz &lt;style&gt;p {}&lt;/style&gt;</p>\n",
++	for _, basename := range files {
++		filename := filepath.Join("testdata", basename+".text")
++		inputBytes, err := ioutil.ReadFile(filename)
++		if err != nil {
++			t.Errorf("Couldn't open '%s', error: %v\n", filename, err)
++			continue
++		}
++		input := string(inputBytes)
 +
-+		"<SCRIPT>alert()</SCRIPT>\n",
-+		"<p>&lt;script&gt;alert()&lt;/script&gt;</p>\n",
++		filename = filepath.Join("testdata", basename+".html")
++		expectedBytes, err := ioutil.ReadFile(filename)
++		if err != nil {
++			t.Errorf("Couldn't open '%s', error: %v\n", filename, err)
++			continue
++		}
++		expected := string(expectedBytes)
 +
-+		"zz <SCRIPT>alert()</SCRIPT>\n",
-+		"<p>zz &lt;script&gt;alert()&lt;/script&gt;</p>\n",
++		// fmt.Fprintf(os.Stderr, "processing %s ...", filename)
++		actual := string(runMarkdownReference(input, flag))
++		if actual != expected {
++			t.Errorf("\n    [%#v]\nExpected[%#v]\nActual  [%#v]",
++				basename+".text", expected, actual)
++		}
++		// fmt.Fprintf(os.Stderr, " ok\n")
 +
-+		"zz <script>alert()</script>\n",
-+		"<p>zz &lt;script&gt;alert()&lt;/script&gt;</p>\n",
-+
-+		" <script>alert()</script>\n",
-+		"<p>&lt;script&gt;alert()&lt;/script&gt;</p>\n",
-+
-+		"<script>alert()</script>\n",
-+		"&lt;script&gt;alert()&lt;/script&gt;\n",
-+
-+		"<script src='foo'></script>\n",
-+		"&lt;script src=&#39;foo&#39;&gt;&lt;/script&gt;\n",
-+
-+		"<script src='a>b'></script>\n",
-+		"&lt;script src=&#39;a&gt;b&#39;&gt;&lt;/script&gt;\n",
-+
-+		"zz <script src='foo'></script>\n",
-+		"<p>zz &lt;script src=&#39;foo&#39;&gt;&lt;/script&gt;</p>\n",
-+
-+		"zz <script src=foo></script>\n",
-+		"<p>zz &lt;script src=foo&gt;&lt;/script&gt;</p>\n",
-+
-+		`<script><script src="http://example.com/exploit.js"></SCRIPT></script>`,
-+		"&lt;script&gt;&lt;script src=&#34;http://example.com/exploit.js&#34;&gt;&lt;/script&gt;&lt;/script&gt;\n",
-+
-+		`'';!--"<XSS>=&{()}`,
-+		"<p>&#39;&#39;;!--&#34;&lt;xss&gt;=&amp;{()}</p>\n",
-+
-+		"<SCRIPT SRC=http://ha.ckers.org/xss.js></SCRIPT>",
-+		"<p>&lt;script SRC=http://ha.ckers.org/xss.js&gt;&lt;/script&gt;</p>\n",
-+
-+		"<SCRIPT \nSRC=http://ha.ckers.org/xss.js></SCRIPT>",
-+		"<p>&lt;script \nSRC=http://ha.ckers.org/xss.js&gt;&lt;/script&gt;</p>\n",
-+
-+		`<IMG SRC="javascript:alert('XSS');">`,
-+		"<p><img></p>\n",
-+
-+		"<IMG SRC=javascript:alert('XSS')>",
-+		"<p><img></p>\n",
-+
-+		"<IMG SRC=JaVaScRiPt:alert('XSS')>",
-+		"<p><img></p>\n",
-+
-+		"<IMG SRC=`javascript:alert(\"RSnake says, 'XSS'\")`>",
-+		"<p><img></p>\n",
-+
-+		`<a onmouseover="alert(document.cookie)">xss link</a>`,
-+		"<p><a>xss link</a></p>\n",
-+
-+		"<a onmouseover=alert(document.cookie)>xss link</a>",
-+		"<p><a>xss link</a></p>\n",
-+
-+		`<IMG """><SCRIPT>alert("XSS")</SCRIPT>">`,
-+		"<p><img>&lt;script&gt;alert(&#34;XSS&#34;)&lt;/script&gt;&#34;&gt;</p>\n",
-+
-+		"<IMG SRC=javascript:alert(String.fromCharCode(88,83,83))>",
-+		"<p><img></p>\n",
-+
-+		`<IMG SRC=# onmouseover="alert('xxs')">`,
-+		"<p><img src=\"#\"></p>\n",
-+
-+		`<IMG SRC= onmouseover="alert('xxs')">`,
-+		"<p><img></p>\n",
-+
-+		`<IMG onmouseover="alert('xxs')">`,
-+		"<p><img></p>\n",
-+
-+		"<IMG SRC=&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;&#97;&#108;&#101;&#114;&#116;&#40;&#39;&#88;&#83;&#83;&#39;&#41;>",
-+		"<p><img></p>\n",
-+
-+		"<IMG SRC=&#0000106&#0000097&#0000118&#0000097&#0000115&#0000099&#0000114&#0000105&#0000112&#0000116&#0000058&#0000097&#0000108&#0000101&#0000114&#0000116&#0000040&#0000039&#0000088&#0000083&#0000083&#0000039&#0000041>",
-+		"<p><img></p>\n",
-+
-+		"<IMG SRC=&#x6A&#x61&#x76&#x61&#x73&#x63&#x72&#x69&#x70&#x74&#x3A&#x61&#x6C&#x65&#x72&#x74&#x28&#x27&#x58&#x53&#x53&#x27&#x29>",
-+		"<p><img></p>\n",
-+
-+		`<IMG SRC="javascriptascript:alert('XSS');">`,
-+		"<p><img></p>\n",
-+
-+		`<IMG SRC="jav&#x09;ascript:alert('XSS');">`,
-+		"<p><img></p>\n",
-+
-+		`<IMG SRC="jav&#x0A;ascript:alert('XSS');">`,
-+		"<p><img></p>\n",
-+
-+		`<IMG SRC="jav&#x0D;ascript:alert('XSS');">`,
-+		"<p><img></p>\n",
-+
-+		`<IMG SRC=" &#14;  javascript:alert('XSS');">`,
-+		"<p><img></p>\n",
-+
-+		`<SCRIPT/XSS SRC="http://ha.ckers.org/xss.js"></SCRIPT>`,
-+		"<p>&lt;script/XSS SRC=&#34;http://ha.ckers.org/xss.js&#34;&gt;&lt;/script&gt;</p>\n",
-+
-+		"<BODY onload!#$%&()*~+-_.,:;?@[/|\\]^`=alert(\"XSS\")>",
-+		"<p>&lt;body onload!#$%&amp;()*~+-_.,:;?@[/|\\]^`=alert(&#34;XSS&#34;)&gt;</p>\n",
-+
-+		`<SCRIPT/SRC="http://ha.ckers.org/xss.js"></SCRIPT>`,
-+		"<p>&lt;script/SRC=&#34;http://ha.ckers.org/xss.js&#34;&gt;&lt;/script&gt;</p>\n",
-+
-+		`<<SCRIPT>alert("XSS");//<</SCRIPT>`,
-+		"<p>&lt;&lt;script&gt;alert(&#34;XSS&#34;);//&lt;&lt;/script&gt;</p>\n",
-+
-+		"<SCRIPT SRC=http://ha.ckers.org/xss.js?< B >",
-+		"<p>&lt;script SRC=http://ha.ckers.org/xss.js?&lt; B &gt;</p>\n",
-+
-+		"<SCRIPT SRC=//ha.ckers.org/.j>",
-+		"<p>&lt;script SRC=//ha.ckers.org/.j&gt;</p>\n",
-+
-+		`<IMG SRC="javascript:alert('XSS')"`,
-+		"<p>&lt;IMG SRC=&#34;javascript:alert(&#39;XSS&#39;)&#34;</p>\n",
-+
-+		"<iframe src=http://ha.ckers.org/scriptlet.html <",
-+		// The hyperlink gets linkified, the <iframe> gets escaped
-+		"<p>&lt;iframe src=<a href=\"http://ha.ckers.org/scriptlet.html\">http://ha.ckers.org/scriptlet.html</a> &lt;</p>\n",
-+
-+		// Additonal token types: SelfClosing, Comment, DocType.
-+		"<br/>",
-+		"<p><br/></p>\n",
-+
-+		"<!-- Comment -->",
-+		"<!-- Comment -->\n",
-+
-+		"<!DOCTYPE test>",
-+		"<p>&lt;!DOCTYPE test&gt;</p>\n",
++		// now test every prefix of every input to check for
++		// bounds checking
++		if !testing.Short() {
++			start, max := 0, len(input)
++			for end := start + 1; end <= max; end++ {
++				candidate = input[start:end]
++				// fmt.Fprintf(os.Stderr, "  %s %d:%d/%d\n", filename, start, end, max)
++				_ = runMarkdownReference(candidate, flag)
++			}
++		}
 +	}
-+	doTestsSanitize(t, tests)
 +}
 +
-+func TestSanitizeQuoteEscaping(t *testing.T) {
-+	tests := []string{
-+		// Make sure quotes are transported correctly (different entities or
-+		// unicode, but correct semantics)
-+		"<p>Here are some &quot;quotes&quot;.</p>\n",
-+		"<p>Here are some &#34;quotes&#34;.</p>\n",
-+
-+		"<p>Here are some &ldquo;quotes&rdquo;.</p>\n",
-+		"<p>Here are some \u201Cquotes\u201D.</p>\n",
-+
-+		// Within a <script> tag, content gets parsed by the raw text parsing rules.
-+		// This test makes sure we correctly disable those parsing rules and do not
-+		// escape e.g. the closing </p>.
-+		`Here are <script> some "quotes".`,
-+		"<p>Here are &lt;script&gt; some &#34;quotes&#34;.</p>\n",
-+
-+		// Same test for an unknown element that does not switch into raw mode.
-+		`Here are <eviltag> some "quotes".`,
-+		"<p>Here are &lt;eviltag&gt; some &#34;quotes&#34;.</p>\n",
++func TestReference(t *testing.T) {
++	files := []string{
++		"Amps and angle encoding",
++		"Auto links",
++		"Backslash escapes",
++		"Blockquotes with code blocks",
++		"Code Blocks",
++		"Code Spans",
++		"Hard-wrapped paragraphs with list-like lines",
++		"Horizontal rules",
++		"Inline HTML (Advanced)",
++		"Inline HTML (Simple)",
++		"Inline HTML comments",
++		"Links, inline style",
++		"Links, reference style",
++		"Links, shortcut references",
++		"Literal quotes in titles",
++		"Markdown Documentation - Basics",
++		"Markdown Documentation - Syntax",
++		"Nested blockquotes",
++		"Ordered and unordered lists",
++		"Strong and em together",
++		"Tabs",
++		"Tidyness",
 +	}
-+	doTestsSanitize(t, tests)
++	doTestsReference(t, files, 0)
 +}
 +
-+func TestSanitizeSelfClosingTag(t *testing.T) {
-+	tests := []string{
-+		"<hr>\n",
-+		"<hr>\n",
-+
-+		"<hr/>\n",
-+		"<hr/>\n",
-+
-+		// Make sure that evil attributes are stripped for self closing tags.
-+		"<hr onclick=\"evil()\"/>\n",
-+		"<hr/>\n",
++func TestReference_EXTENSION_NO_EMPTY_LINE_BEFORE_BLOCK(t *testing.T) {
++	files := []string{
++		"Amps and angle encoding",
++		"Auto links",
++		"Backslash escapes",
++		"Blockquotes with code blocks",
++		"Code Blocks",
++		"Code Spans",
++		"Hard-wrapped paragraphs with list-like lines no empty line before block",
++		"Horizontal rules",
++		"Inline HTML (Advanced)",
++		"Inline HTML (Simple)",
++		"Inline HTML comments",
++		"Links, inline style",
++		"Links, reference style",
++		"Links, shortcut references",
++		"Literal quotes in titles",
++		"Markdown Documentation - Basics",
++		"Markdown Documentation - Syntax",
++		"Nested blockquotes",
++		"Ordered and unordered lists",
++		"Strong and em together",
++		"Tabs",
++		"Tidyness",
 +	}
-+	doTestsSanitize(t, tests)
-+}
-+
-+func TestSanitizeInlineLink(t *testing.T) {
-+	tests := []string{
-+		"[link](javascript:evil)",
-+		"<p><a>link</a></p>\n",
-+		"[link](/abc)",
-+		"<p><a href=\"/abc\">link</a></p>\n",
-+	}
-+	doTestsSanitize(t, tests)
++	doTestsReference(t, files, EXTENSION_NO_EMPTY_LINE_BEFORE_BLOCK)
 +}
 diff --git a/vendor/src/github.com/russross/blackfriday/smartypants.go b/vendor/src/github.com/russross/blackfriday/smartypants.go
 new file mode 100644
-index 0000000..d6f4ad9
+index 0000000..8027571
 --- /dev/null
 +++ b/vendor/src/github.com/russross/blackfriday/smartypants.go
-@@ -0,0 +1,376 @@
+@@ -0,0 +1,398 @@
 +//
 +// Blackfriday Markdown Processor
 +// Available at http://github.com/russross/blackfriday
@@ -7708,13 +8031,13 @@ index 0000000..d6f4ad9
 +	return 0
 +}
 +
-+func smartAmp(out *bytes.Buffer, smrt *smartypantsData, previousChar byte, text []byte) int {
++func smartAmpVariant(out *bytes.Buffer, smrt *smartypantsData, previousChar byte, text []byte, quote byte) int {
 +	if bytes.HasPrefix(text, []byte("&quot;")) {
 +		nextChar := byte(0)
 +		if len(text) >= 7 {
 +			nextChar = text[6]
 +		}
-+		if smartQuoteHelper(out, previousChar, nextChar, 'd', &smrt.inDoubleQuote) {
++		if smartQuoteHelper(out, previousChar, nextChar, quote, &smrt.inDoubleQuote) {
 +			return 5
 +		}
 +	}
@@ -7725,6 +8048,14 @@ index 0000000..d6f4ad9
 +
 +	out.WriteByte('&')
 +	return 0
++}
++
++func smartAmp(out *bytes.Buffer, smrt *smartypantsData, previousChar byte, text []byte) int {
++	return smartAmpVariant(out, smrt, previousChar, text, 'd')
++}
++
++func smartAmpAngledQuote(out *bytes.Buffer, smrt *smartypantsData, previousChar byte, text []byte) int {
++	return smartAmpVariant(out, smrt, previousChar, text, 'a')
 +}
 +
 +func smartPeriod(out *bytes.Buffer, smrt *smartypantsData, previousChar byte, text []byte) int {
@@ -7758,9 +8089,10 @@ index 0000000..d6f4ad9
 +}
 +
 +func smartNumberGeneric(out *bytes.Buffer, smrt *smartypantsData, previousChar byte, text []byte) int {
-+	if wordBoundary(previousChar) && len(text) >= 3 {
++	if wordBoundary(previousChar) && previousChar != '/' && len(text) >= 3 {
 +		// is it of the form digits/digits(word boundary)?, i.e., \d+/\d+\b
 +		// note: check for regular slash (/) or fraction slash (⁄, 0x2044, or 0xe2 81 84 in utf-8)
++		//       and avoid changing dates like 1/23/2005 into fractions.
 +		numEnd := 0
 +		for len(text) > numEnd && isdigit(text[numEnd]) {
 +			numEnd++
@@ -7784,7 +8116,7 @@ index 0000000..d6f4ad9
 +			out.WriteByte(text[0])
 +			return 0
 +		}
-+		if len(text) == denEnd || wordBoundary(text[denEnd]) {
++		if len(text) == denEnd || wordBoundary(text[denEnd]) && text[denEnd] != '/' {
 +			out.WriteString("<sup>")
 +			out.Write(text[:numEnd])
 +			out.WriteString("</sup>&frasl;<sub>")
@@ -7799,23 +8131,23 @@ index 0000000..d6f4ad9
 +}
 +
 +func smartNumber(out *bytes.Buffer, smrt *smartypantsData, previousChar byte, text []byte) int {
-+	if wordBoundary(previousChar) && len(text) >= 3 {
++	if wordBoundary(previousChar) && previousChar != '/' && len(text) >= 3 {
 +		if text[0] == '1' && text[1] == '/' && text[2] == '2' {
-+			if len(text) < 4 || wordBoundary(text[3]) {
++			if len(text) < 4 || wordBoundary(text[3]) && text[3] != '/' {
 +				out.WriteString("&frac12;")
 +				return 2
 +			}
 +		}
 +
 +		if text[0] == '1' && text[1] == '/' && text[2] == '4' {
-+			if len(text) < 4 || wordBoundary(text[3]) || (len(text) >= 5 && tolower(text[3]) == 't' && tolower(text[4]) == 'h') {
++			if len(text) < 4 || wordBoundary(text[3]) && text[3] != '/' || (len(text) >= 5 && tolower(text[3]) == 't' && tolower(text[4]) == 'h') {
 +				out.WriteString("&frac14;")
 +				return 2
 +			}
 +		}
 +
 +		if text[0] == '3' && text[1] == '/' && text[2] == '4' {
-+			if len(text) < 4 || wordBoundary(text[3]) || (len(text) >= 6 && tolower(text[3]) == 't' && tolower(text[4]) == 'h' && tolower(text[5]) == 's') {
++			if len(text) < 4 || wordBoundary(text[3]) && text[3] != '/' || (len(text) >= 6 && tolower(text[3]) == 't' && tolower(text[4]) == 'h' && tolower(text[5]) == 's') {
 +				out.WriteString("&frac34;")
 +				return 2
 +			}
@@ -7826,16 +8158,24 @@ index 0000000..d6f4ad9
 +	return 0
 +}
 +
-+func smartDoubleQuote(out *bytes.Buffer, smrt *smartypantsData, previousChar byte, text []byte) int {
++func smartDoubleQuoteVariant(out *bytes.Buffer, smrt *smartypantsData, previousChar byte, text []byte, quote byte) int {
 +	nextChar := byte(0)
 +	if len(text) > 1 {
 +		nextChar = text[1]
 +	}
-+	if !smartQuoteHelper(out, previousChar, nextChar, 'd', &smrt.inDoubleQuote) {
++	if !smartQuoteHelper(out, previousChar, nextChar, quote, &smrt.inDoubleQuote) {
 +		out.WriteString("&quot;")
 +	}
 +
 +	return 0
++}
++
++func smartDoubleQuote(out *bytes.Buffer, smrt *smartypantsData, previousChar byte, text []byte) int {
++	return smartDoubleQuoteVariant(out, smrt, previousChar, text, 'd')
++}
++
++func smartAngledDoubleQuote(out *bytes.Buffer, smrt *smartypantsData, previousChar byte, text []byte) int {
++	return smartDoubleQuoteVariant(out, smrt, previousChar, text, 'a')
 +}
 +
 +func smartLeftAngle(out *bytes.Buffer, smrt *smartypantsData, previousChar byte, text []byte) int {
@@ -7855,8 +8195,13 @@ index 0000000..d6f4ad9
 +
 +func smartypants(flags int) *smartypantsRenderer {
 +	r := new(smartypantsRenderer)
-+	r['"'] = smartDoubleQuote
-+	r['&'] = smartAmp
++	if flags&HTML_SMARTYPANTS_ANGLED_QUOTES == 0 {
++		r['"'] = smartDoubleQuote
++		r['&'] = smartAmp
++	} else {
++		r['"'] = smartAngledDoubleQuote
++		r['&'] = smartAmpAngledQuote
++	}
 +	r['\''] = smartSingleQuote
 +	r['('] = smartParens
 +	if flags&HTML_SMARTYPANTS_LATEX_DASHES == 0 {
@@ -7877,11 +8222,11 @@ index 0000000..d6f4ad9
 +	r['`'] = smartBacktick
 +	return r
 +}
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Amps and angle encoding.html b/vendor/src/github.com/russross/blackfriday/upskirtref/Amps and angle encoding.html
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Amps and angle encoding.html b/vendor/src/github.com/russross/blackfriday/testdata/Amps and angle encoding.html
 new file mode 100644
 index 0000000..483f8ff
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Amps and angle encoding.html	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Amps and angle encoding.html	
 @@ -0,0 +1,17 @@
 +<p>AT&amp;T has an ampersand in their name.</p>
 +
@@ -7900,11 +8245,11 @@ index 0000000..483f8ff
 +<p>Here's an inline <a href="/script?foo=1&amp;bar=2">link</a>.</p>
 +
 +<p>Here's an inline <a href="/script?foo=1&amp;bar=2">link</a>.</p>
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Amps and angle encoding.text b/vendor/src/github.com/russross/blackfriday/upskirtref/Amps and angle encoding.text
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Amps and angle encoding.text b/vendor/src/github.com/russross/blackfriday/testdata/Amps and angle encoding.text
 new file mode 100644
 index 0000000..0e9527f
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Amps and angle encoding.text	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Amps and angle encoding.text	
 @@ -0,0 +1,21 @@
 +AT&T has an ampersand in their name.
 +
@@ -7928,11 +8273,11 @@ index 0000000..0e9527f
 +[1]: http://example.com/?foo=1&bar=2
 +[2]: http://att.com/  "AT&T"
 \ No newline at end of file
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Auto links.html b/vendor/src/github.com/russross/blackfriday/upskirtref/Auto links.html
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Auto links.html b/vendor/src/github.com/russross/blackfriday/testdata/Auto links.html
 new file mode 100644
 index 0000000..b1791e7
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Auto links.html	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Auto links.html	
 @@ -0,0 +1,18 @@
 +<p>Link: <a href="http://example.com/">http://example.com/</a>.</p>
 +
@@ -7952,11 +8297,11 @@ index 0000000..b1791e7
 +
 +<pre><code>or here: &lt;http://example.com/&gt;
 +</code></pre>
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Auto links.text b/vendor/src/github.com/russross/blackfriday/upskirtref/Auto links.text
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Auto links.text b/vendor/src/github.com/russross/blackfriday/testdata/Auto links.text
 new file mode 100644
 index 0000000..abbc488
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Auto links.text	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Auto links.text	
 @@ -0,0 +1,13 @@
 +Link: <http://example.com/>.
 +
@@ -7972,11 +8317,11 @@ index 0000000..abbc488
 +
 +	or here: <http://example.com/>
 \ No newline at end of file
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Backslash escapes.html b/vendor/src/github.com/russross/blackfriday/upskirtref/Backslash escapes.html
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Backslash escapes.html b/vendor/src/github.com/russross/blackfriday/testdata/Backslash escapes.html
 new file mode 100644
 index 0000000..a73c998
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Backslash escapes.html	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Backslash escapes.html	
 @@ -0,0 +1,123 @@
 +<p>These should all get escaped:</p>
 +
@@ -8101,11 +8446,11 @@ index 0000000..a73c998
 +<p>This is a tag with unescaped backticks <span attr='`ticks`'>bar</span>.</p>
 +
 +<p>This is a tag with backslashes <span attr='\\backslashes\\'>bar</span>.</p>
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Backslash escapes.text b/vendor/src/github.com/russross/blackfriday/upskirtref/Backslash escapes.text
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Backslash escapes.text b/vendor/src/github.com/russross/blackfriday/testdata/Backslash escapes.text
 new file mode 100644
 index 0000000..04c20bd
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Backslash escapes.text	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Backslash escapes.text	
 @@ -0,0 +1,126 @@
 +These should all get escaped:
 +
@@ -8233,11 +8578,11 @@ index 0000000..04c20bd
 +This is a tag with unescaped backticks <span attr='`ticks`'>bar</span>.
 +
 +This is a tag with backslashes <span attr='\\backslashes\\'>bar</span>.
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Blockquotes with code blocks.html b/vendor/src/github.com/russross/blackfriday/upskirtref/Blockquotes with code blocks.html
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Blockquotes with code blocks.html b/vendor/src/github.com/russross/blackfriday/testdata/Blockquotes with code blocks.html
 new file mode 100644
 index 0000000..360fa9b
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Blockquotes with code blocks.html	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Blockquotes with code blocks.html	
 @@ -0,0 +1,15 @@
 +<blockquote>
 +<p>Example:</p>
@@ -8254,11 +8599,11 @@ index 0000000..360fa9b
 +}
 +</code></pre>
 +</blockquote>
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Blockquotes with code blocks.text b/vendor/src/github.com/russross/blackfriday/upskirtref/Blockquotes with code blocks.text
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Blockquotes with code blocks.text b/vendor/src/github.com/russross/blackfriday/testdata/Blockquotes with code blocks.text
 new file mode 100644
 index 0000000..c31d171
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Blockquotes with code blocks.text	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Blockquotes with code blocks.text	
 @@ -0,0 +1,11 @@
 +> Example:
 +> 
@@ -8271,11 +8616,11 @@ index 0000000..c31d171
 +>     sub status {
 +>         return "working";
 +>     }
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Code Blocks.html b/vendor/src/github.com/russross/blackfriday/upskirtref/Code Blocks.html
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Code Blocks.html b/vendor/src/github.com/russross/blackfriday/testdata/Code Blocks.html
 new file mode 100644
 index 0000000..32703f5
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Code Blocks.html	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Code Blocks.html	
 @@ -0,0 +1,18 @@
 +<pre><code>code block on the first line
 +</code></pre>
@@ -8295,11 +8640,11 @@ index 0000000..32703f5
 +
 +<pre><code>code block on the last line
 +</code></pre>
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Code Blocks.text b/vendor/src/github.com/russross/blackfriday/upskirtref/Code Blocks.text
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Code Blocks.text b/vendor/src/github.com/russross/blackfriday/testdata/Code Blocks.text
 new file mode 100644
 index 0000000..b54b092
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Code Blocks.text	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Code Blocks.text	
 @@ -0,0 +1,14 @@
 +	code block on the first line
 +	
@@ -8316,22 +8661,22 @@ index 0000000..b54b092
 +
 +	code block on the last line
 \ No newline at end of file
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Code Spans.html b/vendor/src/github.com/russross/blackfriday/upskirtref/Code Spans.html
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Code Spans.html b/vendor/src/github.com/russross/blackfriday/testdata/Code Spans.html
 new file mode 100644
 index 0000000..ef85f95
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Code Spans.html	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Code Spans.html	
 @@ -0,0 +1,5 @@
 +<p><code>&lt;test a=&quot;</code> content of attribute <code>&quot;&gt;</code></p>
 +
 +<p>Fix for backticks within HTML tag: <span attr='`ticks`'>like this</span></p>
 +
 +<p>Here's how you put <code>`backticks`</code> in a code span.</p>
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Code Spans.text b/vendor/src/github.com/russross/blackfriday/upskirtref/Code Spans.text
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Code Spans.text b/vendor/src/github.com/russross/blackfriday/testdata/Code Spans.text
 new file mode 100644
 index 0000000..750a197
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Code Spans.text	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Code Spans.text	
 @@ -0,0 +1,6 @@
 +`<test a="` content of attribute `">`
 +
@@ -8339,11 +8684,11 @@ index 0000000..750a197
 +
 +Here's how you put `` `backticks` `` in a code span.
 +
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Hard-wrapped paragraphs with list-like lines no empty line before block.html b/vendor/src/github.com/russross/blackfriday/upskirtref/Hard-wrapped paragraphs with list-like lines no empty line before block.html
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Hard-wrapped paragraphs with list-like lines no empty line before block.html b/vendor/src/github.com/russross/blackfriday/testdata/Hard-wrapped paragraphs with list-like lines no empty line before block.html
 new file mode 100644
 index 0000000..fc25319
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Hard-wrapped paragraphs with list-like lines no empty line before block.html	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Hard-wrapped paragraphs with list-like lines no empty line before block.html	
 @@ -0,0 +1,14 @@
 +<p>In Markdown 1.0.0 and earlier. Version</p>
 +
@@ -8359,11 +8704,11 @@ index 0000000..fc25319
 +<ul>
 +<li>criminey.</li>
 +</ul>
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Hard-wrapped paragraphs with list-like lines no empty line before block.text b/vendor/src/github.com/russross/blackfriday/upskirtref/Hard-wrapped paragraphs with list-like lines no empty line before block.text
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Hard-wrapped paragraphs with list-like lines no empty line before block.text b/vendor/src/github.com/russross/blackfriday/testdata/Hard-wrapped paragraphs with list-like lines no empty line before block.text
 new file mode 100644
 index 0000000..f8a5b27
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Hard-wrapped paragraphs with list-like lines no empty line before block.text	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Hard-wrapped paragraphs with list-like lines no empty line before block.text	
 @@ -0,0 +1,8 @@
 +In Markdown 1.0.0 and earlier. Version
 +8. This line turns into a list item.
@@ -8373,11 +8718,11 @@ index 0000000..f8a5b27
 +
 +Here's one with a bullet.
 +* criminey.
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Hard-wrapped paragraphs with list-like lines.html b/vendor/src/github.com/russross/blackfriday/upskirtref/Hard-wrapped paragraphs with list-like lines.html
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Hard-wrapped paragraphs with list-like lines.html b/vendor/src/github.com/russross/blackfriday/testdata/Hard-wrapped paragraphs with list-like lines.html
 new file mode 100644
 index 0000000..e21ac79
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Hard-wrapped paragraphs with list-like lines.html	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Hard-wrapped paragraphs with list-like lines.html	
 @@ -0,0 +1,8 @@
 +<p>In Markdown 1.0.0 and earlier. Version
 +8. This line turns into a list item.
@@ -8387,11 +8732,11 @@ index 0000000..e21ac79
 +
 +<p>Here's one with a bullet.
 +* criminey.</p>
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Hard-wrapped paragraphs with list-like lines.text b/vendor/src/github.com/russross/blackfriday/upskirtref/Hard-wrapped paragraphs with list-like lines.text
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Hard-wrapped paragraphs with list-like lines.text b/vendor/src/github.com/russross/blackfriday/testdata/Hard-wrapped paragraphs with list-like lines.text
 new file mode 100644
 index 0000000..f8a5b27
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Hard-wrapped paragraphs with list-like lines.text	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Hard-wrapped paragraphs with list-like lines.text	
 @@ -0,0 +1,8 @@
 +In Markdown 1.0.0 and earlier. Version
 +8. This line turns into a list item.
@@ -8401,11 +8746,11 @@ index 0000000..f8a5b27
 +
 +Here's one with a bullet.
 +* criminey.
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Horizontal rules.html b/vendor/src/github.com/russross/blackfriday/upskirtref/Horizontal rules.html
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Horizontal rules.html b/vendor/src/github.com/russross/blackfriday/testdata/Horizontal rules.html
 new file mode 100644
 index 0000000..e60d4ba
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Horizontal rules.html	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Horizontal rules.html	
 @@ -0,0 +1,71 @@
 +<p>Dashes:</p>
 +
@@ -8478,11 +8823,11 @@ index 0000000..e60d4ba
 +
 +<pre><code>_ _ _
 +</code></pre>
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Horizontal rules.text b/vendor/src/github.com/russross/blackfriday/upskirtref/Horizontal rules.text
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Horizontal rules.text b/vendor/src/github.com/russross/blackfriday/testdata/Horizontal rules.text
 new file mode 100644
 index 0000000..1594bda
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Horizontal rules.text	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Horizontal rules.text	
 @@ -0,0 +1,67 @@
 +Dashes:
 +
@@ -8551,11 +8896,11 @@ index 0000000..1594bda
 +   _ _ _
 +
 +    _ _ _
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Inline HTML (Advanced).html b/vendor/src/github.com/russross/blackfriday/upskirtref/Inline HTML (Advanced).html
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Inline HTML (Advanced).html b/vendor/src/github.com/russross/blackfriday/testdata/Inline HTML (Advanced).html
 new file mode 100644
 index 0000000..3af9caf
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Inline HTML (Advanced).html	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Inline HTML (Advanced).html	
 @@ -0,0 +1,15 @@
 +<p>Simple block on one line:</p>
 +
@@ -8572,11 +8917,11 @@ index 0000000..3af9caf
 +</div>
 +<div>bar</div>
 +</div>
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Inline HTML (Advanced).text b/vendor/src/github.com/russross/blackfriday/upskirtref/Inline HTML (Advanced).text
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Inline HTML (Advanced).text b/vendor/src/github.com/russross/blackfriday/testdata/Inline HTML (Advanced).text
 new file mode 100644
 index 0000000..86b7206
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Inline HTML (Advanced).text	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Inline HTML (Advanced).text	
 @@ -0,0 +1,15 @@
 +Simple block on one line:
 +
@@ -8593,11 +8938,11 @@ index 0000000..86b7206
 +</div>
 +<div>bar</div>
 +</div>
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Inline HTML (Simple).html b/vendor/src/github.com/russross/blackfriday/upskirtref/Inline HTML (Simple).html
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Inline HTML (Simple).html b/vendor/src/github.com/russross/blackfriday/testdata/Inline HTML (Simple).html
 new file mode 100644
 index 0000000..6bf78f8
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Inline HTML (Simple).html	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Inline HTML (Simple).html	
 @@ -0,0 +1,72 @@
 +<p>Here's a simple block:</p>
 +
@@ -8671,11 +9016,11 @@ index 0000000..6bf78f8
 +<hr class="foo" id="bar"/>
 +
 +<hr class="foo" id="bar" >
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Inline HTML (Simple).text b/vendor/src/github.com/russross/blackfriday/upskirtref/Inline HTML (Simple).text
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Inline HTML (Simple).text b/vendor/src/github.com/russross/blackfriday/testdata/Inline HTML (Simple).text
 new file mode 100644
 index 0000000..14aa2dc
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Inline HTML (Simple).text	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Inline HTML (Simple).text	
 @@ -0,0 +1,69 @@
 +Here's a simple block:
 +
@@ -8746,11 +9091,11 @@ index 0000000..14aa2dc
 +
 +<hr class="foo" id="bar" >
 +
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Inline HTML comments.html b/vendor/src/github.com/russross/blackfriday/upskirtref/Inline HTML comments.html
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Inline HTML comments.html b/vendor/src/github.com/russross/blackfriday/testdata/Inline HTML comments.html
 new file mode 100644
 index 0000000..3f167a1
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Inline HTML comments.html	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Inline HTML comments.html	
 @@ -0,0 +1,13 @@
 +<p>Paragraph one.</p>
 +
@@ -8765,11 +9110,11 @@ index 0000000..3f167a1
 +<!-- one comment block -- -- with two comments -->
 +
 +<p>The end.</p>
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Inline HTML comments.text b/vendor/src/github.com/russross/blackfriday/upskirtref/Inline HTML comments.text
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Inline HTML comments.text b/vendor/src/github.com/russross/blackfriday/testdata/Inline HTML comments.text
 new file mode 100644
 index 0000000..41d830d
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Inline HTML comments.text	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Inline HTML comments.text	
 @@ -0,0 +1,13 @@
 +Paragraph one.
 +
@@ -8784,11 +9129,11 @@ index 0000000..41d830d
 +<!-- one comment block -- -- with two comments -->
 +
 +The end.
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Links, inline style.html b/vendor/src/github.com/russross/blackfriday/upskirtref/Links, inline style.html
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Links, inline style.html b/vendor/src/github.com/russross/blackfriday/testdata/Links, inline style.html
 new file mode 100644
 index 0000000..5802f2d
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Links, inline style.html	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Links, inline style.html	
 @@ -0,0 +1,11 @@
 +<p>Just a <a href="/url/">URL</a>.</p>
 +
@@ -8801,11 +9146,11 @@ index 0000000..5802f2d
 +<p><a href="/url/" title="title has spaces afterward">URL and title</a>.</p>
 +
 +<p>[Empty]().</p>
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Links, inline style.text b/vendor/src/github.com/russross/blackfriday/upskirtref/Links, inline style.text
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Links, inline style.text b/vendor/src/github.com/russross/blackfriday/testdata/Links, inline style.text
 new file mode 100644
 index 0000000..09017a9
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Links, inline style.text	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Links, inline style.text	
 @@ -0,0 +1,12 @@
 +Just a [URL](/url/).
 +
@@ -8819,11 +9164,11 @@ index 0000000..09017a9
 +
 +
 +[Empty]().
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Links, reference style.html b/vendor/src/github.com/russross/blackfriday/upskirtref/Links, reference style.html
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Links, reference style.html b/vendor/src/github.com/russross/blackfriday/testdata/Links, reference style.html
 new file mode 100644
 index 0000000..bebefde
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Links, reference style.html	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Links, reference style.html	
 @@ -0,0 +1,52 @@
 +<p>Foo <a href="/url/" title="Title">bar</a>.</p>
 +
@@ -8877,11 +9222,11 @@ index 0000000..bebefde
 +
 +<p>Here's another where the <a href="/url/">link
 +breaks</a> across lines, but with a line-ending space.</p>
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Links, reference style.text b/vendor/src/github.com/russross/blackfriday/upskirtref/Links, reference style.text
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Links, reference style.text b/vendor/src/github.com/russross/blackfriday/testdata/Links, reference style.text
 new file mode 100644
 index 0000000..341ec88
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Links, reference style.text	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Links, reference style.text	
 @@ -0,0 +1,71 @@
 +Foo [bar] [1].
 +
@@ -8954,11 +9299,11 @@ index 0000000..341ec88
 +
 +
 +[link breaks]: /url/
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Links, shortcut references.html b/vendor/src/github.com/russross/blackfriday/upskirtref/Links, shortcut references.html
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Links, shortcut references.html b/vendor/src/github.com/russross/blackfriday/testdata/Links, shortcut references.html
 new file mode 100644
 index 0000000..0b5e1d6
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Links, shortcut references.html	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Links, shortcut references.html	
 @@ -0,0 +1,9 @@
 +<p>This is the <a href="/simple">simple case</a>.</p>
 +
@@ -8969,11 +9314,11 @@ index 0000000..0b5e1d6
 +break</a> with a line-ending space.</p>
 +
 +<p><a href="/that">this</a> and the <a href="/other">other</a></p>
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Links, shortcut references.text b/vendor/src/github.com/russross/blackfriday/upskirtref/Links, shortcut references.text
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Links, shortcut references.text b/vendor/src/github.com/russross/blackfriday/testdata/Links, shortcut references.text
 new file mode 100644
 index 0000000..8c44c98
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Links, shortcut references.text	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Links, shortcut references.text	
 @@ -0,0 +1,20 @@
 +This is the [simple case].
 +
@@ -8995,20 +9340,20 @@ index 0000000..8c44c98
 +[this]: /this
 +[that]: /that
 +[other]: /other
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Literal quotes in titles.html b/vendor/src/github.com/russross/blackfriday/upskirtref/Literal quotes in titles.html
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Literal quotes in titles.html b/vendor/src/github.com/russross/blackfriday/testdata/Literal quotes in titles.html
 new file mode 100644
 index 0000000..611c1ac
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Literal quotes in titles.html	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Literal quotes in titles.html	
 @@ -0,0 +1,3 @@
 +<p>Foo <a href="/url/" title="Title with &quot;quotes&quot; inside">bar</a>.</p>
 +
 +<p>Foo <a href="/url/" title="Title with &quot;quotes&quot; inside">bar</a>.</p>
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Literal quotes in titles.text b/vendor/src/github.com/russross/blackfriday/upskirtref/Literal quotes in titles.text
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Literal quotes in titles.text b/vendor/src/github.com/russross/blackfriday/testdata/Literal quotes in titles.text
 new file mode 100644
 index 0000000..29d0e42
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Literal quotes in titles.text	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Literal quotes in titles.text	
 @@ -0,0 +1,7 @@
 +Foo [bar][].
 +
@@ -9017,11 +9362,11 @@ index 0000000..29d0e42
 +
 +  [bar]: /url/ "Title with "quotes" inside"
 +
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Markdown Documentation - Basics.html b/vendor/src/github.com/russross/blackfriday/upskirtref/Markdown Documentation - Basics.html
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Markdown Documentation - Basics.html b/vendor/src/github.com/russross/blackfriday/testdata/Markdown Documentation - Basics.html
 new file mode 100644
 index 0000000..ea3a61c
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Markdown Documentation - Basics.html	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Markdown Documentation - Basics.html	
 @@ -0,0 +1,314 @@
 +<h1>Markdown: Basics</h1>
 +
@@ -9337,11 +9682,11 @@ index 0000000..ea3a61c
 +&amp;lt;/blockquote&amp;gt;
 +&lt;/code&gt;&lt;/pre&gt;
 +</code></pre>
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Markdown Documentation - Basics.text b/vendor/src/github.com/russross/blackfriday/upskirtref/Markdown Documentation - Basics.text
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Markdown Documentation - Basics.text b/vendor/src/github.com/russross/blackfriday/testdata/Markdown Documentation - Basics.text
 new file mode 100644
 index 0000000..486055c
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Markdown Documentation - Basics.text	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Markdown Documentation - Basics.text	
 @@ -0,0 +1,306 @@
 +Markdown: Basics
 +================
@@ -9649,11 +9994,11 @@ index 0000000..486055c
 +        &lt;p&gt;For example.&lt;/p&gt;
 +    &lt;/blockquote&gt;
 +    </code></pre>
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Markdown Documentation - Syntax.html b/vendor/src/github.com/russross/blackfriday/upskirtref/Markdown Documentation - Syntax.html
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Markdown Documentation - Syntax.html b/vendor/src/github.com/russross/blackfriday/testdata/Markdown Documentation - Syntax.html
 new file mode 100644
 index 0000000..61dde59
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Markdown Documentation - Syntax.html	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Markdown Documentation - Syntax.html	
 @@ -0,0 +1,946 @@
 +<h1>Markdown: Syntax</h1>
 +
@@ -10601,11 +10946,11 @@ index 0000000..61dde59
 +.   dot
 +!   exclamation mark
 +</code></pre>
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Markdown Documentation - Syntax.text b/vendor/src/github.com/russross/blackfriday/upskirtref/Markdown Documentation - Syntax.text
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Markdown Documentation - Syntax.text b/vendor/src/github.com/russross/blackfriday/testdata/Markdown Documentation - Syntax.text
 new file mode 100644
 index 0000000..57360a1
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Markdown Documentation - Syntax.text	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Markdown Documentation - Syntax.text	
 @@ -0,0 +1,888 @@
 +Markdown: Syntax
 +================
@@ -11495,11 +11840,11 @@ index 0000000..57360a1
 +    .   dot
 +    !   exclamation mark
 +
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Nested blockquotes.html b/vendor/src/github.com/russross/blackfriday/upskirtref/Nested blockquotes.html
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Nested blockquotes.html b/vendor/src/github.com/russross/blackfriday/testdata/Nested blockquotes.html
 new file mode 100644
 index 0000000..538bb4f
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Nested blockquotes.html	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Nested blockquotes.html	
 @@ -0,0 +1,9 @@
 +<blockquote>
 +<p>foo</p>
@@ -11510,22 +11855,22 @@ index 0000000..538bb4f
 +
 +<p>foo</p>
 +</blockquote>
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Nested blockquotes.text b/vendor/src/github.com/russross/blackfriday/upskirtref/Nested blockquotes.text
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Nested blockquotes.text b/vendor/src/github.com/russross/blackfriday/testdata/Nested blockquotes.text
 new file mode 100644
 index 0000000..ed3c624
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Nested blockquotes.text	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Nested blockquotes.text	
 @@ -0,0 +1,5 @@
 +> foo
 +>
 +> > bar
 +>
 +> foo
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Ordered and unordered lists.html b/vendor/src/github.com/russross/blackfriday/upskirtref/Ordered and unordered lists.html
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Ordered and unordered lists.html b/vendor/src/github.com/russross/blackfriday/testdata/Ordered and unordered lists.html
 new file mode 100644
 index 0000000..d6fa427
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Ordered and unordered lists.html	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Ordered and unordered lists.html	
 @@ -0,0 +1,166 @@
 +<h2>Unordered</h2>
 +
@@ -11693,11 +12038,11 @@ index 0000000..d6fa427
 +
 +<p>that</p></li>
 +</ul>
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Ordered and unordered lists.text b/vendor/src/github.com/russross/blackfriday/upskirtref/Ordered and unordered lists.text
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Ordered and unordered lists.text b/vendor/src/github.com/russross/blackfriday/testdata/Ordered and unordered lists.text
 new file mode 100644
 index 0000000..7f3b497
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Ordered and unordered lists.text	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Ordered and unordered lists.text	
 @@ -0,0 +1,131 @@
 +## Unordered
 +
@@ -11830,11 +12175,11 @@ index 0000000..7f3b497
 +	*	sub
 +
 +	that
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Strong and em together.html b/vendor/src/github.com/russross/blackfriday/upskirtref/Strong and em together.html
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Strong and em together.html b/vendor/src/github.com/russross/blackfriday/testdata/Strong and em together.html
 new file mode 100644
 index 0000000..71ec78c
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Strong and em together.html	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Strong and em together.html	
 @@ -0,0 +1,7 @@
 +<p><strong><em>This is strong and em.</em></strong></p>
 +
@@ -11843,11 +12188,11 @@ index 0000000..71ec78c
 +<p><strong><em>This is strong and em.</em></strong></p>
 +
 +<p>So is <strong><em>this</em></strong> word.</p>
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Strong and em together.text b/vendor/src/github.com/russross/blackfriday/upskirtref/Strong and em together.text
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Strong and em together.text b/vendor/src/github.com/russross/blackfriday/testdata/Strong and em together.text
 new file mode 100644
 index 0000000..95ee690
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Strong and em together.text	
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Strong and em together.text	
 @@ -0,0 +1,7 @@
 +***This is strong and em.***
 +
@@ -11856,11 +12201,11 @@ index 0000000..95ee690
 +___This is strong and em.___
 +
 +So is ___this___ word.
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Tabs.html b/vendor/src/github.com/russross/blackfriday/upskirtref/Tabs.html
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Tabs.html b/vendor/src/github.com/russross/blackfriday/testdata/Tabs.html
 new file mode 100644
 index 0000000..64006d9
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Tabs.html
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Tabs.html
 @@ -0,0 +1,26 @@
 +<ul>
 +<li><p>this is a list item
@@ -11888,11 +12233,11 @@ index 0000000..64006d9
 ++   this is an example list item
 +    indented with spaces
 +</code></pre>
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Tabs.text b/vendor/src/github.com/russross/blackfriday/upskirtref/Tabs.text
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Tabs.text b/vendor/src/github.com/russross/blackfriday/testdata/Tabs.text
 new file mode 100644
 index 0000000..589d113
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Tabs.text
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Tabs.text
 @@ -0,0 +1,21 @@
 ++	this is a list item
 +	indented with tabs
@@ -11915,11 +12260,11 @@ index 0000000..589d113
 +	
 +	+   this is an example list item
 +	    indented with spaces
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Tidyness.html b/vendor/src/github.com/russross/blackfriday/upskirtref/Tidyness.html
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Tidyness.html b/vendor/src/github.com/russross/blackfriday/testdata/Tidyness.html
 new file mode 100644
 index 0000000..9c45b69
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Tidyness.html
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Tidyness.html
 @@ -0,0 +1,9 @@
 +<blockquote>
 +<p>A list within a blockquote:</p>
@@ -11930,148 +12275,140 @@ index 0000000..9c45b69
 +<li>asterisk 3</li>
 +</ul>
 +</blockquote>
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref/Tidyness.text b/vendor/src/github.com/russross/blackfriday/upskirtref/Tidyness.text
+diff --git a/vendor/src/github.com/russross/blackfriday/testdata/Tidyness.text b/vendor/src/github.com/russross/blackfriday/testdata/Tidyness.text
 new file mode 100644
 index 0000000..5f18b8d
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref/Tidyness.text
++++ b/vendor/src/github.com/russross/blackfriday/testdata/Tidyness.text
 @@ -0,0 +1,5 @@
 +> A list within a blockquote:
 +> 
 +> *	asterisk 1
 +> *	asterisk 2
 +> *	asterisk 3
-diff --git a/vendor/src/github.com/russross/blackfriday/upskirtref_test.go b/vendor/src/github.com/russross/blackfriday/upskirtref_test.go
+diff --git a/vendor/src/github.com/shurcooL/sanitized_anchor_name/.travis.yml b/vendor/src/github.com/shurcooL/sanitized_anchor_name/.travis.yml
 new file mode 100644
-index 0000000..42a0bdd
+index 0000000..aaee9cf
 --- /dev/null
-+++ b/vendor/src/github.com/russross/blackfriday/upskirtref_test.go
-@@ -0,0 +1,128 @@
-+//
-+// Blackfriday Markdown Processor
-+// Available at http://github.com/russross/blackfriday
-+//
-+// Copyright © 2011 Russ Ross <russ@russross.com>.
-+// Distributed under the Simplified BSD License.
-+// See README.md for details.
-+//
++++ b/vendor/src/github.com/shurcooL/sanitized_anchor_name/.travis.yml
+@@ -0,0 +1,10 @@
++language: go
++go:
++  - 1.4
++install:
++  - go get golang.org/x/tools/cmd/vet
++script:
++  - go get -t -v ./...
++  - diff -u <(echo -n) <(gofmt -d ./)
++  - go tool vet ./
++  - go test -v -race ./...
+diff --git a/vendor/src/github.com/shurcooL/sanitized_anchor_name/README.md b/vendor/src/github.com/shurcooL/sanitized_anchor_name/README.md
+new file mode 100644
+index 0000000..089c440
+--- /dev/null
++++ b/vendor/src/github.com/shurcooL/sanitized_anchor_name/README.md
+@@ -0,0 +1,25 @@
++sanitized_anchor_name [![Build Status](https://travis-ci.org/shurcooL/sanitized_anchor_name.svg?branch=master)](https://travis-ci.org/shurcooL/sanitized_anchor_name)
++=====================
 +
-+//
-+// Markdown 1.0.3 reference tests
-+//
++Package `sanitized_anchor_name` provides a func to create sanitized anchor names.
 +
-+package blackfriday
++Its logic can be reused by multiple packages to create interoperable anchor names and links to those anchors.
++
++At this time, it does not try to ensure that generated anchor names are unique, that responsibility falls on the caller.
++
++Example
++=======
++
++```Go
++anchorName := sanitized_anchor_name.Create("This is a header")
++
++fmt.Println(anchorName)
++
++// Output:
++// this-is-a-header
++```
++
++License
++-------
++
++- [MIT License](http://opensource.org/licenses/mit-license.php)
+diff --git a/vendor/src/github.com/shurcooL/sanitized_anchor_name/main.go b/vendor/src/github.com/shurcooL/sanitized_anchor_name/main.go
+new file mode 100644
+index 0000000..72a8753
+--- /dev/null
++++ b/vendor/src/github.com/shurcooL/sanitized_anchor_name/main.go
+@@ -0,0 +1,29 @@
++// Package sanitized_anchor_name provides a func to create sanitized anchor names.
++//
++// Its logic can be reused by multiple packages to create interoperable anchor names
++// and links to those anchors.
++//
++// At this time, it does not try to ensure that generated anchor names
++// are unique, that responsibility falls on the caller.
++package sanitized_anchor_name // import "github.com/shurcooL/sanitized_anchor_name"
++
++import "unicode"
++
++// Create returns a sanitized anchor name for the given text.
++func Create(text string) string {
++	var anchorName []rune
++	var futureDash = false
++	for _, r := range []rune(text) {
++		switch {
++		case unicode.IsLetter(r) || unicode.IsNumber(r):
++			if futureDash && len(anchorName) > 0 {
++				anchorName = append(anchorName, '-')
++			}
++			futureDash = false
++			anchorName = append(anchorName, unicode.ToLower(r))
++		default:
++			futureDash = true
++		}
++	}
++	return string(anchorName)
++}
+diff --git a/vendor/src/github.com/shurcooL/sanitized_anchor_name/main_test.go b/vendor/src/github.com/shurcooL/sanitized_anchor_name/main_test.go
+new file mode 100644
+index 0000000..ad03201
+--- /dev/null
++++ b/vendor/src/github.com/shurcooL/sanitized_anchor_name/main_test.go
+@@ -0,0 +1,35 @@
++package sanitized_anchor_name_test
 +
 +import (
-+	"io/ioutil"
-+	"path/filepath"
-+	"testing"
++	"fmt"
++
++	"github.com/shurcooL/sanitized_anchor_name"
 +)
 +
-+func runMarkdownReference(input string, flag int) string {
-+	renderer := HtmlRenderer(0, "", "")
-+	return string(Markdown([]byte(input), renderer, flag))
++func ExampleCreate() {
++	anchorName := sanitized_anchor_name.Create("This is a header")
++
++	fmt.Println(anchorName)
++
++	// Output:
++	// this-is-a-header
 +}
 +
-+func doTestsReference(t *testing.T, files []string, flag int) {
-+	// catch and report panics
-+	var candidate string
-+	defer func() {
-+		if err := recover(); err != nil {
-+			t.Errorf("\npanic while processing [%#v]\n", candidate)
-+		}
-+	}()
++func ExampleCreate2() {
++	fmt.Println(sanitized_anchor_name.Create("This is a header"))
++	fmt.Println(sanitized_anchor_name.Create("This is also          a header"))
++	fmt.Println(sanitized_anchor_name.Create("main.go"))
++	fmt.Println(sanitized_anchor_name.Create("Article 123"))
++	fmt.Println(sanitized_anchor_name.Create("<- Let's try this, shall we?"))
++	fmt.Printf("%q\n", sanitized_anchor_name.Create("        "))
++	fmt.Println(sanitized_anchor_name.Create("Hello, 世界"))
 +
-+	for _, basename := range files {
-+		filename := filepath.Join("upskirtref", basename+".text")
-+		inputBytes, err := ioutil.ReadFile(filename)
-+		if err != nil {
-+			t.Errorf("Couldn't open '%s', error: %v\n", filename, err)
-+			continue
-+		}
-+		input := string(inputBytes)
-+
-+		filename = filepath.Join("upskirtref", basename+".html")
-+		expectedBytes, err := ioutil.ReadFile(filename)
-+		if err != nil {
-+			t.Errorf("Couldn't open '%s', error: %v\n", filename, err)
-+			continue
-+		}
-+		expected := string(expectedBytes)
-+
-+		// fmt.Fprintf(os.Stderr, "processing %s ...", filename)
-+		actual := string(runMarkdownReference(input, flag))
-+		if actual != expected {
-+			t.Errorf("\n    [%#v]\nExpected[%#v]\nActual  [%#v]",
-+				basename+".text", expected, actual)
-+		}
-+		// fmt.Fprintf(os.Stderr, " ok\n")
-+
-+		// now test every prefix of every input to check for
-+		// bounds checking
-+		if !testing.Short() {
-+			start, max := 0, len(input)
-+			for end := start + 1; end <= max; end++ {
-+				candidate = input[start:end]
-+				// fmt.Fprintf(os.Stderr, "  %s %d:%d/%d\n", filename, start, end, max)
-+				_ = runMarkdownReference(candidate, flag)
-+			}
-+		}
-+	}
++	// Output:
++	// this-is-a-header
++	// this-is-also-a-header
++	// main-go
++	// article-123
++	// let-s-try-this-shall-we
++	// ""
++	// hello-世界
 +}
-+
-+func TestReference(t *testing.T) {
-+	files := []string{
-+		"Amps and angle encoding",
-+		"Auto links",
-+		"Backslash escapes",
-+		"Blockquotes with code blocks",
-+		"Code Blocks",
-+		"Code Spans",
-+		"Hard-wrapped paragraphs with list-like lines",
-+		"Horizontal rules",
-+		"Inline HTML (Advanced)",
-+		"Inline HTML (Simple)",
-+		"Inline HTML comments",
-+		"Links, inline style",
-+		"Links, reference style",
-+		"Links, shortcut references",
-+		"Literal quotes in titles",
-+		"Markdown Documentation - Basics",
-+		"Markdown Documentation - Syntax",
-+		"Nested blockquotes",
-+		"Ordered and unordered lists",
-+		"Strong and em together",
-+		"Tabs",
-+		"Tidyness",
-+	}
-+	doTestsReference(t, files, 0)
-+}
-+
-+func TestReference_EXTENSION_NO_EMPTY_LINE_BEFORE_BLOCK(t *testing.T) {
-+	files := []string{
-+		"Amps and angle encoding",
-+		"Auto links",
-+		"Backslash escapes",
-+		"Blockquotes with code blocks",
-+		"Code Blocks",
-+		"Code Spans",
-+		"Hard-wrapped paragraphs with list-like lines no empty line before block",
-+		"Horizontal rules",
-+		"Inline HTML (Advanced)",
-+		"Inline HTML (Simple)",
-+		"Inline HTML comments",
-+		"Links, inline style",
-+		"Links, reference style",
-+		"Links, shortcut references",
-+		"Literal quotes in titles",
-+		"Markdown Documentation - Basics",
-+		"Markdown Documentation - Syntax",
-+		"Nested blockquotes",
-+		"Ordered and unordered lists",
-+		"Strong and em together",
-+		"Tabs",
-+		"Tidyness",
-+	}
-+	doTestsReference(t, files, EXTENSION_NO_EMPTY_LINE_BEFORE_BLOCK)
-+}
+-- 
+1.8.3.1
+

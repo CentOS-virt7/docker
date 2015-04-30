@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 77
+%global w_release 78
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 34
+%global dp_release 35
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,17 +23,17 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.6.0
-%global d_release       10
+%global d_release       11
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global d_commit      08529373512e383421ebf9ec4b868e05816b4bd3
+%global d_commit      8aae715d99d7fdeaed1c8043e789d3620520ffef
 %global d_shortcommit %(c=%{d_commit}; echo ${c:0:7})
 
-%global atomic_commit 7b136161e4dbb224053d5292ce1ae50ceb2eb094
+%global atomic_commit 5b2fa8d261fc3392b44c50b631d586724f517138
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 21
+%global atomic_release 22
 
 %global utils_commit dcb4518b69b2071385089290bc75c63e5251fcba
 
@@ -98,7 +98,7 @@ BuildRequires:  pkgconfig(systemd)
 Requires:   systemd
 # need xz to work with ubuntu images
 Requires:   xz
-Requires:   device-mapper-libs >= 1.02.90-1
+Requires:   device-mapper-libs >= 7:1.02.90-1
 Requires:   subscription-manager
 Provides:   lxc-docker = %{d_version}-%{d_release}
 Provides:   docker = %{d_version}-%{d_release}
@@ -511,8 +511,17 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Thu Apr 30 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.0-11
+- build docker @rhatdan/rhel7-1.6 commit#8aae715
+- build atomic @projectatomic/master commit#5b2fa8d (fixes a typo)
+- Resolves: rhbz#1207839
+- Resolves: rhbz#1211765
+- Resolves: rhbz#1209545 (fixed in 1.6.0-10)
+- Resolves: rhbz#1151167 (fixed in 1.6.0-6)
+
 * Tue Apr 28 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.0-10
 - Resolves: rhbz#1215768
+- Resolves: rhbz#1212579
 - build docker @rhatdan/rhel7-1.6 commit#0852937
 
 * Fri Apr 24 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.0-9
@@ -547,7 +556,6 @@ fi
 
 * Wed Apr 15 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.0-2
 - Resolves: rhbz#1211292 - move GOTRACEBACK=crash to unitfile
-- Resolves: rhbz#1207839 - specify min device-mapper-libs version
 - build docker @rhatdan/rhel7-1.6 commit#fed6da1
 - build atomic master commit#e5734c4
 
