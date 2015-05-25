@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 78
+%global w_release 79
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 35
+%global dp_release 36
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,7 +23,7 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.6.0
-%global d_release       11
+%global d_release       12
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
@@ -33,7 +33,7 @@
 
 %global atomic_commit 5b2fa8d261fc3392b44c50b631d586724f517138
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 22
+%global atomic_release 23
 
 %global utils_commit dcb4518b69b2071385089290bc75c63e5251fcba
 
@@ -88,6 +88,7 @@ Patch3:     codegangsta-cli.patch
 Patch4:     urlparse.patch
 Patch5:     docker-py-remove-lock.patch
 Patch6:     0001-replace-closed-with-fp-isclosed-for-rhel7.patch
+Patch7:     rmi-f-IMAGE_ID.patch
 BuildRequires:  glibc-static
 BuildRequires:  golang >= 1.4.2
 BuildRequires:  device-mapper-devel
@@ -511,6 +512,10 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Mon May 25 2015 Michal Minar <miminar@redhat.com> - 1.6.0-12
+- Remove all repositories when removing image by ID.
+- Resolves: #1222784
+
 * Thu Apr 30 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.0-11
 - build docker @rhatdan/rhel7-1.6 commit#8aae715
 - build atomic @projectatomic/master commit#5b2fa8d (fixes a typo)
