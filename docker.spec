@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 79
+%global w_release 80
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 36
+%global dp_release 37
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,7 +23,7 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.6.0
-%global d_release       12
+%global d_release       13
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
@@ -33,7 +33,7 @@
 
 %global atomic_commit 5b2fa8d261fc3392b44c50b631d586724f517138
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 23
+%global atomic_release 24
 
 %global utils_commit dcb4518b69b2071385089290bc75c63e5251fcba
 
@@ -208,6 +208,7 @@ SELinux policy modules for use with Docker.
 %setup -qn docker-%{d_commit}
 %patch1 -p1
 %patch3 -p1
+%patch7 -p1
 cp %{SOURCE6} .
 
 # unpack %{repo}-selinux
@@ -512,7 +513,7 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
-* Mon May 25 2015 Michal Minar <miminar@redhat.com> - 1.6.0-12
+* Mon May 25 2015 Michal Minar <miminar@redhat.com> - 1.6.0-13
 - Remove all repositories when removing image by ID.
 - Resolves: #1222784
 
