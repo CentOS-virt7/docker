@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 81
+%global w_release 82
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 38
+%global dp_release 39
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,7 +23,7 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.6.0
-%global d_release       14
+%global d_release       15
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
@@ -33,7 +33,7 @@
 
 %global atomic_commit cc9aed4540402a83ed55e95782f4cf2cc6e944c7
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 25
+%global atomic_release 26
 
 %global utils_commit 562e2c0f7748d4c4db556cb196354a5805bf2119
 
@@ -49,7 +49,7 @@
 %global dss_commit e075395113b85d88c152e80c76d5560d89973882
 %global dss_shortcommit %(c=%{dss_commit}; echo ${c:0:7})
 %global dss_version 0.5
-%global dss_release 1
+%global dss_release 2
 
 # Usage: _format var format
 # Expand 'modulenames' into various formats as needed
@@ -217,7 +217,8 @@ Version: %{dss_version}
 Release: %{dss_release}%{?dist}
 Summary: A simple service to setup docker storage devices
 License: ASL 2.0
-Requires: lvm2
+BuildRequires: pkgconfig(systemd)
+Requires: lvm2 >= 2.02.112
 Requires: systemd-units
 Requires: xfsprogs
 
@@ -567,11 +568,16 @@ fi
 %{_libdir}/docker-storage-setup/docker-storage-setup
 
 %changelog
+* Tue May 26 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.0-15
+- d-s-s br: pkgconfig(systemd)
+- Resolves: rhbz#1214070 enforce min NVR for lvm2
+
 * Tue May 26 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.0-14
 - build atomic master commit#cc9aed4
 - build docker-utils master commit#562e2c0
 - build docker-selinux master commit#ba1ff3c
 - include docker-storage-setup subpackage, use master commit#e075395
+- Resolves: rhbz#1216095
 
 * Mon May 25 2015 Michal Minar <miminar@redhat.com> - 1.6.0-13
 - Remove all repositories when removing image by ID.
