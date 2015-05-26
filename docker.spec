@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 80
+%global w_release 81
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 37
+%global dp_release 38
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,7 +23,7 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.6.0
-%global d_release       13
+%global d_release       14
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
@@ -31,19 +31,25 @@
 %global d_commit      8aae715d99d7fdeaed1c8043e789d3620520ffef
 %global d_shortcommit %(c=%{d_commit}; echo ${c:0:7})
 
-%global atomic_commit 5b2fa8d261fc3392b44c50b631d586724f517138
+%global atomic_commit cc9aed4540402a83ed55e95782f4cf2cc6e944c7
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 24
+%global atomic_release 25
 
-%global utils_commit dcb4518b69b2071385089290bc75c63e5251fcba
+%global utils_commit 562e2c0f7748d4c4db556cb196354a5805bf2119
 
 # docker-selinux stuff (prefix with ds_ for version/release etc.)
 # Some bits borrowed from the openstack-selinux package
-%global ds_commit d59539be7eba77297e044fdc5de871f7ceaf15a3
+%global ds_commit ba1ff3cb8ba6b950d4c345a7b5812cf81940479f
 %global ds_shortcommit %(c=%{ds_commit}; echo ${c:0:7})
 %global selinuxtype targeted
 %global moduletype services
 %global modulenames %{repo}
+
+# docker-storage-setup stuff (prefix with dss_ for version/release etc.)
+%global dss_commit e075395113b85d88c152e80c76d5560d89973882
+%global dss_shortcommit %(c=%{dss_commit}; echo ${c:0:7})
+%global dss_version 0.5
+%global dss_release 1
 
 # Usage: _format var format
 # Expand 'modulenames' into various formats as needed
@@ -83,6 +89,8 @@ Source10:   https://github.com/projectatomic/atomic/archive/%{atomic_commit}.tar
 Source11:   https://github.com/vbatts/docker-utils/archive/%{utils_commit}.tar.gz
 # Source12 is the source tarball for docker-selinux
 Source12: https://github.com/fedora-cloud/%{repo}-selinux/archive/%{ds_commit}/%{repo}-selinux-%{ds_shortcommit}.tar.gz
+# Source13 is the source tarball for docker-storage-setup
+Source13: https://github.com/a13m/docker-storage-setup/archive/%{dss_commit}/%{repo}-storage-setup-%{dss_shortcommit}.tar.gz
 Patch1:     go-md2man.patch
 Patch3:     codegangsta-cli.patch
 Patch4:     urlparse.patch
@@ -204,6 +212,20 @@ Provides: %{repo}-io-selinux
 %description selinux
 SELinux policy modules for use with Docker.
 
+%package storage-setup
+Version: %{dss_version}
+Release: %{dss_release}%{?dist}
+Summary: A simple service to setup docker storage devices
+License: ASL 2.0
+Requires: lvm2
+Requires: systemd-units
+Requires: xfsprogs
+
+%description storage-setup
+This is a simple service to configure Docker to use an LVM-managed
+thin pool.  It also supports auto-growing both the pool as well
+as the root logical volume and partition table.
+
 %prep
 %setup -qn docker-%{d_commit}
 %patch1 -p1
@@ -235,6 +257,9 @@ popd
 tar zxf %{SOURCE10}
 sed -i '/pylint/d' atomic-%{atomic_commit}/Makefile
 sed -i 's/go-md2man/.\/go-md2man/' atomic-%{atomic_commit}/Makefile
+
+# untar d-s-s
+tar zxf %{SOURCE13}
 
 %build
 mkdir _build
@@ -406,6 +431,16 @@ pushd atomic-%{atomic_commit}
 make install DESTDIR=%{buildroot}
 popd
 
+# install d-s-s
+pushd %{repo}-storage-setup-%{dss_commit}
+install -d %{buildroot}%{_bindir}
+install -p -m 755 docker-storage-setup.sh %{buildroot}%{_bindir}/docker-storage-setup
+install -d %{buildroot}%{_unitdir}
+install -p -m 644 docker-storage-setup.service %{buildroot}%{_unitdir}
+install -d %{buildroot}%{_libdir}/docker-storage-setup/
+install -p -m 644 docker-storage-setup.conf %{buildroot}%{_libdir}/docker-storage-setup/docker-storage-setup
+popd
+
 %check
 [ ! -e /run/docker.sock ] || {
     mkdir test_dir
@@ -436,8 +471,14 @@ if %{_sbindir}/selinuxenabled ; then
 %relabel_files
 fi
 
+%post storage-setup
+%systemd_post docker-storage-setup.service
+
 %preun
 %systemd_preun docker.service
+
+%preun storage-setup
+%systemd_preun docker-storage-setup.service
 
 %postun
 %systemd_postun_with_restart docker.service
@@ -450,6 +491,9 @@ if %{_sbindir}/selinuxenabled ; then
 %relabel_files
 fi
 fi
+
+%postun storage-setup
+%systemd_postun docker-storage-setup.service
 
 %files
 %doc AUTHORS CHANGELOG.md CONTRIBUTING.md MAINTAINERS NOTICE
@@ -503,16 +547,32 @@ fi
 %doc atomic-%{atomic_commit}/COPYING atomic-%{atomic_commit}/README.md
 %config(noreplace) %{_sysconfdir}/sysconfig/atomic
 %{_sysconfdir}/profile.d/atomic.sh
+%{_sysconfdir}/dbus-1/system.d/org.atomic.conf
 %{_bindir}/atomic
 %{_mandir}/man1/atomic*
 %{_datadir}/bash-completion/completions/atomic
+%{_datadir}/atomic
+%{_datadir}/dbus-1/system-services/org.atomic.service
+%{_datadir}/polkit-1/actions/org.atomic.policy
 %{python_sitelib}/atomic*.egg-info
+%{python_sitelib}/Atomic
 
 %files selinux
 %doc %{repo}-selinux-%{ds_commit}/README.md
 %{_datadir}/selinux/*
 
+%files storage-setup
+%{_unitdir}/docker-storage-setup.service
+%{_bindir}/docker-storage-setup
+%{_libdir}/docker-storage-setup/docker-storage-setup
+
 %changelog
+* Tue May 26 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.0-14
+- build atomic master commit#cc9aed4
+- build docker-utils master commit#562e2c0
+- build docker-selinux master commit#ba1ff3c
+- include docker-storage-setup subpackage, use master commit#e075395
+
 * Mon May 25 2015 Michal Minar <miminar@redhat.com> - 1.6.0-13
 - Remove all repositories when removing image by ID.
 - Resolves: #1222784
