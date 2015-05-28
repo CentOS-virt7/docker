@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 82
+%global w_release 83
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 39
+%global dp_release 40
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -22,24 +22,24 @@
 %global project         docker
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
-%global d_version       1.6.0
-%global d_release       15
+%global d_version       1.6.2
+%global d_release       1
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global d_commit      8aae715d99d7fdeaed1c8043e789d3620520ffef
+%global d_commit      d8675b50e1a659549555120d792a594c357bfa7b
 %global d_shortcommit %(c=%{d_commit}; echo ${c:0:7})
 
-%global atomic_commit cc9aed4540402a83ed55e95782f4cf2cc6e944c7
+%global atomic_commit ec592be5815d5a5366c0d4cf3604b94176734eef
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 26
+%global atomic_release 27
 
 %global utils_commit 562e2c0f7748d4c4db556cb196354a5805bf2119
 
 # docker-selinux stuff (prefix with ds_ for version/release etc.)
 # Some bits borrowed from the openstack-selinux package
-%global ds_commit ba1ff3cb8ba6b950d4c345a7b5812cf81940479f
+%global ds_commit e86b2bc1593054d622e5aabf4e3ab4d218ea7474
 %global ds_shortcommit %(c=%{ds_commit}; echo ${c:0:7})
 %global selinuxtype targeted
 %global moduletype services
@@ -49,7 +49,7 @@
 %global dss_commit e075395113b85d88c152e80c76d5560d89973882
 %global dss_shortcommit %(c=%{dss_commit}; echo ${c:0:7})
 %global dss_version 0.5
-%global dss_release 2
+%global dss_release 3
 
 # Usage: _format var format
 # Expand 'modulenames' into various formats as needed
@@ -96,7 +96,6 @@ Patch3:     codegangsta-cli.patch
 Patch4:     urlparse.patch
 Patch5:     docker-py-remove-lock.patch
 Patch6:     0001-replace-closed-with-fp-isclosed-for-rhel7.patch
-Patch7:     rmi-f-IMAGE_ID.patch
 BuildRequires:  glibc-static
 BuildRequires:  golang >= 1.4.2
 BuildRequires:  device-mapper-devel
@@ -231,7 +230,6 @@ as the root logical volume and partition table.
 %setup -qn docker-%{d_commit}
 %patch1 -p1
 %patch3 -p1
-%patch7 -p1
 cp %{SOURCE6} .
 
 # unpack %{repo}-selinux
@@ -568,6 +566,12 @@ fi
 %{_libdir}/docker-storage-setup/docker-storage-setup
 
 %changelog
+* Thu May 28 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-1
+- rebase to 1.6.2
+- build docker @rhatdan/rhel7-1.6 commit#d8675b5
+- build atomic master commit#ec592be
+- build docker-selinux master commit#e86b2bc
+
 * Tue May 26 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.0-15
 - d-s-s br: pkgconfig(systemd)
 - Resolves: rhbz#1214070 enforce min NVR for lvm2
