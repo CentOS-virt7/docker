@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 83
+%global w_release 84
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 40
+%global dp_release 41
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,17 +23,17 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.6.2
-%global d_release       1
+%global d_release       2
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global d_commit      d8675b50e1a659549555120d792a594c357bfa7b
+%global d_commit      175dd9c0da590d523e5c64dcbaa3d03505e52caf
 %global d_shortcommit %(c=%{d_commit}; echo ${c:0:7})
 
 %global atomic_commit ec592be5815d5a5366c0d4cf3604b94176734eef
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 27
+%global atomic_release 28
 
 %global utils_commit 562e2c0f7748d4c4db556cb196354a5805bf2119
 
@@ -49,7 +49,7 @@
 %global dss_commit e075395113b85d88c152e80c76d5560d89973882
 %global dss_shortcommit %(c=%{dss_commit}; echo ${c:0:7})
 %global dss_version 0.5
-%global dss_release 3
+%global dss_release 4
 
 # Usage: _format var format
 # Expand 'modulenames' into various formats as needed
@@ -566,6 +566,9 @@ fi
 %{_libdir}/docker-storage-setup/docker-storage-setup
 
 %changelog
+* Thu May 28 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-2
+- build docker @rhatdan/rhel7-1.6 commit#175dd9c
+
 * Thu May 28 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-1
 - rebase to 1.6.2
 - build docker @rhatdan/rhel7-1.6 commit#d8675b5
