@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 84
+%global w_release 86
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 41
+%global dp_release 42
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,17 +23,17 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.6.2
-%global d_release       2
+%global d_release       3
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global d_commit      175dd9c0da590d523e5c64dcbaa3d03505e52caf
+%global d_commit      a615a49ab5853a48779c33fb264251b5645219c7
 %global d_shortcommit %(c=%{d_commit}; echo ${c:0:7})
 
-%global atomic_commit ec592be5815d5a5366c0d4cf3604b94176734eef
+%global atomic_commit 2f1398ccacbde3bb0273fe2573daef72aa9d1ea2
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 28
+%global atomic_release 29
 
 %global utils_commit 562e2c0f7748d4c4db556cb196354a5805bf2119
 
@@ -47,10 +47,10 @@
 
 # docker-storage-setup stuff (prefix with dss_ for version/release etc.)
 %global dss_libdir %{_prefix}/lib/docker-storage-setup
-%global dss_commit e075395113b85d88c152e80c76d5560d89973882
+%global dss_commit 0f2b772a9fd76c4c47fd93a1fe1cd76b7b24c919
 %global dss_shortcommit %(c=%{dss_commit}; echo ${c:0:7})
 %global dss_version 0.5
-%global dss_release 4
+%global dss_release 6
 
 # Usage: _format var format
 # Expand 'modulenames' into various formats as needed
@@ -162,7 +162,7 @@ BuildRequires:  python-tools
 BuildRequires:  python-requests
 Requires:       docker >= %{d_version}-%{d_release}
 Requires:       python-requests
-Requires:       python-%{w_distname} >= 0.11.0
+Requires:       python-%{w_distname} >= %{w_version}-%{w_release}
 Requires:       python-six >= 1.3.0
 Requires:       python-argparse
 Provides:       python-docker-py = %{dp_version}-%{dp_release}
@@ -184,7 +184,7 @@ BuildRequires: python-requests
 Requires: docker
 Requires: python-requests
 Requires: python-docker-py >= %{dp_version}-%{dp_release}
-Requires: python-%{w_distname} >= 0.11.0
+Requires: python-%{w_distname} >= %{w_version}-%{w_release}
 Requires: python-six >= 1.3.0
 Conflicts: python-docker < 1.0.0-11
 
@@ -572,6 +572,9 @@ fi
 - Resolves: rhbz#1226989 - correct install path for docker-stroage-setup
 config file
 - Resolves: rhbz#1227040 - docker requires docker-storage-setup at runtime
+- built docker @rhatdan/rhel7-1.6 commit#a615a49
+- built atomic master commit#2f1398c
+- built d-s-s master commit#0f2b772
 
 * Thu May 28 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-2
 - build docker @rhatdan/rhel7-1.6 commit#175dd9c
