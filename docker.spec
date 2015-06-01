@@ -46,6 +46,7 @@
 %global modulenames %{repo}
 
 # docker-storage-setup stuff (prefix with dss_ for version/release etc.)
+%global dss_libdir %{_prefix}/lib/docker-storage-setup
 %global dss_commit e075395113b85d88c152e80c76d5560d89973882
 %global dss_shortcommit %(c=%{dss_commit}; echo ${c:0:7})
 %global dss_version 0.5
@@ -437,8 +438,8 @@ install -d %{buildroot}%{_bindir}
 install -p -m 755 docker-storage-setup.sh %{buildroot}%{_bindir}/docker-storage-setup
 install -d %{buildroot}%{_unitdir}
 install -p -m 644 docker-storage-setup.service %{buildroot}%{_unitdir}
-install -d %{buildroot}%{_libdir}/docker-storage-setup/
-install -p -m 644 docker-storage-setup.conf %{buildroot}%{_libdir}/docker-storage-setup/docker-storage-setup
+install -d %{buildroot}%{dss_libdir}
+install -p -m 644 docker-storage-setup.conf %{buildroot}%{dss_libdir}/docker-storage-setup
 popd
 
 %check
@@ -564,10 +565,12 @@ fi
 %files storage-setup
 %{_unitdir}/docker-storage-setup.service
 %{_bindir}/docker-storage-setup
-%{_libdir}/docker-storage-setup/docker-storage-setup
+%{dss_libdir}/docker-storage-setup
 
 %changelog
 * Mon Jun 01 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-3
+- Resolves: rhbz#1226989 - correct install path for docker-stroage-setup
+config file
 - docker requires docker-storage-setup at runtime
 
 * Thu May 28 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-2
