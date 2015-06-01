@@ -108,6 +108,7 @@ Requires:   systemd
 Requires:   xz
 Requires:   device-mapper-libs >= 7:1.02.90-1
 Requires:   subscription-manager
+Requires:   docker-storage-setup = %{dss_version}-%{dss_release}
 Provides:   lxc-docker = %{d_version}-%{d_release}
 Provides:   docker = %{d_version}-%{d_release}
 Provides:   docker-io = %{d_version}-%{d_release}
@@ -566,6 +567,9 @@ fi
 %{_libdir}/docker-storage-setup/docker-storage-setup
 
 %changelog
+* Mon Jun 01 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-3
+- docker requires docker-storage-setup at runtime
+
 * Thu May 28 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-2
 - build docker @rhatdan/rhel7-1.6 commit#175dd9c
 
