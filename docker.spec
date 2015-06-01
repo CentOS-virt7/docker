@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 86
+%global w_release 87
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 42
+%global dp_release 43
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,7 +23,7 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.6.2
-%global d_release       3
+%global d_release       4
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
@@ -33,7 +33,7 @@
 
 %global atomic_commit 2f1398ccacbde3bb0273fe2573daef72aa9d1ea2
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 29
+%global atomic_release 30
 
 %global utils_commit 562e2c0f7748d4c4db556cb196354a5805bf2119
 
@@ -50,7 +50,7 @@
 %global dss_commit 0f2b772a9fd76c4c47fd93a1fe1cd76b7b24c919
 %global dss_shortcommit %(c=%{dss_commit}; echo ${c:0:7})
 %global dss_version 0.5
-%global dss_release 6
+%global dss_release 7
 
 # Usage: _format var format
 # Expand 'modulenames' into various formats as needed
@@ -109,7 +109,7 @@ Requires:   systemd
 Requires:   xz
 Requires:   device-mapper-libs >= 7:1.02.90-1
 Requires:   subscription-manager
-Requires:   docker-storage-setup = %{dss_version}-%{dss_release}
+Requires:   docker-storage-setup >= %{dss_version}-%{dss_release}
 Provides:   lxc-docker = %{d_version}-%{d_release}
 Provides:   docker = %{d_version}-%{d_release}
 Provides:   docker-io = %{d_version}-%{d_release}
@@ -233,6 +233,7 @@ as the root logical volume and partition table.
 %patch1 -p1
 %patch3 -p1
 cp %{SOURCE6} .
+sed -i 's/$/%{?dist}/' VERSION
 
 # unpack %{repo}-selinux
 tar zxf %{SOURCE12}
@@ -319,7 +320,7 @@ popd
 %install
 # install binary
 install -d %{buildroot}%{_bindir}
-install -p -m 755 bundles/%{d_version}/dynbinary/docker-%{d_version} %{buildroot}%{_bindir}/docker
+install -p -m 755 bundles/%{d_version}%{?dist}/dynbinary/docker-%{d_version}%{?dist} %{buildroot}%{_bindir}/docker
 
 # install dockertarsum and docker-fetch
 install -p -m 755 _build/src/docker-fetch %{buildroot}%{_bindir}
@@ -327,7 +328,7 @@ install -p -m 755 _build/src/dockertarsum %{buildroot}%{_bindir}
 
 # install dockerinit
 install -d %{buildroot}%{_libexecdir}/docker
-install -p -m 755 bundles/%{d_version}/dynbinary/dockerinit-%{d_version} %{buildroot}%{_libexecdir}/docker/dockerinit
+install -p -m 755 bundles/%{d_version}%{?dist}/dynbinary/dockerinit-%{d_version}%{?dist} %{buildroot}%{_libexecdir}/docker/dockerinit
 
 # install manpages
 install -d %{buildroot}%{_mandir}/man1
@@ -568,6 +569,10 @@ fi
 %{dss_libdir}/docker-storage-setup
 
 %changelog
+* Mon Jun 01 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-4
+- include dist tag in 'docker version' to tell a distro build from a docker
+upstream rpm
+
 * Mon Jun 01 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-3
 - Resolves: rhbz#1226989 - correct install path for docker-stroage-setup
 config file
