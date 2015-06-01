@@ -571,7 +571,7 @@ fi
 * Mon Jun 01 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-3
 - Resolves: rhbz#1226989 - correct install path for docker-stroage-setup
 config file
-- docker requires docker-storage-setup at runtime
+- Resolves: rhbz#1227040 - docker requires docker-storage-setup at runtime
 
 * Thu May 28 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-2
 - build docker @rhatdan/rhel7-1.6 commit#175dd9c
