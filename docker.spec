@@ -426,7 +426,7 @@ install -p -m 644 docker-storage-setup.conf %{buildroot}%{dss_libdir}/docker-sto
 popd
 
 %check
-[ ! -e /run/docker.sock ] || {
+[ ! -w /run/docker.sock ] || {
     mkdir test_dir
     pushd test_dir
     git clone https://%{import_path}
