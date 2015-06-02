@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 87
+%global w_release 88
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 43
+%global dp_release 44
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,7 +23,7 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.6.2
-%global d_release       4
+%global d_release       5
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
@@ -33,13 +33,13 @@
 
 %global atomic_commit 2f1398ccacbde3bb0273fe2573daef72aa9d1ea2
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 30
+%global atomic_release 31
 
 %global utils_commit 562e2c0f7748d4c4db556cb196354a5805bf2119
 
 # docker-selinux stuff (prefix with ds_ for version/release etc.)
 # Some bits borrowed from the openstack-selinux package
-%global ds_commit e86b2bc1593054d622e5aabf4e3ab4d218ea7474
+%global ds_commit 99c4c77fd8a3d28e93d7a1d6b8af2db09bdf5989
 %global ds_shortcommit %(c=%{ds_commit}; echo ${c:0:7})
 %global selinuxtype targeted
 %global moduletype services
@@ -109,7 +109,6 @@ Requires:   systemd
 Requires:   xz
 Requires:   device-mapper-libs >= 7:1.02.90-1
 Requires:   subscription-manager
-Requires:   docker-storage-setup >= %{dss_version}-%{dss_release}
 Provides:   lxc-docker = %{d_version}-%{d_release}
 Provides:   docker = %{d_version}-%{d_release}
 Provides:   docker-io = %{d_version}-%{d_release}
@@ -212,21 +211,6 @@ Provides: %{repo}-io-selinux
 
 %description selinux
 SELinux policy modules for use with Docker.
-
-%package storage-setup
-Version: %{dss_version}
-Release: %{dss_release}%{?dist}
-Summary: A simple service to setup docker storage devices
-License: ASL 2.0
-BuildRequires: pkgconfig(systemd)
-Requires: lvm2 >= 2.02.112
-Requires: systemd-units
-Requires: xfsprogs
-
-%description storage-setup
-This is a simple service to configure Docker to use an LVM-managed
-thin pool.  It also supports auto-growing both the pool as well
-as the root logical volume and partition table.
 
 %prep
 %setup -qn docker-%{d_commit}
@@ -433,7 +417,7 @@ pushd atomic-%{atomic_commit}
 make install DESTDIR=%{buildroot}
 popd
 
-# install d-s-s
+# install docker-storage-setup
 pushd %{repo}-storage-setup-%{dss_commit}
 install -d %{buildroot}%{_bindir}
 install -p -m 755 docker-storage-setup.sh %{buildroot}%{_bindir}/docker-storage-setup
@@ -473,14 +457,8 @@ if %{_sbindir}/selinuxenabled ; then
 %relabel_files
 fi
 
-%post storage-setup
-%systemd_post docker-storage-setup.service
-
 %preun
 %systemd_preun docker.service
-
-%preun storage-setup
-%systemd_preun docker-storage-setup.service
 
 %postun
 %systemd_postun_with_restart docker.service
@@ -493,9 +471,6 @@ if %{_sbindir}/selinuxenabled ; then
 %relabel_files
 fi
 fi
-
-%postun storage-setup
-%systemd_postun docker-storage-setup.service
 
 %files
 %doc AUTHORS CHANGELOG.md CONTRIBUTING.md MAINTAINERS NOTICE
@@ -529,6 +504,10 @@ fi
 %{_sysconfdir}/docker
 %{_bindir}/docker-fetch
 %{_bindir}/dockertarsum
+# docker-storage-setup specific
+%{_unitdir}/docker-storage-setup.service
+%{_bindir}/docker-storage-setup
+%{dss_libdir}/docker-storage-setup
 
 %files logrotate
 %doc README.docker-logrotate
@@ -563,12 +542,13 @@ fi
 %doc %{repo}-selinux-%{ds_commit}/README.md
 %{_datadir}/selinux/*
 
-%files storage-setup
-%{_unitdir}/docker-storage-setup.service
-%{_bindir}/docker-storage-setup
-%{dss_libdir}/docker-storage-setup
-
 %changelog
+* Tue Jun 02 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-5
+- build docker-selinux master commit#99c4c77
+- build atomic master commit#2f1398c
+- include docker-storage-setup in docker itself, no subpackage created
+- docker.service Wants=docker-storage-setup.service
+
 * Mon Jun 01 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-4
 - include dist tag in 'docker version' to tell a distro build from a docker
 upstream rpm
