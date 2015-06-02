@@ -49,8 +49,6 @@
 %global dss_libdir %{_prefix}/lib/docker-storage-setup
 %global dss_commit 0f2b772a9fd76c4c47fd93a1fe1cd76b7b24c919
 %global dss_shortcommit %(c=%{dss_commit}; echo ${c:0:7})
-%global dss_version 0.5
-%global dss_release 7
 
 # Usage: _format var format
 # Expand 'modulenames' into various formats as needed
@@ -112,6 +110,7 @@ Requires:   subscription-manager
 Provides:   lxc-docker = %{d_version}-%{d_release}
 Provides:   docker = %{d_version}-%{d_release}
 Provides:   docker-io = %{d_version}-%{d_release}
+Provides:   docker-storage-setup
 
 # RE: rhbz#1195804 - ensure min NVR for selinux-policy
 Requires: selinux-policy >= 3.13.1-23
