@@ -361,8 +361,8 @@ install -d %{buildroot}%{_datadir}/zsh/site-functions
 install -p -m 644 contrib/completion/zsh/_docker %{buildroot}%{_datadir}/zsh/site-functions
 
 # install udev rules
-install -d %{buildroot}%{_prefix}/lib/udev/rules.d
-install -p -m 755 contrib/udev/80-docker.rules %{buildroot}%{_prefix}/lib/udev/rules.d
+install -d %{buildroot}%{_udevrulesdir}
+install -p -m 755 contrib/udev/80-docker.rules %{buildroot}%{_udevrulesdir}
 
 # install storage dir
 install -d -m 700 %{buildroot}%{_sharedstatedir}/docker
@@ -515,7 +515,7 @@ fi
 %config(noreplace) %{_sysconfdir}/sysconfig/docker-network
 %{_datadir}/bash-completion/completions/docker
 %dir %{_sharedstatedir}/docker
-%{_prefix}/lib/udev/rules.d/80-docker.rules
+%{_udevrulesdir}/80-docker.rules
 %dir %{_datadir}/fish/vendor_completions.d/
 %{_datadir}/fish/vendor_completions.d/docker.fish
 %dir %{_datadir}/vim/vimfiles/doc
