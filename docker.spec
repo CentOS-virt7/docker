@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 89
+%global w_release 90
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 45
+%global dp_release 46
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,7 +23,7 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.6.2
-%global d_release       6
+%global d_release       7
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
@@ -31,9 +31,9 @@
 %global d_commit      f1561f672dc9d458de8ff988926dd22b4cb5c3d0
 %global d_shortcommit %(c=%{d_commit}; echo ${c:0:7})
 
-%global atomic_commit 2f1398ccacbde3bb0273fe2573daef72aa9d1ea2
+%global atomic_commit f863afd9ae0db92912129ae25e93211263b77c2d
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 32
+%global atomic_release 33
 
 %global utils_commit 562e2c0f7748d4c4db556cb196354a5805bf2119
 
@@ -47,7 +47,7 @@
 
 # docker-storage-setup stuff (prefix with dss_ for version/release etc.)
 %global dss_libdir %{_prefix}/lib/docker-storage-setup
-%global dss_commit 0f2b772a9fd76c4c47fd93a1fe1cd76b7b24c919
+%global dss_commit 2cdf16f3b50456d9f21f370b26bab5dc2acb0caa
 %global dss_shortcommit %(c=%{dss_commit}; echo ${c:0:7})
 
 # Usage: _format var format
@@ -215,7 +215,6 @@ SELinux policy modules for use with Docker.
 %patch1 -p1
 %patch3 -p1
 cp %{SOURCE6} .
-sed -i 's/$/%{?dist}/' VERSION
 
 # unpack %{repo}-selinux
 tar zxf %{SOURCE12}
@@ -302,7 +301,7 @@ popd
 %install
 # install binary
 install -d %{buildroot}%{_bindir}
-install -p -m 755 bundles/%{d_version}%{?dist}/dynbinary/docker-%{d_version}%{?dist} %{buildroot}%{_bindir}/docker
+install -p -m 755 bundles/%{d_version}/dynbinary/docker-%{d_version} %{buildroot}%{_bindir}/docker
 
 # install dockertarsum and docker-fetch
 install -p -m 755 _build/src/docker-fetch %{buildroot}%{_bindir}
@@ -310,7 +309,7 @@ install -p -m 755 _build/src/dockertarsum %{buildroot}%{_bindir}
 
 # install dockerinit
 install -d %{buildroot}%{_libexecdir}/docker
-install -p -m 755 bundles/%{d_version}%{?dist}/dynbinary/dockerinit-%{d_version}%{?dist} %{buildroot}%{_libexecdir}/docker/dockerinit
+install -p -m 755 bundles/%{d_version}/dynbinary/dockerinit-%{d_version} %{buildroot}%{_libexecdir}/docker/dockerinit
 
 # install manpages
 install -d %{buildroot}%{_mandir}/man1
@@ -423,6 +422,8 @@ install -d %{buildroot}%{_unitdir}
 install -p -m 644 docker-storage-setup.service %{buildroot}%{_unitdir}
 install -d %{buildroot}%{dss_libdir}
 install -p -m 644 docker-storage-setup.conf %{buildroot}%{dss_libdir}/docker-storage-setup
+install -d %{buildroot}%{_mandir}/man1
+install -p -m 644 docker-storage-setup.1 %{buildroot}%{_mandir}/man1
 popd
 
 %check
@@ -541,6 +542,12 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Thu Jun 04 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-7
+- Resolves: rhbz#1228397 - install manpage for d-s-s
+- Resolves: rhbz#1228459 - solve 'Permission denied' error for d-s-s
+- Resolves: rhbz#1228685 - don't append dist tag to docker version
+(revert change in 1.6.2-4)
+
 * Tue Jun 02 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-6
 - build docker rhatdan/rhel7-1.6 commit#f1561f6
 
