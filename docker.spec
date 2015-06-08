@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 90
+%global w_release 91
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 46
+%global dp_release 47
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,17 +23,17 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.6.2
-%global d_release       7
+%global d_release       8
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global d_commit      f1561f672dc9d458de8ff988926dd22b4cb5c3d0
+%global d_commit      ac7d43fd9b0c96728341d443e597024911600f32
 %global d_shortcommit %(c=%{d_commit}; echo ${c:0:7})
 
 %global atomic_commit f863afd9ae0db92912129ae25e93211263b77c2d
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 33
+%global atomic_release 34
 
 %global utils_commit 562e2c0f7748d4c4db556cb196354a5805bf2119
 
@@ -542,6 +542,11 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Mon Jun 08 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-8
+- Resolves: rhbz#1229319 - do not claim /run/secrets
+- build docker rhatdan/rhel7-1.6 commit#ac7d43f
+- build atomic master commit#f863afd
+
 * Thu Jun 04 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-7
 - Resolves: rhbz#1228397 - install manpage for d-s-s
 - Resolves: rhbz#1228459 - solve 'Permission denied' error for d-s-s
