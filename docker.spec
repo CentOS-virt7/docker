@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 92
+%global w_release 93
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 48
+%global dp_release 49
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,7 +23,7 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.6.2
-%global d_release       9
+%global d_release       10
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
@@ -33,7 +33,7 @@
 
 %global atomic_commit f863afd9ae0db92912129ae25e93211263b77c2d
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 35
+%global atomic_release 36
 
 %global utils_commit 562e2c0f7748d4c4db556cb196354a5805bf2119
 
@@ -117,7 +117,7 @@ Provides:   docker-io = %{d_version}-%{d_release}
 Requires: selinux-policy >= 3.13.1-23
 Requires(pre): %{repo}-selinux >= %{version}-%{release}
 
-# rhbz#121407s - update deps for d-s-s
+# rhbz#1214070 - update deps for d-s-s
 Requires: lvm2 >= 2.02.112
 Requires: xfsprogs
 
@@ -548,6 +548,9 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Wed Jun 10 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-10
+- correct typo
+
 * Wed Jun 10 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-9
 - Resolves: rhbz#1214070 - update d-s-s related deps
 - Resolves: rhbz#1229374 - use prior existing metadata volume if any
