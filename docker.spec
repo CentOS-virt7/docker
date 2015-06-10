@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 91
+%global w_release 92
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 47
+%global dp_release 48
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,17 +23,17 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.6.2
-%global d_release       8
+%global d_release       9
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global d_commit      ac7d43fd9b0c96728341d443e597024911600f32
+%global d_commit      b79465d2e9a11c61dcba47965fad2dad83f6c31e
 %global d_shortcommit %(c=%{d_commit}; echo ${c:0:7})
 
 %global atomic_commit f863afd9ae0db92912129ae25e93211263b77c2d
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 34
+%global atomic_release 35
 
 %global utils_commit 562e2c0f7748d4c4db556cb196354a5805bf2119
 
@@ -47,7 +47,7 @@
 
 # docker-storage-setup stuff (prefix with dss_ for version/release etc.)
 %global dss_libdir %{_prefix}/lib/docker-storage-setup
-%global dss_commit 2cdf16f3b50456d9f21f370b26bab5dc2acb0caa
+%global dss_commit eefbef7c0dd7315e55664aff298e7214807f4c0c
 %global dss_shortcommit %(c=%{dss_commit}; echo ${c:0:7})
 
 # Usage: _format var format
@@ -102,7 +102,9 @@ BuildRequires:  btrfs-progs-devel
 BuildRequires:  sqlite-devel
 BuildRequires:  pkgconfig(systemd)
 # appropriate systemd version as per rhbz#1171054
-Requires:   systemd
+Requires(post): systemd
+Requires(preun): systemd
+Requires(postun): systemd
 # need xz to work with ubuntu images
 Requires:   xz
 Requires:   device-mapper-libs >= 7:1.02.90-1
@@ -114,6 +116,10 @@ Provides:   docker-io = %{d_version}-%{d_release}
 # RE: rhbz#1195804 - ensure min NVR for selinux-policy
 Requires: selinux-policy >= 3.13.1-23
 Requires(pre): %{repo}-selinux >= %{version}-%{release}
+
+# rhbz#121407s - update deps for d-s-s
+Requires: lvm2 >= 2.02.112
+Requires: xfsprogs
 
 %description
 Docker is an open-source engine that automates the deployment of any
@@ -542,8 +548,15 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Wed Jun 10 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-9
+- Resolves: rhbz#1214070 - update d-s-s related deps
+- Resolves: rhbz#1229374 - use prior existing metadata volume if any
+- Resolves: rhbz#1230192 (include d-s-s master commit#eefbef7)
+- build docker @rhatdan/rhel7-1.6 commit#b79465d
+
 * Mon Jun 08 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-8
 - Resolves: rhbz#1229319 - do not claim /run/secrets
+- Resolves: rhbz#1228167
 - build docker rhatdan/rhel7-1.6 commit#ac7d43f
 - build atomic master commit#f863afd
 
@@ -578,7 +591,12 @@ config file
 - build docker @rhatdan/rhel7-1.6 commit#175dd9c
 
 * Thu May 28 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-1
-- rebase to 1.6.2
+- Resolves: rhbz#1225965 - rebase to 1.6.2
+- Resolves: rhbz#1226320, rhbz#1225549, rhbz#1225556
+- Resolves: rhbz#1219705 - CVE-2015-3627
+- Resolves: rhbz#1219701 - CVE-2015-3629
+- Resolves: rhbz#1219709 - CVE-2015-3630
+- Resolves: rhbz#1219713 - CVE-2015-3631
 - build docker @rhatdan/rhel7-1.6 commit#d8675b5
 - build atomic master commit#ec592be
 - build docker-selinux master commit#e86b2bc
