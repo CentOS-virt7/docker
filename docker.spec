@@ -552,7 +552,7 @@ fi
 - build docker-selinux master commit#9c089c6
 
 * Mon Jun 15 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-11
-- Resolves: rhbz#1231134, rhbz#1225556, rhbz#1215819
+- Resolves: rhbz#1231936 (clone of fedora rhbz#1231134), rhbz#1225556, rhbz#1215819
 - build docker @rhatdan/rhel7-1.6 commit#7b32c6c
 
 * Wed Jun 10 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-10
