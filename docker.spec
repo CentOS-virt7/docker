@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 94
+%global w_release 95
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 50
+%global dp_release 51
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,7 +23,7 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.6.2
-%global d_release       11
+%global d_release       12
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
@@ -33,7 +33,7 @@
 
 %global atomic_commit f863afd9ae0db92912129ae25e93211263b77c2d
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 37
+%global atomic_release 38
 
 %global utils_commit 562e2c0f7748d4c4db556cb196354a5805bf2119
 
@@ -548,6 +548,9 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Mon Jun 15 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-12
+- build docker-selinux master commit#9c089c6
+
 * Mon Jun 15 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-11
 - Resolves: rhbz#1231134, rhbz#1225556, rhbz#1215819
 - build docker @rhatdan/rhel7-1.6 commit#7b32c6c
