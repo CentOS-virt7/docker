@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 93
+%global w_release 94
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 49
+%global dp_release 50
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,23 +23,23 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.6.2
-%global d_release       10
+%global d_release       11
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global d_commit      b79465d2e9a11c61dcba47965fad2dad83f6c31e
+%global d_commit      7b32c6ca081de83ee744c7751427ddc1a4d7aec9
 %global d_shortcommit %(c=%{d_commit}; echo ${c:0:7})
 
 %global atomic_commit f863afd9ae0db92912129ae25e93211263b77c2d
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 36
+%global atomic_release 37
 
 %global utils_commit 562e2c0f7748d4c4db556cb196354a5805bf2119
 
 # docker-selinux stuff (prefix with ds_ for version/release etc.)
 # Some bits borrowed from the openstack-selinux package
-%global ds_commit 99c4c77fd8a3d28e93d7a1d6b8af2db09bdf5989
+%global ds_commit 9c089c6c85d2fd05b4cdf7dff6bfba075ee99c49
 %global ds_shortcommit %(c=%{ds_commit}; echo ${c:0:7})
 %global selinuxtype targeted
 %global moduletype services
@@ -548,6 +548,10 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Mon Jun 15 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-11
+- Resolves: rhbz#1231134, rhbz#1225556, rhbz#1215819
+- build docker @rhatdan/rhel7-1.6 commit#7b32c6c
+
 * Wed Jun 10 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-10
 - correct typo
 
