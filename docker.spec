@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 95
+%global w_release 97
 
 # for docker-python, prefix with dp_
 %global dp_version 1.0.0
-%global dp_release 51
+%global dp_release 53
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,17 +23,17 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.6.2
-%global d_release       12
+%global d_release       14
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global d_commit      7b32c6ca081de83ee744c7751427ddc1a4d7aec9
+%global d_commit      ba1f6c3a8973725dcc97298aecb367ad5498955b
 %global d_shortcommit %(c=%{d_commit}; echo ${c:0:7})
 
 %global atomic_commit f863afd9ae0db92912129ae25e93211263b77c2d
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 38
+%global atomic_release 40
 
 %global utils_commit 562e2c0f7748d4c4db556cb196354a5805bf2119
 
@@ -70,8 +70,8 @@ URL:        http://www.docker.com
 # only x86_64 for now: https://github.com/docker/docker/issues/136
 ExclusiveArch:  x86_64
 #Source0:    https://%{import_path}/archive/v%{version}.tar.gz
-# Branch used available at https://github.com/rhatdan/docker/commits/rhel7-1.6
-Source0:    https://github.com/rhatdan/docker/archive/%{d_commit}.tar.gz
+# Branch used available at https://github.com/lsm5/docker/commits/rhel7-1.6
+Source0:    https://github.com/lsm5/docker/archive/%{d_commit}.tar.gz
 Source1:    docker.service
 Source3:    docker.sysconfig
 Source4:    docker-storage.sysconfig
@@ -548,6 +548,13 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Mon Jun 15 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-14
+- Resolves: rhbz#1218639, rhbz#1225556 (unresolved in -11)
+- build docker @lsm5/rhel7-1.6 commit#ba1f6c3
+
+* Mon Jun 15 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-13
+- Resolves: rhbz#1222453
+
 * Mon Jun 15 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-12
 - build docker-selinux master commit#9c089c6
 
