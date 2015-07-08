@@ -9,11 +9,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 97
+%global w_release 98
 
 # for docker-python, prefix with dp_
-%global dp_version 1.0.0
-%global dp_release 53
+%global dp_version 1.2.3
+%global dp_release 1
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -22,24 +22,24 @@
 %global project         docker
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
-%global d_version       1.6.2
-%global d_release       14
+%global d_version       1.7.0
+%global d_release       1
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global d_commit      ba1f6c3a8973725dcc97298aecb367ad5498955b
+%global d_commit      0f235fcef1e7b33b58d95a349e691b0816009348
 %global d_shortcommit %(c=%{d_commit}; echo ${c:0:7})
 
-%global atomic_commit f863afd9ae0db92912129ae25e93211263b77c2d
+%global atomic_commit f133684c47bfd33c27e792d2a9078812effc7ff1
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 40
+%global atomic_release 41
 
 %global utils_commit 562e2c0f7748d4c4db556cb196354a5805bf2119
 
 # docker-selinux stuff (prefix with ds_ for version/release etc.)
 # Some bits borrowed from the openstack-selinux package
-%global ds_commit 9c089c6c85d2fd05b4cdf7dff6bfba075ee99c49
+%global ds_commit bebf349f6e66c10f8010446a6b3440e43311a8ff
 %global ds_shortcommit %(c=%{ds_commit}; echo ${c:0:7})
 %global selinuxtype targeted
 %global moduletype services
@@ -47,7 +47,7 @@
 
 # docker-storage-setup stuff (prefix with dss_ for version/release etc.)
 %global dss_libdir %{_prefix}/lib/docker-storage-setup
-%global dss_commit eefbef7c0dd7315e55664aff298e7214807f4c0c
+%global dss_commit e9c3a4cf5cc0982319263570804e142fe036c1a0
 %global dss_shortcommit %(c=%{dss_commit}; echo ${c:0:7})
 
 # Usage: _format var format
@@ -70,8 +70,9 @@ URL:        http://www.docker.com
 # only x86_64 for now: https://github.com/docker/docker/issues/136
 ExclusiveArch:  x86_64
 #Source0:    https://%{import_path}/archive/v%{version}.tar.gz
-# Branch used available at https://github.com/lsm5/docker/commits/rhel7-1.6
-Source0:    https://github.com/lsm5/docker/archive/%{d_commit}.tar.gz
+# Branch used available at
+# https://github.com/rhatdan/docker/commits/rhel7-1.7
+Source0:    https://github.com/rhatdan/docker/archive/%{d_commit}.tar.gz
 Source1:    docker.service
 Source3:    docker.sysconfig
 Source4:    docker-storage.sysconfig
@@ -278,16 +279,16 @@ pushd $(pwd)/_build/src
 # build go-md2man for building manpages
 go build github.com/cpuguy83/go-md2man
 # build dockertarsum and docker-fetch(commented out, doesn't build)
-go build github.com/vbatts/docker-utils/cmd/docker-fetch
+#go build github.com/vbatts/docker-utils/cmd/docker-fetch
 go build github.com/vbatts/docker-utils/cmd/dockertarsum
 popd
 
-cp _build/src/go-md2man docs/man/.
+cp _build/src/go-md2man man/.
 cp _build/src/go-md2man atomic-%{atomic_commit}/.
 
-sed -i 's/go-md2man/.\/go-md2man/' docs/man/md2man-all.sh
+sed -i 's/go-md2man/.\/go-md2man/' man/md2man-all.sh
 # build docker manpages
-docs/man/md2man-all.sh
+man/md2man-all.sh
 
 # build python-websocket-client
 pushd %{w_distname}-%{w_version}
@@ -310,7 +311,7 @@ install -d %{buildroot}%{_bindir}
 install -p -m 755 bundles/%{d_version}/dynbinary/docker-%{d_version} %{buildroot}%{_bindir}/docker
 
 # install dockertarsum and docker-fetch
-install -p -m 755 _build/src/docker-fetch %{buildroot}%{_bindir}
+#install -p -m 755 _build/src/docker-fetch %{buildroot}%{_bindir}
 install -p -m 755 _build/src/dockertarsum %{buildroot}%{_bindir}
 
 # install dockerinit
@@ -319,9 +320,9 @@ install -p -m 755 bundles/%{d_version}/dynbinary/dockerinit-%{d_version} %{build
 
 # install manpages
 install -d %{buildroot}%{_mandir}/man1
-install -p -m 644 docs/man/man1/* %{buildroot}%{_mandir}/man1
+install -p -m 644 man/man1/* %{buildroot}%{_mandir}/man1
 install -d %{buildroot}%{_mandir}/man5
-install -p -m 644 docs/man/man5/* %{buildroot}%{_mandir}/man5
+install -p -m 644 man/man5/* %{buildroot}%{_mandir}/man5
 
 # install bash completion
 install -d %{buildroot}%{_datadir}/bash-completion/completions/
@@ -507,7 +508,7 @@ fi
 %dir %{_datadir}/zsh/site-functions
 %{_datadir}/zsh/site-functions/_docker
 %{_sysconfdir}/docker
-%{_bindir}/docker-fetch
+#{_bindir}/docker-fetch
 %{_bindir}/dockertarsum
 # docker-storage-setup specific
 %{_unitdir}/docker-storage-setup.service
@@ -548,6 +549,15 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Wed Jul 08 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.7.0-1
+- Resolves: rhbz#1241186 - rebase to v1.7.0 + rh patches
+- built docker @rhatdan/rhel7-1.7 commit#0f235fc
+- built docker-selinux master commit#bebf349
+- built d-s-s master commit#e9c3a4c
+- built atomic master commit#f133684
+- rebase python-docker-py to upstream v1.2.3
+- disable docker-fetch for now, doesn't build
+
 * Mon Jun 15 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.6.2-14
 - Resolves: rhbz#1218639, rhbz#1225556 (unresolved in -11)
 - build docker @lsm5/rhel7-1.6 commit#ba1f6c3

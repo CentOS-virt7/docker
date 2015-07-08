@@ -1,7 +1,9 @@
-From 8699e821282802626210fd1d78f982975611f3ed Mon Sep 17 00:00:00 2001
+From cb75275827e762a716a15459bb540a423f1fed3c Mon Sep 17 00:00:00 2001
 From: Lokesh Mandvekar <lsm5@fedoraproject.org>
-Date: Fri, 23 Jan 2015 17:43:42 -0500
-Subject: [PATCH] remove lock for rhel7
+Date: Wed, 8 Jul 2015 12:04:17 -0500
+Subject: [PATCH] remove lock
+
+atomic doesn't work on rhel without this :(
 
 Signed-off-by: Lokesh Mandvekar <lsm5@fedoraproject.org>
 ---
@@ -9,33 +11,33 @@ Signed-off-by: Lokesh Mandvekar <lsm5@fedoraproject.org>
  1 file changed, 8 insertions(+), 9 deletions(-)
 
 diff --git a/docker/unixconn/unixconn.py b/docker/unixconn/unixconn.py
-index 1f18060..57c98a5 100644
+index 551bd29..4c4c8e5 100644
 --- a/docker/unixconn/unixconn.py
 +++ b/docker/unixconn/unixconn.py
-@@ -72,15 +72,14 @@ class UnixAdapter(requests.adapters.HTTPAdapter):
+@@ -68,15 +68,14 @@ class UnixAdapter(requests.adapters.HTTPAdapter):
          super(UnixAdapter, self).__init__()
 
-     def get_connection(self, socket_path, proxies=None):
+     def get_connection(self, url, proxies=None):
 -        with self.pools.lock:
--            pool = self.pools.get(socket_path)
+-            pool = self.pools.get(url)
 -            if pool:
 -                return pool
 -
--            pool = UnixHTTPConnectionPool(
--                self.base_url, socket_path, self.timeout
--            )
--            self.pools[socket_path] = pool
-+        pool = self.pools.get(socket_path)
+-            pool = UnixHTTPConnectionPool(url,
+-                                          self.socket_path,
+-                                          self.timeout)
+-            self.pools[url] = pool
++        pool = self.pools.get(url)
 +        if pool:
 +            return pool
 +
-+        pool = UnixHTTPConnectionPool(
-+            self.base_url, socket_path, self.timeout
-+        )
-+        self.pools[socket_path] = pool
++        pool = UnixHTTPConnectionPool(url,
++                                      self.socket_path,
++                                      self.timeout)
++        self.pools[url] = pool
 
          return pool
 
 -- 
-1.8.3.1
+2.4.5
 

@@ -1,7 +1,7 @@
+d40a49a404e316b0a371903006c9f728  0f235fcef1e7b33b58d95a349e691b0816009348.tar.gz
 dcc29edf013e3bed4bdeaeffd69c2217  562e2c0f7748d4c4db556cb196354a5805bf2119.tar.gz
-9ea64ba780639be96df7a81b75bada48  ba1f6c3a8973725dcc97298aecb367ad5498955b.tar.gz
-b5b1daa6c434771e7de2881b86bd13d0  docker-py-1.0.0.tar.gz
-928e06856ec64f1a209b48220bb96397  docker-selinux-9c089c6.tar.gz
-fab008bdbbbdba8797a81b0484424ca2  docker-storage-setup-eefbef7.tar.gz
-7f65e89ff588cb230678ccd79b3ab85c  f863afd9ae0db92912129ae25e93211263b77c2d.tar.gz
+9d8d7c5b68a9e9e0cb5a730900c1f97c  docker-py-1.2.3.tar.gz
+175d1c195f62b55a66cb0f01bb6b9b84  docker-selinux-bebf349.tar.gz
+bd7136e2907953d1aea2044307aa6ef1  docker-storage-setup-e9c3a4c.tar.gz
+b9ae303376f868b624c912a6a83dab28  f133684c47bfd33c27e792d2a9078812effc7ff1.tar.gz
 081dd04bae325bcd20a04f6b8a12ddce  websocket-client-0.14.1.tar.gz
