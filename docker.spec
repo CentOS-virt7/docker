@@ -9,7 +9,7 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 98
+%global w_release 100
 
 # for docker-python, prefix with dp_
 %global dp_version 1.2.3
