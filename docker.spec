@@ -1,3 +1,4 @@
+%global with_unit_test 1
 # modifying the dockerinit binary breaks the SHA1 sum check by docker
 %global __os_install_post %{_rpmconfigdir}/brp-compress
 
@@ -9,11 +10,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 102
+%global w_release 103
 
 # for docker-python, prefix with dp_
 %global dp_version 1.2.3
-%global dp_release 3
+%global dp_release 4
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,7 +24,7 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.7.0
-%global d_release       3
+%global d_release       4
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
@@ -33,7 +34,7 @@
 
 %global atomic_commit f133684c47bfd33c27e792d2a9078812effc7ff1
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 43
+%global atomic_release 44
 
 %global utils_commit 562e2c0f7748d4c4db556cb196354a5805bf2119
 
@@ -131,6 +132,14 @@ Docker containers can encapsulate any payload, and will run consistently on
 and between virtually any server. The same container that a developer builds
 and tests on a laptop will run at scale, in production*, on VMs, bare-metal
 servers, OpenStack clusters, public instances, or combinations of the above.
+
+%if 0%{?with_unit_test}
+%package unit-test
+Summary: %{summary} - for running unit tests
+
+%description unit-test
+%{summary} - for running unit tests
+%endif
 
 %package logrotate
 Summary:    cron job to run logrotate on docker containers
@@ -375,6 +384,16 @@ install -p -m 644 %{repo}-selinux-%{ds_commit}/$INTERFACES %{buildroot}%{_datadi
 install -d %{buildroot}%{_datadir}/selinux/packages
 install -m 0644 %{repo}-selinux-%{ds_commit}/$MODULES %{buildroot}%{_datadir}/selinux/packages
 
+%if 0%{?with_unit_test}
+install -d -m 0755 %{buildroot}%{_sharedstatedir}/docker-unit-test/
+cp -pav VERSION Dockerfile %{buildroot}%{_sharedstatedir}/docker-unit-test/.
+for d in api builder cliconfig contrib daemon graph hack image integration-cli links nat opts pkg registry runconfig trust utils vendor volume; do
+  cp -a $d %{buildroot}%{_sharedstatedir}/docker-unit-test/
+done
+# remove docker.initd as it requires /sbin/runtime no packages in Fedora
+rm -rf %{buildroot}%{_sharedstatedir}/docker-unit-test/contrib/init/openrc/docker.initd
+%endif
+
 # remove %{repo}-selinux rpm spec file
 rm -rf %{repo}-selinux-%{ds_commit}/%{repo}-selinux.spec
 
@@ -515,6 +534,11 @@ fi
 %{_bindir}/docker-storage-setup
 %{dss_libdir}/docker-storage-setup
 
+%if 0%{?with_unit_test}
+%files unit-test
+%{_sharedstatedir}/docker-unit-test/
+%endif
+
 %files logrotate
 %doc README.docker-logrotate
 %{_sysconfdir}/cron.daily/docker-logrotate
@@ -549,6 +573,9 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Wed Jul 15 2015 Jan Chaloupka <jchaloup@redhat.com> - 1.7.0-3.1
+- Add unit-test subpackage
+
 * Thu Jul 09 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.7.0-3
 - built docker @rhatdan/rhel7-1.7 commit#4740812
 
