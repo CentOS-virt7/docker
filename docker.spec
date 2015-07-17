@@ -10,11 +10,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 103
+%global w_release 104
 
 # for docker-python, prefix with dp_
 %global dp_version 1.2.3
-%global dp_release 4
+%global dp_release 5
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -24,7 +24,7 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.7.0
-%global d_release       4
+%global d_release       5
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
@@ -32,9 +32,9 @@
 %global d_commit      4740812f06d1d63d6c9e62ade9611f9172c057e9
 %global d_shortcommit %(c=%{d_commit}; echo ${c:0:7})
 
-%global atomic_commit f133684c47bfd33c27e792d2a9078812effc7ff1
+%global atomic_commit 146d887a59401aa17bbe888d9fedbc7d4aee8626
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 44
+%global atomic_release 45
 
 %global utils_commit 562e2c0f7748d4c4db556cb196354a5805bf2119
 
@@ -97,6 +97,7 @@ Patch3:     codegangsta-cli.patch
 Patch4:     urlparse.patch
 Patch5:     docker-py-remove-lock.patch
 Patch6:     0001-replace-closed-with-fp-isclosed-for-rhel7.patch
+Patch7:     0001-atomic.sysconfig-use-rhel-tools-as-the-TOOLSIMG.patch
 BuildRequires:  glibc-static
 BuildRequires:  golang >= 1.4.2
 BuildRequires:  device-mapper-devel
@@ -254,8 +255,11 @@ popd
 
 # untar atomic
 tar zxf %{SOURCE10}
-sed -i '/pylint/d' atomic-%{atomic_commit}/Makefile
-sed -i 's/go-md2man/.\/go-md2man/' atomic-%{atomic_commit}/Makefile
+pushd atomic-%{atomic_commit}
+sed -i '/pylint/d' Makefile
+sed -i 's/go-md2man/.\/go-md2man/' Makefile
+%patch7 -p1
+popd
 
 # untar d-s-s
 tar zxf %{SOURCE13}
@@ -573,6 +577,10 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Fri Jul 17 2015 Jonathan Lebon <jlebon@redhat.com> - 1.7.0-5
+- Add patch for atomic.sysconfig
+- Related: https://github.com/projectatomic/atomic/pull/94
+
 * Wed Jul 15 2015 Jan Chaloupka <jchaloup@redhat.com> - 1.7.0-3.1
 - Add unit-test subpackage
 
