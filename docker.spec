@@ -13,8 +13,10 @@
 %global w_release 104
 
 # for docker-python, prefix with dp_
-%global dp_version 1.2.3
-%global dp_release 5
+%global dp_version 1.4.0
+%global dp_commit 54a154d8b251df5e4788570dac4bea3cfa70b199
+%global dp_shortcommit %(c=%{dp_commit}; echo ${c:0:7})
+%global dp_release 1
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -23,16 +25,16 @@
 %global project         docker
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
-%global d_version       1.7.0
-%global d_release       5
+%global d_version       1.7.1
+%global d_release       1
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global d_commit      4740812f06d1d63d6c9e62ade9611f9172c057e9
+%global d_commit d2fbc0baa7ff117e698c5b6ef1233139a7beea2a
 %global d_shortcommit %(c=%{d_commit}; echo ${c:0:7})
 
-%global atomic_commit 146d887a59401aa17bbe888d9fedbc7d4aee8626
+%global atomic_commit 52d695cadae01ecbc6ba2755ad1fdfecc3a8e252
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
 %global atomic_release 45
 
@@ -48,7 +50,7 @@
 
 # docker-storage-setup stuff (prefix with dss_ for version/release etc.)
 %global dss_libdir %{_prefix}/lib/docker-storage-setup
-%global dss_commit e9c3a4cf5cc0982319263570804e142fe036c1a0
+%global dss_commit b15239869d789e86a279edae5479fd25a988bf78
 %global dss_shortcommit %(c=%{dss_commit}; echo ${c:0:7})
 
 # Usage: _format var format
@@ -83,7 +85,7 @@ Source7:    docker-network.sysconfig
 # Source8 is the source tarball for python-websocket-client
 Source8:    http://pypi.python.org/packages/source/w/%{w_distname}/%{w_distname}-%{w_version}.tar.gz
 # Source9 is the source tarball for docker-py
-Source9:    http://pypi.python.org/packages/source/d/docker-py/docker-py-%{dp_version}.tar.gz
+Source9:    http://github.com/rhatdan/docker-py/archive/%{dp_commit}.tar.gz
 # Source10 is the source tarball for atomic
 Source10:   https://github.com/projectatomic/atomic/archive/%{atomic_commit}.tar.gz
 # Source11 is the source tarball for dockertarsum and docker-fetch
@@ -92,12 +94,12 @@ Source11:   https://github.com/vbatts/docker-utils/archive/%{utils_commit}.tar.g
 Source12: https://github.com/fedora-cloud/%{repo}-selinux/archive/%{ds_commit}/%{repo}-selinux-%{ds_shortcommit}.tar.gz
 # Source13 is the source tarball for docker-storage-setup
 Source13: https://github.com/a13m/docker-storage-setup/archive/%{dss_commit}/%{repo}-storage-setup-%{dss_shortcommit}.tar.gz
-Patch1:     go-md2man.patch
-Patch3:     codegangsta-cli.patch
-Patch4:     urlparse.patch
-Patch5:     docker-py-remove-lock.patch
-Patch6:     0001-replace-closed-with-fp-isclosed-for-rhel7.patch
-Patch7:     0001-atomic.sysconfig-use-rhel-tools-as-the-TOOLSIMG.patch
+Patch1: go-md2man.patch
+Patch3: codegangsta-cli.patch
+Patch4: urlparse.patch
+Patch5: docker-py-remove-lock.patch
+Patch6: 0001-Rework-patch-for-rhbz-1194445.patch
+Patch7: 0001-atomic.sysconfig-use-rhel-tools-as-the-TOOLSIMG.patch
 BuildRequires:  glibc-static
 BuildRequires:  golang >= 1.4.2
 BuildRequires:  device-mapper-devel
@@ -248,7 +250,7 @@ popd
 
 # untar docker-py tarball
 tar zxf %{SOURCE9}
-pushd docker-py-%{dp_version}
+pushd docker-py-%{dp_commit}
 %patch5 -p1
 %patch6 -p1
 popd
@@ -309,7 +311,7 @@ pushd %{w_distname}-%{w_version}
 popd
 
 # build docker-py
-pushd docker-py-%{dp_version}
+pushd docker-py-%{dp_commit}
 %{__python} setup.py build
 popd
 
@@ -435,7 +437,7 @@ find %{buildroot}/%{python2_sitelib} -type f -exec chmod -x {} \;
 popd
 
 # install docker-py
-pushd docker-py-%{dp_version}
+pushd docker-py-%{dp_commit}
 %{__python} setup.py install --root %{buildroot}
 popd
 
@@ -452,6 +454,8 @@ install -d %{buildroot}%{_unitdir}
 install -p -m 644 docker-storage-setup.service %{buildroot}%{_unitdir}
 install -d %{buildroot}%{dss_libdir}
 install -p -m 644 docker-storage-setup.conf %{buildroot}%{dss_libdir}/docker-storage-setup
+install -d %{buildroot}%{_sysconfdir}/sysconfig
+install -p -m 644 docker-storage-setup-override.conf %{buildroot}%{_sysconfdir}/sysconfig/docker-storage-setup
 install -d %{buildroot}%{_mandir}/man1
 install -p -m 644 docker-storage-setup.1 %{buildroot}%{_mandir}/man1
 popd
@@ -537,6 +541,7 @@ fi
 %{_unitdir}/docker-storage-setup.service
 %{_bindir}/docker-storage-setup
 %{dss_libdir}/docker-storage-setup
+%config(noreplace) %{_sysconfdir}/sysconfig/docker-storage-setup
 
 %if 0%{?with_unit_test}
 %files unit-test
@@ -554,9 +559,9 @@ fi
 %{_bindir}/wsdump
 
 %files python
-%doc docker-py-%{dp_version}/{LICENSE,README.md}
+%doc docker-py-%{dp_commit}/{LICENSE,README.md}
 %{python_sitelib}/docker
-%{python_sitelib}/docker_py-%{dp_version}-py2*.egg-info
+%{python_sitelib}/docker_py-%{dp_version}*
 
 %files -n atomic
 %doc atomic-%{atomic_commit}/COPYING atomic-%{atomic_commit}/README.md
@@ -577,6 +582,13 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Wed Jul 22 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.7.1-1
+- built docker @rhatdan/rhel7-1.7 commit#d2fbc0b
+- built docker-py @rhatdan/master commit#54a154d
+- built d-s-s master commit#b152398
+- built atomic master commit#d2fbc0b
+- built docker-selinux master commit#d2fbc0b
+
 * Fri Jul 17 2015 Jonathan Lebon <jlebon@redhat.com> - 1.7.0-5
 - Add patch for atomic.sysconfig
 - Related: https://github.com/projectatomic/atomic/pull/94
