@@ -10,13 +10,11 @@
 %global w_distname websocket-client
 %global w_eggname websocket_client
 %global w_version 0.14.1
-%global w_release 104
 
 # for docker-python, prefix with dp_
 %global dp_version 1.4.0
 %global dp_commit 54a154d8b251df5e4788570dac4bea3cfa70b199
 %global dp_shortcommit %(c=%{dp_commit}; echo ${c:0:7})
-%global dp_release 1
 
 #debuginfo not supported with Go
 %global debug_package   %{nil}
@@ -26,7 +24,6 @@
 %global repo            docker
 %global common_path     %{provider}.%{provider_tld}/%{project}
 %global d_version       1.7.1
-%global d_release       1
 
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
@@ -36,7 +33,6 @@
 
 %global atomic_commit 52d695cadae01ecbc6ba2755ad1fdfecc3a8e252
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-%global atomic_release 45
 
 %global utils_commit 562e2c0f7748d4c4db556cb196354a5805bf2119
 
@@ -66,7 +62,7 @@
 
 Name:       docker
 Version:    %{d_version}
-Release:    %{d_release}%{?dist}
+Release:    104%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
@@ -114,9 +110,9 @@ Requires(postun): systemd
 Requires:   xz
 Requires:   device-mapper-libs >= 7:1.02.90-1
 Requires:   subscription-manager
-Provides:   lxc-docker = %{d_version}-%{d_release}
-Provides:   docker = %{d_version}-%{d_release}
-Provides:   docker-io = %{d_version}-%{d_release}
+Provides:   lxc-docker = %{d_version}-%{release}
+Provides:   docker = %{d_version}-%{release}
+Provides:   docker-io = %{d_version}-%{release}
 
 # RE: rhbz#1195804 - ensure min NVR for selinux-policy
 Requires: selinux-policy >= 3.13.1-23
@@ -146,8 +142,8 @@ Summary: %{summary} - for running unit tests
 
 %package logrotate
 Summary:    cron job to run logrotate on docker containers
-Requires:   docker = %{d_version}-%{d_release}
-Provides:   docker-io-logrotate = %{d_version}-%{d_release}
+Requires:   docker = %{d_version}-%{release}
+Provides:   docker-io-logrotate = %{d_version}-%{release}
 
 %description logrotate
 This package installs %{summary}. logrotate is assumed to be installed on
@@ -156,7 +152,6 @@ containers for this to work, failures are silently ignored.
 %package -n python-%{w_distname}
 Summary:    WebSocket client for python
 Version:    %{w_version}
-Release:    %{w_release}%{?dist}
 License:    LGPLv2
 BuildArch:  noarch
 
@@ -169,27 +164,25 @@ python-websocket-client supports only hybi-13.
 
 %package python
 Version:        %{dp_version}
-Release:        %{dp_release}%{?dist}
 License:        ASL 2.0
 Summary:        An API client for docker written in Python
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-tools
 BuildRequires:  python-requests
-Requires:       docker >= %{d_version}-%{d_release}
+Requires:       docker >= %{d_version}-%{release}
 Requires:       python-requests
-Requires:       python-%{w_distname} >= %{w_version}-%{w_release}
+Requires:       python-%{w_distname} >= %{w_version}-%{release}
 Requires:       python-six >= 1.3.0
 Requires:       python-argparse
-Provides:       python-docker-py = %{dp_version}-%{dp_release}
-Provides:       python-docker = %{dp_version}-%{dp_release}
+Provides:       python-docker-py = %{dp_version}-%{release}
+Provides:       python-docker = %{dp_version}-%{release}
 
 %description python
 %{summary}
 
 %package -n atomic
 Version: 0
-Release: 0.%{atomic_release}.git%{atomic_shortcommit}%{?dist}
 Summary: Tool for managing ProjectAtomic systems and containers
 License: LGPLv2+
 ExclusiveArch: x86_64
@@ -199,8 +192,8 @@ BuildRequires: python-tools
 BuildRequires: python-requests
 Requires: docker
 Requires: python-requests
-Requires: python-docker-py >= %{dp_version}-%{dp_release}
-Requires: python-%{w_distname} >= %{w_version}-%{w_release}
+Requires: python-docker-py >= %{dp_version}-%{release}
+Requires: python-%{w_distname} >= %{w_version}-%{release}
 Requires: python-six >= 1.3.0
 Conflicts: python-docker < 1.0.0-11
 
@@ -582,6 +575,10 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Wed Jul 22 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.7.1-104
+- use a common release tag for all subpackages, much easier to update via
+rpmdev-bumpspec
+
 * Wed Jul 22 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.7.1-1
 - built docker @rhatdan/rhel7-1.7 commit#d2fbc0b
 - built docker-py @rhatdan/master commit#54a154d
