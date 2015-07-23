@@ -1,18 +1,20 @@
-From ab7da0672172e5d7def87c05d58d76a5970c7ac7 Mon Sep 17 00:00:00 2001
+From 5e24a5214db77a021ab12faea417e5f6f6ab57ba Mon Sep 17 00:00:00 2001
 From: Lokesh Mandvekar <lsm5@fedoraproject.org>
-Date: Mon, 9 Mar 2015 12:47:24 -0400
-Subject: [PATCH] replace closed with _fp.isclosed() for rhel7
+Date: Mon, 20 Jul 2015 14:56:35 -0400
+Subject: [PATCH] Rework patch for rhbz#1194445
+
+- make docker-py work well with older python-requests
 
 Signed-off-by: Lokesh Mandvekar <lsm5@fedoraproject.org>
 ---
- docker/client.py | 2 +-
+ docker/clientbase.py | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/docker/client.py b/docker/client.py
-index 79726aa..5a5a97c 100644
---- a/docker/client.py
-+++ b/docker/client.py
-@@ -185,7 +185,7 @@ class Client(requests.Session):
+diff --git a/docker/clientbase.py b/docker/clientbase.py
+index c81ee0c..fd861bc 100644
+--- a/docker/clientbase.py
++++ b/docker/clientbase.py
+@@ -166,7 +166,7 @@ class ClientBase(requests.Session):
          """Generator for data coming from a chunked-encoded HTTP response."""
          if response.raw._fp.chunked:
              reader = response.raw
@@ -21,6 +23,6 @@ index 79726aa..5a5a97c 100644
                  # this read call will block until we get a chunk
                  data = reader.read(1)
                  if not data:
---
+-- 
 1.8.3.1
 

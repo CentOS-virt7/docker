@@ -28,13 +28,13 @@
 %global import_path                 %{common_path}/%{repo}
 %global import_path_libcontainer    %{common_path}/libcontainer
 
-%global d_commit d2fbc0baa7ff117e698c5b6ef1233139a7beea2a
+%global d_commit ac162a36bd7ca812430a72131c57094357d96e24
 %global d_shortcommit %(c=%{d_commit}; echo ${c:0:7})
 
 %global atomic_commit 52d695cadae01ecbc6ba2755ad1fdfecc3a8e252
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
 
-%global utils_commit 562e2c0f7748d4c4db556cb196354a5805bf2119
+%global utils_commit 52d695cadae01ecbc6ba2755ad1fdfecc3a8e252
 
 # docker-selinux stuff (prefix with ds_ for version/release etc.)
 # Some bits borrowed from the openstack-selinux package
@@ -62,7 +62,7 @@
 
 Name:       docker
 Version:    %{d_version}
-Release:    104%{?dist}
+Release:    105%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
@@ -288,7 +288,7 @@ pushd $(pwd)/_build/src
 go build github.com/cpuguy83/go-md2man
 # build dockertarsum and docker-fetch(commented out, doesn't build)
 #go build github.com/vbatts/docker-utils/cmd/docker-fetch
-go build github.com/vbatts/docker-utils/cmd/dockertarsum
+#go build github.com/vbatts/docker-utils/cmd/dockertarsum
 popd
 
 cp _build/src/go-md2man man/.
@@ -320,7 +320,7 @@ install -p -m 755 bundles/%{d_version}/dynbinary/docker-%{d_version} %{buildroot
 
 # install dockertarsum and docker-fetch
 #install -p -m 755 _build/src/docker-fetch %{buildroot}%{_bindir}
-install -p -m 755 _build/src/dockertarsum %{buildroot}%{_bindir}
+#install -p -m 755 _build/src/dockertarsum %{buildroot}%{_bindir}
 
 # install dockerinit
 install -d %{buildroot}%{_libexecdir}/docker
@@ -529,7 +529,7 @@ fi
 %{_datadir}/zsh/site-functions/_docker
 %{_sysconfdir}/docker
 #{_bindir}/docker-fetch
-%{_bindir}/dockertarsum
+#{_bindir}/dockertarsum
 # docker-storage-setup specific
 %{_unitdir}/docker-storage-setup.service
 %{_bindir}/docker-storage-setup
@@ -575,6 +575,15 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Thu Jul 23 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.7.1-105
+- Resolves: rhbz#1245325
+- built docker @rhatdan/rhel7-1.7 commit#ac162a3
+- built docker-py @rhatdan/master commit#54a154d
+- built d-s-s master commit#b152398
+- built atomic master commit#ac162a3
+- built docker-selinux master commit#ac162a3
+- disable dockerfetch and dockertarsum
+
 * Wed Jul 22 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.7.1-104
 - use a common release tag for all subpackages, much easier to update via
 rpmdev-bumpspec
