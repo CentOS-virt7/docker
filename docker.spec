@@ -62,7 +62,7 @@
 
 Name:       docker
 Version:    %{d_version}
-Release:    106%{?dist}
+Release:    107%{?dist}
 Summary:    Automates deployment of containerized applications
 License:    ASL 2.0
 URL:        http://www.docker.com
@@ -575,6 +575,13 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Fri Jul 24 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.7.1-107
+- built docker @rhatdan/rhel7-1.7 commit#3043001
+- built docker-py @rhatdan/master commit#54a154d
+- built d-s-s master commit#b152398
+- built atomic master commit#52d695c
+- built docker-selinux master commit#bebf349
+
 * Thu Jul 23 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.7.1-106
 - built docker @rhatdan/rhel7-1.7 commit#3043001
 - built docker-py @rhatdan/master commit#54a154d
