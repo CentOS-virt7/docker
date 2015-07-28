@@ -286,9 +286,9 @@ popd
 pushd $(pwd)/_build/src
 # build go-md2man for building manpages
 go build github.com/cpuguy83/go-md2man
-# build dockertarsum and docker-fetch(commented out, doesn't build)
-#go build github.com/vbatts/docker-utils/cmd/docker-fetch
-#go build github.com/vbatts/docker-utils/cmd/dockertarsum
+# build dockertarsum and docker-fetch
+go build github.com/vbatts/docker-utils/cmd/docker-fetch
+go build github.com/vbatts/docker-utils/cmd/dockertarsum
 popd
 
 cp _build/src/go-md2man man/.
@@ -319,8 +319,8 @@ install -d %{buildroot}%{_bindir}
 install -p -m 755 bundles/%{d_version}/dynbinary/docker-%{d_version} %{buildroot}%{_bindir}/docker
 
 # install dockertarsum and docker-fetch
-#install -p -m 755 _build/src/docker-fetch %{buildroot}%{_bindir}
-#install -p -m 755 _build/src/dockertarsum %{buildroot}%{_bindir}
+install -p -m 755 _build/src/docker-fetch %{buildroot}%{_bindir}
+install -p -m 755 _build/src/dockertarsum %{buildroot}%{_bindir}
 
 # install dockerinit
 install -d %{buildroot}%{_libexecdir}/docker
@@ -528,8 +528,8 @@ fi
 %dir %{_datadir}/zsh/site-functions
 %{_datadir}/zsh/site-functions/_docker
 %{_sysconfdir}/docker
-#{_bindir}/docker-fetch
-#{_bindir}/dockertarsum
+%{_bindir}/docker-fetch
+%{_bindir}/dockertarsum
 # docker-storage-setup specific
 %{_unitdir}/docker-storage-setup.service
 %{_bindir}/docker-storage-setup
