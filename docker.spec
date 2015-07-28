@@ -182,7 +182,7 @@ Provides:       python-docker = %{dp_version}-%{release}
 %{summary}
 
 %package -n atomic
-Version: 0
+Version: 1.0
 Summary: Tool for managing ProjectAtomic systems and containers
 License: LGPLv2+
 ExclusiveArch: x86_64
