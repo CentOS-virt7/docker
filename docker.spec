@@ -96,6 +96,7 @@ Patch4: urlparse.patch
 Patch5: docker-py-remove-lock.patch
 Patch6: 0001-Rework-patch-for-rhbz-1194445.patch
 Patch7: 0001-atomic.sysconfig-use-rhel-tools-as-the-TOOLSIMG.patch
+Patch8: unpin-python-requests-requirement.patch
 BuildRequires: glibc-static
 BuildRequires: golang >= 1.4.2
 BuildRequires: device-mapper-devel
@@ -246,6 +247,7 @@ tar zxf %{SOURCE9}
 pushd docker-py-%{dp_commit}
 %patch5 -p1
 %patch6 -p1
+%patch8 -p1
 popd
 
 # untar atomic
@@ -575,6 +577,10 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Mon Aug 10 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.7.1-109
+- Resolves: rhbz#1249651 - unpin python-requests requirement
+- update python-websocket-client to 0.32.0
+
 * Tue Jul 28 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.7.1-108
 - built docker @rhatdan/rhel7-1.7 commit#3043001
 - built docker-py @rhatdan/master commit#54a154d
