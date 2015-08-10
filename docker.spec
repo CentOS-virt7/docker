@@ -17,16 +17,16 @@
 %global dp_shortcommit %(c=%{dp_commit}; echo ${c:0:7})
 
 #debuginfo not supported with Go
-%global debug_package   %{nil}
-%global provider_tld    com
-%global provider        github
-%global project         docker
-%global repo            docker
-%global common_path     %{provider}.%{provider_tld}/%{project}
-%global d_version       1.7.1
+%global debug_package %{nil}
+%global provider_tld com
+%global provider github
+%global project docker
+%global repo docker
+%global common_path %{provider}.%{provider_tld}/%{project}
+%global d_version 1.7.1
 
-%global import_path                 %{common_path}/%{repo}
-%global import_path_libcontainer    %{common_path}/libcontainer
+%global import_path %{common_path}/%{repo}
+%global import_path_libcontainer %{common_path}/libcontainer
 
 %global d_commit 30430018c3d8c14afc1c843a781fffe8e0b35355
 %global d_shortcommit %(c=%{d_commit}; echo ${c:0:7})
@@ -60,32 +60,32 @@
 # Version of SELinux we were using
 %global selinux_policyver 3.13.1-23
 
-Name:       docker
-Version:    %{d_version}
-Release:    108%{?dist}
-Summary:    Automates deployment of containerized applications
-License:    ASL 2.0
-URL:        http://www.docker.com
+Name: docker
+Version: %{d_version}
+Release: 108%{?dist}
+Summary: Automates deployment of containerized applications
+License: ASL 2.0
+URL: http://www.docker.com
 # only x86_64 for now: https://github.com/docker/docker/issues/136
-ExclusiveArch:  x86_64
-#Source0:    https://%{import_path}/archive/v%{version}.tar.gz
+ExclusiveArch: x86_64
+#Source0: https://%{import_path}/archive/v%{version}.tar.gz
 # Branch used available at
 # https://github.com/rhatdan/docker/commits/rhel7-1.7
-Source0:    https://github.com/rhatdan/docker/archive/%{d_commit}.tar.gz
-Source1:    docker.service
-Source3:    docker.sysconfig
-Source4:    docker-storage.sysconfig
-Source5:    docker-logrotate.sh
-Source6:    README.docker-logrotate
-Source7:    docker-network.sysconfig
+Source0: https://github.com/rhatdan/docker/archive/%{d_commit}.tar.gz
+Source1: docker.service
+Source3: docker.sysconfig
+Source4: docker-storage.sysconfig
+Source5: docker-logrotate.sh
+Source6: README.docker-logrotate
+Source7: docker-network.sysconfig
 # Source8 is the source tarball for python-websocket-client
-Source8:    http://pypi.python.org/packages/source/w/%{w_distname}/%{w_distname}-%{w_version}.tar.gz
+Source8: http://pypi.python.org/packages/source/w/%{w_distname}/%{w_distname}-%{w_version}.tar.gz
 # Source9 is the source tarball for docker-py
-Source9:    http://github.com/rhatdan/docker-py/archive/%{dp_commit}.tar.gz
+Source9: http://github.com/rhatdan/docker-py/archive/%{dp_commit}.tar.gz
 # Source10 is the source tarball for atomic
-Source10:   https://github.com/projectatomic/atomic/archive/%{atomic_commit}.tar.gz
+Source10: https://github.com/projectatomic/atomic/archive/%{atomic_commit}.tar.gz
 # Source11 is the source tarball for dockertarsum and docker-fetch
-Source11:   https://github.com/vbatts/docker-utils/archive/%{utils_commit}.tar.gz
+Source11: https://github.com/vbatts/docker-utils/archive/%{utils_commit}.tar.gz
 # Source12 is the source tarball for docker-selinux
 Source12: https://github.com/fedora-cloud/%{repo}-selinux/archive/%{ds_commit}/%{repo}-selinux-%{ds_shortcommit}.tar.gz
 # Source13 is the source tarball for docker-storage-setup
@@ -96,23 +96,23 @@ Patch4: urlparse.patch
 Patch5: docker-py-remove-lock.patch
 Patch6: 0001-Rework-patch-for-rhbz-1194445.patch
 Patch7: 0001-atomic.sysconfig-use-rhel-tools-as-the-TOOLSIMG.patch
-BuildRequires:  glibc-static
-BuildRequires:  golang >= 1.4.2
-BuildRequires:  device-mapper-devel
-BuildRequires:  btrfs-progs-devel
-BuildRequires:  sqlite-devel
-BuildRequires:  pkgconfig(systemd)
+BuildRequires: glibc-static
+BuildRequires: golang >= 1.4.2
+BuildRequires: device-mapper-devel
+BuildRequires: btrfs-progs-devel
+BuildRequires: sqlite-devel
+BuildRequires: pkgconfig(systemd)
 # appropriate systemd version as per rhbz#1171054
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
 # need xz to work with ubuntu images
-Requires:   xz
-Requires:   device-mapper-libs >= 7:1.02.90-1
-Requires:   subscription-manager
-Provides:   lxc-docker = %{d_version}-%{release}
-Provides:   docker = %{d_version}-%{release}
-Provides:   docker-io = %{d_version}-%{release}
+Requires: xz
+Requires: device-mapper-libs >= 7:1.02.90-1
+Requires: subscription-manager
+Provides: lxc-docker = %{d_version}-%{release}
+Provides: docker = %{d_version}-%{release}
+Provides: docker-io = %{d_version}-%{release}
 
 # RE: rhbz#1195804 - ensure min NVR for selinux-policy
 Requires: selinux-policy >= 3.13.1-23
@@ -141,19 +141,19 @@ Summary: %{summary} - for running unit tests
 %endif
 
 %package logrotate
-Summary:    cron job to run logrotate on docker containers
-Requires:   docker = %{d_version}-%{release}
-Provides:   docker-io-logrotate = %{d_version}-%{release}
+Summary: cron job to run logrotate on docker containers
+Requires: docker = %{d_version}-%{release}
+Provides: docker-io-logrotate = %{d_version}-%{release}
 
 %description logrotate
 This package installs %{summary}. logrotate is assumed to be installed on
 containers for this to work, failures are silently ignored.
 
 %package -n python-%{w_distname}
-Summary:    WebSocket client for python
-Version:    %{w_version}
-License:    LGPLv2
-BuildArch:  noarch
+Summary: WebSocket client for python
+Version: %{w_version}
+License: LGPLv2
+BuildArch: noarch
 
 %description -n python-%{w_distname}
 python-websocket-client module is WebSocket client for python. This
@@ -163,20 +163,20 @@ functions.
 python-websocket-client supports only hybi-13.
 
 %package python
-Version:        %{dp_version}
-License:        ASL 2.0
-Summary:        An API client for docker written in Python
-BuildRequires:  python2-devel
-BuildRequires:  python-setuptools
-BuildRequires:  python-tools
-BuildRequires:  python-requests
-Requires:       docker >= %{d_version}-%{release}
-Requires:       python-requests
-Requires:       python-%{w_distname} >= %{w_version}-%{release}
-Requires:       python-six >= 1.3.0
-Requires:       python-argparse
-Provides:       python-docker-py = %{dp_version}-%{release}
-Provides:       python-docker = %{dp_version}-%{release}
+Version: %{dp_version}
+License: ASL 2.0
+Summary: An API client for docker written in Python
+BuildRequires: python2-devel
+BuildRequires: python-setuptools
+BuildRequires: python-tools
+BuildRequires: python-requests
+Requires: docker >= %{d_version}-%{release}
+Requires: python-requests
+Requires: python-%{w_distname} >= %{w_version}-%{release}
+Requires: python-six >= 1.3.0
+Requires: python-argparse
+Provides: python-docker-py = %{dp_version}-%{release}
+Provides: python-docker = %{dp_version}-%{release}
 
 %description python
 %{summary}
