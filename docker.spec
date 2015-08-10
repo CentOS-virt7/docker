@@ -9,7 +9,7 @@
 %global w_modname websocket
 %global w_distname websocket-client
 %global w_eggname websocket_client
-%global w_version 0.14.1
+%global w_version 0.32.0
 
 # for docker-python, prefix with dp_
 %global dp_version 1.4.0
@@ -62,7 +62,7 @@
 
 Name: docker
 Version: %{d_version}
-Release: 108%{?dist}
+Release: 109%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: http://www.docker.com
@@ -79,7 +79,7 @@ Source5: docker-logrotate.sh
 Source6: README.docker-logrotate
 Source7: docker-network.sysconfig
 # Source8 is the source tarball for python-websocket-client
-Source8: http://pypi.python.org/packages/source/w/%{w_distname}/%{w_distname}-%{w_version}.tar.gz
+Source8: http://pypi.python.org/packages/source/w/%{w_distname}/%{w_eggname}-%{w_version}.tar.gz
 # Source9 is the source tarball for docker-py
 Source9: http://github.com/rhatdan/docker-py/archive/%{dp_commit}.tar.gz
 # Source10 is the source tarball for atomic
@@ -171,8 +171,8 @@ BuildRequires: python-setuptools
 BuildRequires: python-tools
 BuildRequires: python-requests
 Requires: docker >= %{d_version}-%{release}
-Requires: python-requests
-Requires: python-%{w_distname} >= %{w_version}-%{release}
+Requires: python-requests >= 2.5.3
+Requires: python-%{w_distname} == %{w_version}
 Requires: python-six >= 1.3.0
 Requires: python-argparse
 Provides: python-docker-py = %{dp_version}-%{release}
@@ -237,7 +237,7 @@ tar zxf %{SOURCE11}
 # untar python-websocket-client tarball
 tar zxf %{SOURCE8}
 rm -rf %{w_distname}-%{w_version}/%{w_distname}.egg-info
-pushd %{w_distname}-%{w_version}/websocket
+pushd %{w_eggname}-%{w_version}
 %patch4 -p1
 popd
 
@@ -299,7 +299,7 @@ sed -i 's/go-md2man/.\/go-md2man/' man/md2man-all.sh
 man/md2man-all.sh
 
 # build python-websocket-client
-pushd %{w_distname}-%{w_version}
+pushd %{w_eggname}-%{w_version}
 %{__python} setup.py build
 popd
 
@@ -411,7 +411,7 @@ ln -s %{_sysconfdir}/rhsm/ca/redhat-uep.pem %{buildroot}/%{_sysconfdir}/docker/c
 install -dp %{buildroot}%{_sysconfdir}/docker/
 
 # install python-websocket-client
-pushd %{w_distname}-%{w_version}
+pushd %{w_eggname}-%{w_version}
 %{__python} setup.py install -O1 --skip-build --root=%{buildroot}
 mv %{buildroot}/%{_bindir}/wsdump.py \
     %{buildroot}/%{_bindir}/wsdump
@@ -546,7 +546,7 @@ fi
 %{_sysconfdir}/cron.daily/docker-logrotate
 
 %files -n python-websocket-client
-%doc %{w_distname}-%{w_version}/{README.rst,LICENSE}
+%doc %{w_eggname}-%{w_version}/{README.rst,LICENSE}
 %{python2_sitelib}/%{w_modname}/
 %{python2_sitelib}/%{w_eggname}*%{w_version}*
 %{_bindir}/wsdump

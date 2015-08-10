@@ -1,15 +1,30 @@
-diff -uNr websocket/__init__.py websocket-1/__init__.py
---- websocket/__init__.py	2014-05-07 21:53:31.000000000 -0400
-+++ websocket-1/__init__.py	2015-01-23 12:34:41.231543225 -0500
-@@ -40,7 +40,10 @@
- 
-     HAVE_SSL = False
- 
+From 33ea4eb39f2b4c12f8ec88b71f9cad968f02eeef Mon Sep 17 00:00:00 2001
+From: Lokesh Mandvekar <lsm5@fedoraproject.org>
+Date: Mon, 10 Aug 2015 13:54:04 -0400
+Subject: [PATCH] import urlparse if six.moves.urllib.parse unavailable
+
+Signed-off-by: Lokesh Mandvekar <lsm5@fedoraproject.org>
+---
+ websocket/_url.py | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/websocket/_url.py b/websocket/_url.py
+index 703b715..8667521 100644
+--- a/websocket/_url.py
++++ b/websocket/_url.py
+@@ -20,7 +20,11 @@ Copyright (C) 2010 Hiroki Ohtani(liris)
+
+ """
+
 -from six.moves.urllib.parse import urlparse
 +try:
 +    from six.moves.urllib.parse import urlparse
 +except:
 +    import urlparse
- if six.PY3:
-     from base64 import encodebytes as base64encode
- else:
++
+ import os
+
+ __all__ = ["parse_url", "get_proxy_info"]
+-- 
+1.8.3.1
+
