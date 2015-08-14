@@ -449,6 +449,7 @@ install -d %{buildroot}%{_unitdir}
 install -p -m 644 docker-storage-setup.service %{buildroot}%{_unitdir}
 install -d %{buildroot}%{dss_libdir}
 install -p -m 644 docker-storage-setup.conf %{buildroot}%{dss_libdir}/docker-storage-setup
+install -p -m 755 libdss.sh %{buildroot}%{dss_libdir}
 install -d %{buildroot}%{_sysconfdir}/sysconfig
 install -p -m 644 docker-storage-setup-override.conf %{buildroot}%{_sysconfdir}/sysconfig/docker-storage-setup
 install -d %{buildroot}%{_mandir}/man1
@@ -533,10 +534,11 @@ fi
 %{_bindir}/docker-fetch
 %{_bindir}/dockertarsum
 # docker-storage-setup specific
+%config(noreplace) %{_sysconfdir}/sysconfig/docker-storage-setup
 %{_unitdir}/docker-storage-setup.service
 %{_bindir}/docker-storage-setup
 %{dss_libdir}/docker-storage-setup
-%config(noreplace) %{_sysconfdir}/sysconfig/docker-storage-setup
+%{dss_libdir}/libdss.sh
 
 %if 0%{?with_unit_test}
 %files unit-test
