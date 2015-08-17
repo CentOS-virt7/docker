@@ -28,17 +28,17 @@
 %global import_path %{common_path}/%{repo}
 %global import_path_libcontainer %{common_path}/libcontainer
 
-%global d_commit 30430018c3d8c14afc1c843a781fffe8e0b35355
+%global d_commit ba2de95334cb370ce2bfb822b142af0f2208ea6e
 %global d_shortcommit %(c=%{d_commit}; echo ${c:0:7})
 
-%global atomic_commit a4442c43f166b836595b9d85545d7511716ee0da
+%global atomic_commit 53169d5d0c59d641db9ebcbd88235ffbe25439e9
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
 
 %global utils_commit dab51acd1b1a77f7cb01a1b7e2129ec85c846b71
 
 # docker-selinux stuff (prefix with ds_ for version/release etc.)
 # Some bits borrowed from the openstack-selinux package
-%global ds_commit bebf349f6e66c10f8010446a6b3440e43311a8ff
+%global ds_commit 39a894e4cb6db5c6c536c4c818b805a410f7574c
 %global ds_shortcommit %(c=%{ds_commit}; echo ${c:0:7})
 %global selinuxtype targeted
 %global moduletype services
@@ -46,7 +46,7 @@
 
 # docker-storage-setup stuff (prefix with dss_ for version/release etc.)
 %global dss_libdir %{_prefix}/lib/docker-storage-setup
-%global dss_commit b15239869d789e86a279edae5479fd25a988bf78
+%global dss_commit ac1b30e05557bc2375992747ed94a9e1ab1f208a
 %global dss_shortcommit %(c=%{dss_commit}; echo ${c:0:7})
 
 # Usage: _format var format
@@ -62,7 +62,7 @@
 
 Name: docker
 Version: %{d_version}
-Release: 109%{?dist}
+Release: 110%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: http://www.docker.com
@@ -579,6 +579,14 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Mon Aug 17 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.7.1-110
+- built docker @rhatdan/rhel7-1.7 commit#ba2de95
+- built docker-py @rhatdan/master commit#54a154d
+- built d-s-s master commit#ac1b30e
+- built atomic master commit#53169d5
+- built docker-selinux master commit#39a894e
+- built docker-utils master commit#dab51ac
+
 * Mon Aug 10 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.7.1-109
 - Resolves: rhbz#1249651 - unpin python-requests requirement
 - update python-websocket-client to 0.32.0
