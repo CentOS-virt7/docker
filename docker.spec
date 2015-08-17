@@ -191,6 +191,7 @@ BuildRequires: python2-devel
 BuildRequires: python-setuptools
 BuildRequires: python-tools
 BuildRequires: python-requests
+BuildRequires: python-docker-py
 Requires: docker
 Requires: python-requests
 Requires: python-docker-py >= %{dp_version}-%{release}
