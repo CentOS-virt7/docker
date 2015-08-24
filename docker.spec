@@ -62,7 +62,7 @@
 
 Name: docker
 Version: %{d_version}
-Release: 113%{?dist}
+Release: 114%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: http://www.docker.com
@@ -580,6 +580,9 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Mon Aug 24 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.7.1-114
+- Resolves: rhbz#1255874 - (#1255488 is for 7.2)
+
 * Fri Aug 21 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.7.1-113
 - Resolves: rhbz#1255488
 - built docker @rhatdan/rhel7-1.7 commit#4136d06
