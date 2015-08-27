@@ -28,17 +28,17 @@
 %global import_path %{common_path}/%{repo}
 %global import_path_libcontainer %{common_path}/libcontainer
 
-%global d_commit 4136d06229d02b31e32e15dfbfe0e4cbdda80471
+%global d_commit 446ad9bd9e8ec218aff5b22529c0bdc6df69d0e2
 %global d_shortcommit %(c=%{d_commit}; echo ${c:0:7})
 
-%global atomic_commit 995a223544dc1be5acfab48c90ec142073f83339
+%global atomic_commit 011a826ff8b35f1d206a3de6f37fdb0292c948c9
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
 
 %global utils_commit dab51acd1b1a77f7cb01a1b7e2129ec85c846b71
 
 # docker-selinux stuff (prefix with ds_ for version/release etc.)
 # Some bits borrowed from the openstack-selinux package
-%global ds_commit 39a894e4cb6db5c6c536c4c818b805a410f7574c
+%global ds_commit 6267b8324424e5ac7eb57a91243474b32dd2d965
 %global ds_shortcommit %(c=%{ds_commit}; echo ${c:0:7})
 %global selinuxtype targeted
 %global moduletype services
@@ -62,7 +62,7 @@
 
 Name: docker
 Version: %{d_version}
-Release: 114%{?dist}
+Release: 115%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: http://www.docker.com
@@ -580,6 +580,15 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Thu Aug 27 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.7.1-115
+- Resolves: rhbz#1252421
+- built docker @rhatdan/rhel7-1.7 commit#446ad9b
+- built docker-py @rhatdan/master commit#54a154d
+- built d-s-s master commit#d3b9ba7
+- built atomic master commit#011a826
+- built docker-selinux master commit#6267b83
+- built docker-utils master commit#dab51ac
+
 * Mon Aug 24 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.7.1-114
 - Resolves: rhbz#1255874 - (#1255488 is for 7.2)
 
