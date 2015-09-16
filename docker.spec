@@ -73,6 +73,7 @@ Source13: https://%{provider}.%{provider_tld}/projectatomic/%{name}-storage-setu
 BuildRequires: glibc-static
 BuildRequires: golang == 1.4.2
 BuildRequires: device-mapper-devel
+BuildRequires: pkgconfig(audit)
 BuildRequires: btrfs-progs-devel
 BuildRequires: sqlite-devel
 BuildRequires: go-md2man
