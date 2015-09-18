@@ -23,22 +23,22 @@
 %global project docker
 %global repo docker
 %global common_path %{provider}.%{provider_tld}/%{project}
-%global d_version 1.7.1
+%global d_version 1.8.2
 
 %global import_path %{common_path}/%{repo}
 %global import_path_libcontainer %{common_path}/libcontainer
 
-%global d_commit 446ad9bd9e8ec218aff5b22529c0bdc6df69d0e2
+%global d_commit 23f26d9e4fc5bd8de44fb08eae6d898b9c754897
 %global d_shortcommit %(c=%{d_commit}; echo ${c:0:7})
 
-%global atomic_commit 011a826ff8b35f1d206a3de6f37fdb0292c948c9
+%global atomic_commit 062aaddbd91997f140300aff6c7e1e99c3330313
 %global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
 
 %global utils_commit dab51acd1b1a77f7cb01a1b7e2129ec85c846b71
 
 # docker-selinux stuff (prefix with ds_ for version/release etc.)
 # Some bits borrowed from the openstack-selinux package
-%global ds_commit 6267b8324424e5ac7eb57a91243474b32dd2d965
+%global ds_commit b5281b76967235e95c901fae822af715991e70dd
 %global ds_shortcommit %(c=%{ds_commit}; echo ${c:0:7})
 %global selinuxtype targeted
 %global moduletype services
@@ -46,7 +46,7 @@
 
 # docker-storage-setup stuff (prefix with dss_ for version/release etc.)
 %global dss_libdir %{_prefix}/lib/docker-storage-setup
-%global dss_commit d3b9ba74525192f02cefc993b77a476b879974fb
+%global dss_commit 6898d433f7c7666475656ab89565ec02d08c4c55
 %global dss_shortcommit %(c=%{dss_commit}; echo ${c:0:7})
 
 # Usage: _format var format
@@ -62,7 +62,7 @@
 
 Name: docker
 Version: %{d_version}
-Release: 115%{?dist}
+Release: 116%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: http://www.docker.com
@@ -183,7 +183,7 @@ Provides: python-docker = %{dp_version}-%{release}
 %{summary}
 
 %package -n atomic
-Version: 1.0
+Version: 1.4
 Summary: Tool for managing ProjectAtomic systems and containers
 License: LGPLv2+
 ExclusiveArch: x86_64
@@ -389,7 +389,7 @@ install -m 0644 %{repo}-selinux-%{ds_commit}/$MODULES %{buildroot}%{_datadir}/se
 %if 0%{?with_unit_test}
 install -d -m 0755 %{buildroot}%{_sharedstatedir}/docker-unit-test/
 cp -pav VERSION Dockerfile %{buildroot}%{_sharedstatedir}/docker-unit-test/.
-for d in api builder cliconfig contrib daemon graph hack image integration-cli links nat opts pkg registry runconfig trust utils vendor volume; do
+for d in */ ; do
   cp -a $d %{buildroot}%{_sharedstatedir}/docker-unit-test/
 done
 # remove docker.initd as it requires /sbin/runtime no packages in Fedora
@@ -580,6 +580,13 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Fri Sep 18 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.8.2-116
+- Resolves: rhbz#1261329, rhbz#1263394, rhbz#1264090
+- built docker @rhatdan/rhel7-1.8 commit#23f26d9
+- built d-s-s master commit#6898d43
+- built docker-selinux master commit#b5281b7
+- built docker-utils master commit#dab51ac
+
 * Thu Aug 27 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.7.1-115
 - Resolves: rhbz#1252421
 - built docker @rhatdan/rhel7-1.7 commit#446ad9b
