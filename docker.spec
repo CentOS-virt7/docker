@@ -2,26 +2,12 @@
 # modifying the dockerinit binary breaks the SHA1 sum check by docker
 %global __os_install_post %{_rpmconfigdir}/brp-compress
 
-# no python3 subpackage for docker-py
-%global with_python3 0
-
-# for python-websocket-client, prefix with w_
-%global w_modname websocket
-%global w_distname websocket-client
-%global w_eggname websocket_client
-%global w_version 0.32.0
-
-# for docker-python, prefix with dp_
-%global dp_version 1.4.0
-%global dp_commit 54a154d8b251df5e4788570dac4bea3cfa70b199
-%global dp_shortcommit %(c=%{dp_commit}; echo ${c:0:7})
-
 #debuginfo not supported with Go
 %global debug_package %{nil}
 %global provider_tld com
 %global provider github
 %global project docker
-%global repo docker
+%global repo %{project}
 %global common_path %{provider}.%{provider_tld}/%{project}
 %global d_version 1.8.2
 
@@ -31,21 +17,18 @@
 %global d_commit 23f26d9e4fc5bd8de44fb08eae6d898b9c754897
 %global d_shortcommit %(c=%{d_commit}; echo ${c:0:7})
 
-%global atomic_commit 062aaddbd91997f140300aff6c7e1e99c3330313
-%global atomic_shortcommit %(c=%{atomic_commit}; echo ${c:0:7})
-
 %global utils_commit dab51acd1b1a77f7cb01a1b7e2129ec85c846b71
 
-# docker-selinux stuff (prefix with ds_ for version/release etc.)
+# %%{name}-selinux stuff (prefix with ds_ for version/release etc.)
 # Some bits borrowed from the openstack-selinux package
 %global ds_commit b5281b76967235e95c901fae822af715991e70dd
 %global ds_shortcommit %(c=%{ds_commit}; echo ${c:0:7})
 %global selinuxtype targeted
 %global moduletype services
-%global modulenames %{repo}
+%global modulenames %{name}
 
-# docker-storage-setup stuff (prefix with dss_ for version/release etc.)
-%global dss_libdir %{_prefix}/lib/docker-storage-setup
+# %%{name}-storage-setup stuff (prefix with dss_ for version/release etc.)
+%global dss_libdir %{_prefix}/lib/%{name}-storage-setup
 %global dss_commit 6898d433f7c7666475656ab89565ec02d08c4c55
 %global dss_shortcommit %(c=%{dss_commit}; echo ${c:0:7})
 
@@ -55,53 +38,40 @@
 %global _format() export %1=""; for x in %{modulenames}; do %1+=%2; %1+=" "; done;
 
 # Relabel files
-%global relabel_files() %{_sbindir}/restorecon -R %{_bindir}/%{repo} %{_localstatedir}/run/%{repo}.sock %{_localstatedir}/run/%{repo}.pid %{_sharedstatedir}/%{repo} %{_sysconfdir}/%{repo} %{_localstatedir}/log/%{repo} %{_localstatedir}/log/lxc %{_localstatedir}/lock/lxc %{_unitdir}/%{repo}.service %{_sysconfdir}/%{repo} &> /dev/null || :
+%global relabel_files() %{_sbindir}/restorecon -R %{_bindir}/%{name} %{_localstatedir}/run/%{name}.sock %{_localstatedir}/run/%{name}.pid %{_sharedstatedir}/%{name} %{_sysconfdir}/%{name} %{_localstatedir}/log/%{name} %{_localstatedir}/log/lxc %{_localstatedir}/lock/lxc %{_unitdir}/%{name}.service %{_sysconfdir}/%{name} &> /dev/null || :
 
 # Version of SELinux we were using
 %global selinux_policyver 3.13.1-23
 
-Name: docker
+Name: %{repo}
 Version: %{d_version}
-Release: 116%{?dist}
+Release: 1%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
-URL: http://www.docker.com
-# only x86_64 for now: https://github.com/docker/docker/issues/136
+URL: https://%{import_path}
+# only x86_64 for now: https://%%{provider}.%%{provider_tld}/%%{name}/%%{name}/issues/136
 ExclusiveArch: x86_64
-#Source0: https://%{import_path}/archive/v%{version}.tar.gz
 # Branch used available at
-# https://github.com/rhatdan/docker/commits/rhel7-1.7
-Source0: https://github.com/rhatdan/docker/archive/%{d_commit}.tar.gz
-Source1: docker.service
-Source3: docker.sysconfig
-Source4: docker-storage.sysconfig
-Source5: docker-logrotate.sh
-Source6: README.docker-logrotate
-Source7: docker-network.sysconfig
-# Source8 is the source tarball for python-websocket-client
-Source8: http://pypi.python.org/packages/source/w/%{w_distname}/%{w_eggname}-%{w_version}.tar.gz
-# Source9 is the source tarball for docker-py
-Source9: http://github.com/rhatdan/docker-py/archive/%{dp_commit}.tar.gz
-# Source10 is the source tarball for atomic
-Source10: https://github.com/projectatomic/atomic/archive/%{atomic_commit}.tar.gz
-# Source11 is the source tarball for dockertarsum and docker-fetch
-Source11: https://github.com/vbatts/docker-utils/archive/%{utils_commit}.tar.gz
-# Source12 is the source tarball for docker-selinux
-Source12: https://github.com/fedora-cloud/%{repo}-selinux/archive/%{ds_commit}/%{repo}-selinux-%{ds_shortcommit}.tar.gz
-# Source13 is the source tarball for docker-storage-setup
-Source13: https://github.com/a13m/docker-storage-setup/archive/%{dss_commit}/%{repo}-storage-setup-%{dss_shortcommit}.tar.gz
-Patch1: go-md2man.patch
-Patch3: codegangsta-cli.patch
-Patch4: urlparse.patch
-Patch5: docker-py-remove-lock.patch
-Patch6: 0001-Rework-patch-for-rhbz-1194445.patch
-Patch7: 0001-atomic.sysconfig-use-rhel-tools-as-the-TOOLSIMG.patch
-Patch8: unpin-python-requests-requirement.patch
+# https://%%{provider}.%%{provider_tld}/rhatdan/%%{name}/commits/rhel7-1.8
+Source0: https://%{provider}.%{provider_tld}/rhatdan/%{name}/archive/%{d_commit}.tar.gz
+Source1: %{name}.service
+Source3: %{name}.sysconfig
+Source4: %{name}-storage.sysconfig
+Source5: %{name}-logrotate.sh
+Source6: README.%{name}-logrotate
+Source7: %{name}-network.sysconfig
+# Source11 is the source tarball for %%{name}tarsum and %%{name}-fetch
+Source11: https://%{provider}.%{provider_tld}/vbatts/%{name}-utils/archive/%{utils_commit}.tar.gz
+# Source12 is the source tarball for %%{name}-selinux
+Source12: https://%{provider}.%{provider_tld}/fedora-cloud/%{name}-selinux/archive/%{ds_commit}/%{name}-selinux-%{ds_shortcommit}.tar.gz
+# Source13 is the source tarball for %%{name}-storage-setup
+Source13: https://%{provider}.%{provider_tld}/projectatomic/%{name}-storage-setup/archive/%{dss_commit}/%{name}-storage-setup-%{dss_shortcommit}.tar.gz
 BuildRequires: glibc-static
 BuildRequires: golang >= 1.4.2
 BuildRequires: device-mapper-devel
 BuildRequires: btrfs-progs-devel
 BuildRequires: sqlite-devel
+BuildRequires: go-md2man
 BuildRequires: pkgconfig(systemd)
 # appropriate systemd version as per rhbz#1171054
 Requires(post): systemd
@@ -111,13 +81,12 @@ Requires(postun): systemd
 Requires: xz
 Requires: device-mapper-libs >= 7:1.02.90-1
 Requires: subscription-manager
-Provides: lxc-docker = %{d_version}-%{release}
-Provides: docker = %{d_version}-%{release}
-Provides: docker-io = %{d_version}-%{release}
+Provides: lxc-%{name} = %{d_version}-%{release}
+Provides: %{name}-io = %{d_version}-%{release}
 
 # RE: rhbz#1195804 - ensure min NVR for selinux-policy
 Requires: selinux-policy >= 3.13.1-23
-Requires(pre): %{repo}-selinux >= %{version}-%{release}
+Requires(pre): %{name}-selinux >= %{version}-%{release}
 
 # rhbz#1214070 - update deps for d-s-s
 Requires: lvm2 >= 2.02.112
@@ -142,73 +111,13 @@ Summary: %{summary} - for running unit tests
 %endif
 
 %package logrotate
-Summary: cron job to run logrotate on docker containers
-Requires: docker = %{d_version}-%{release}
-Provides: docker-io-logrotate = %{d_version}-%{release}
+Summary: cron job to run logrotate on Docker containers
+Requires: %{name} = %{d_version}-%{release}
+Provides: %{name}-io-logrotate = %{d_version}-%{release}
 
 %description logrotate
 This package installs %{summary}. logrotate is assumed to be installed on
 containers for this to work, failures are silently ignored.
-
-%package -n python-%{w_distname}
-Summary: WebSocket client for python
-Version: %{w_version}
-License: LGPLv2
-BuildArch: noarch
-
-%description -n python-%{w_distname}
-python-websocket-client module is WebSocket client for python. This
-provides the low level APIs for WebSocket. All APIs are the synchronous
-functions.
-
-python-websocket-client supports only hybi-13.
-
-%package python
-Version: %{dp_version}
-License: ASL 2.0
-Summary: An API client for docker written in Python
-BuildRequires: python2-devel
-BuildRequires: python-setuptools
-BuildRequires: python-tools
-BuildRequires: python-requests
-Requires: docker >= %{d_version}-%{release}
-Requires: python-requests >= 2.5.3
-Requires: python-%{w_distname} == %{w_version}
-Requires: python-six >= 1.3.0
-Requires: python-argparse
-Provides: python-docker-py = %{dp_version}-%{release}
-Provides: python-docker = %{dp_version}-%{release}
-
-%description python
-%{summary}
-
-%package -n atomic
-Version: 1.4
-Summary: Tool for managing ProjectAtomic systems and containers
-License: LGPLv2+
-ExclusiveArch: x86_64
-BuildRequires: python2-devel
-BuildRequires: python-setuptools
-BuildRequires: python-tools
-BuildRequires: python-requests
-BuildRequires: python-docker-py
-Requires: docker
-Requires: python-requests
-Requires: python-docker-py >= %{dp_version}-%{release}
-Requires: python-%{w_distname} >= %{w_version}-%{release}
-Requires: python-six >= 1.3.0
-Conflicts: python-docker < 1.0.0-11
-
-%description -n atomic
-The goal of Atomic is to provide a high level, coherent entrypoint to the
-system, and fill in gaps.
-
-For Docker, atomic can make it easier to interact with special kinds of
-containers, such as super-privileged debugging tools and the like.
-
-The atomic host subcommand wraps rpm-ostree, currently just providing a
-friendlier name, but in the future Atomic may provide more unified
-management.
 
 %package selinux
 Summary: SELinux policies for Docker
@@ -219,45 +128,20 @@ Requires(post): selinux-policy-targeted >= %{selinux_policyver}
 Requires(post): policycoreutils
 Requires(post): policycoreutils-python
 Requires(post): libselinux-utils
-Provides: %{repo}-io-selinux
+Provides: %{name}-io-selinux
 
 %description selinux
 SELinux policy modules for use with Docker.
 
 %prep
-%setup -qn docker-%{d_commit}
-%patch1 -p1
-%patch3 -p1
+%setup -qn %{name}-%{d_commit}
 cp %{SOURCE6} .
 
-# unpack %{repo}-selinux
+# unpack %%{name}-selinux
 tar zxf %{SOURCE12}
 
-# untar docker-utils tarball
+# untar %%{name}-utils tarball
 tar zxf %{SOURCE11}
-
-# untar python-websocket-client tarball
-tar zxf %{SOURCE8}
-rm -rf %{w_distname}-%{w_version}/%{w_distname}.egg-info
-pushd %{w_eggname}-%{w_version}
-%patch4 -p1
-popd
-
-# untar docker-py tarball
-tar zxf %{SOURCE9}
-pushd docker-py-%{dp_commit}
-%patch5 -p1
-%patch6 -p1
-%patch8 -p1
-popd
-
-# untar atomic
-tar zxf %{SOURCE10}
-pushd atomic-%{atomic_commit}
-sed -i '/pylint/d' Makefile
-sed -i 's/go-md2man/.\/go-md2man/' Makefile
-%patch7 -p1
-popd
 
 # untar d-s-s
 tar zxf %{SOURCE13}
@@ -266,68 +150,47 @@ tar zxf %{SOURCE13}
 mkdir _build
 
 pushd _build
-  mkdir -p src/github.com/{docker,vbatts}
-  ln -s $(dirs +1 -l) src/github.com/docker/docker
-  ln -s $(dirs +1 -l)/docker-utils-%{utils_commit} src/github.com/vbatts/docker-utils
+  mkdir -p src/%{provider}.%{provider_tld}/{%{name},vbatts}
+  ln -s $(dirs +1 -l) src/%{import_path}
+  ln -s $(dirs +1 -l)/%{name}-utils-%{utils_commit} src/%{provider}.%{provider_tld}/vbatts/%{name}-utils
 popd
 
 export DOCKER_GITCOMMIT="%{d_shortcommit}/%{d_version}"
 export DOCKER_BUILDTAGS='selinux btrfs_noversion'
 export GOPATH=$(pwd)/_build:$(pwd)/vendor:%{gopath}
 
-# build docker binary
+# build %%{name} binary
 sed -i '/rm -r autogen/d' hack/make.sh
 DEBUG=1 hack/make.sh dynbinary
 cp contrib/syntax/vim/LICENSE LICENSE-vim-syntax
 cp contrib/syntax/vim/README.md README-vim-syntax.md
 
-# build %{repo}-selinux
-pushd %{repo}-selinux-%{ds_commit}
+# build %%{name}-selinux
+pushd %{name}-selinux-%{ds_commit}
 make SHARE="%{_datadir}" TARGETS="%{modulenames}"
 popd
 
 pushd $(pwd)/_build/src
-# build go-md2man for building manpages
-go build github.com/cpuguy83/go-md2man
-# build dockertarsum and docker-fetch
-go build github.com/vbatts/docker-utils/cmd/docker-fetch
-go build github.com/vbatts/docker-utils/cmd/dockertarsum
+# build %{name}tarsum and %{name}-fetch
+go build %{provider}.%{provider_tld}/vbatts/%{name}-utils/cmd/%{name}-fetch
+go build %{provider}.%{provider_tld}/vbatts/%{name}-utils/cmd/%{name}tarsum
 popd
 
-cp _build/src/go-md2man man/.
-cp _build/src/go-md2man atomic-%{atomic_commit}/.
-
-sed -i 's/go-md2man/.\/go-md2man/' man/md2man-all.sh
-# build docker manpages
+# build %%{name} manpages
 man/md2man-all.sh
-
-# build python-websocket-client
-pushd %{w_eggname}-%{w_version}
-%{__python} setup.py build
-popd
-
-# build docker-py
-pushd docker-py-%{dp_commit}
-%{__python} setup.py build
-popd
-
-# build atomic
-pushd atomic-%{atomic_commit}
-make all
-popd
 
 %install
 # install binary
 install -d %{buildroot}%{_bindir}
-install -p -m 755 bundles/%{d_version}/dynbinary/docker-%{d_version} %{buildroot}%{_bindir}/docker
+install -p -m 755 bundles/%{d_version}/dynbinary/%{name}-%{d_version} %{buildroot}%{_bindir}/%{name}
 
-# install dockertarsum and docker-fetch
-install -p -m 755 _build/src/docker-fetch %{buildroot}%{_bindir}
-install -p -m 755 _build/src/dockertarsum %{buildroot}%{_bindir}
+# install %%{name}tarsum and %%{name}-fetch
+install -p -m 755 _build/src/%{name}-fetch %{buildroot}%{_bindir}
+install -p -m 755 _build/src/%{name}tarsum %{buildroot}%{_bindir}
 
-# install dockerinit
-install -d %{buildroot}%{_libexecdir}/docker
-install -p -m 755 bundles/%{d_version}/dynbinary/dockerinit-%{d_version} %{buildroot}%{_libexecdir}/docker/dockerinit
+# install %%{name}init
+install -d %{buildroot}%{_libexecdir}/%{name}
+install -p -m 755 bundles/%{d_version}/dynbinary/%{name}init-%{d_version} %{buildroot}%{_libexecdir}/%{name}/%{name}init
 
 # install manpages
 install -d %{buildroot}%{_mandir}/man1
@@ -337,34 +200,34 @@ install -p -m 644 man/man5/* %{buildroot}%{_mandir}/man5
 
 # install bash completion
 install -d %{buildroot}%{_datadir}/bash-completion/completions/
-install -p -m 644 contrib/completion/bash/docker %{buildroot}%{_datadir}/bash-completion/completions/
+install -p -m 644 contrib/completion/bash/%{name} %{buildroot}%{_datadir}/bash-completion/completions/
 
 # install fish completion
 # create, install and own /usr/share/fish/vendor_completions.d until
 # upstream fish provides it
 install -dp %{buildroot}%{_datadir}/fish/vendor_completions.d
-install -p -m 644 contrib/completion/fish/docker.fish %{buildroot}%{_datadir}/fish/vendor_completions.d
+install -p -m 644 contrib/completion/fish/%{name}.fish %{buildroot}%{_datadir}/fish/vendor_completions.d
 
 # install container logrotate cron script
 install -dp %{buildroot}%{_sysconfdir}/cron.daily/
-install -p -m 755 %{SOURCE5} %{buildroot}%{_sysconfdir}/cron.daily/docker-logrotate
+install -p -m 755 %{SOURCE5} %{buildroot}%{_sysconfdir}/cron.daily/%{name}-logrotate
 
 # install vim syntax highlighting
 install -d %{buildroot}%{_datadir}/vim/vimfiles/{doc,ftdetect,syntax}
-install -p -m 644 contrib/syntax/vim/doc/dockerfile.txt %{buildroot}%{_datadir}/vim/vimfiles/doc
-install -p -m 644 contrib/syntax/vim/ftdetect/dockerfile.vim %{buildroot}%{_datadir}/vim/vimfiles/ftdetect
-install -p -m 644 contrib/syntax/vim/syntax/dockerfile.vim %{buildroot}%{_datadir}/vim/vimfiles/syntax
+install -p -m 644 contrib/syntax/vim/doc/%{name}file.txt %{buildroot}%{_datadir}/vim/vimfiles/doc
+install -p -m 644 contrib/syntax/vim/ftdetect/%{name}file.vim %{buildroot}%{_datadir}/vim/vimfiles/ftdetect
+install -p -m 644 contrib/syntax/vim/syntax/%{name}file.vim %{buildroot}%{_datadir}/vim/vimfiles/syntax
 
 # install zsh completion
 install -d %{buildroot}%{_datadir}/zsh/site-functions
-install -p -m 644 contrib/completion/zsh/_docker %{buildroot}%{_datadir}/zsh/site-functions
+install -p -m 644 contrib/completion/zsh/_%{name} %{buildroot}%{_datadir}/zsh/site-functions
 
 # install udev rules
 install -d %{buildroot}%{_udevrulesdir}
-install -p -m 755 contrib/udev/80-docker.rules %{buildroot}%{_udevrulesdir}
+install -p -m 755 contrib/udev/80-%{name}.rules %{buildroot}%{_udevrulesdir}
 
 # install storage dir
-install -d -m 700 %{buildroot}%{_sharedstatedir}/docker
+install -d -m 700 %{buildroot}%{_sharedstatedir}/%{name}
 
 # install systemd/init scripts
 install -d %{buildroot}%{_unitdir}
@@ -372,32 +235,32 @@ install -p -m 644 %{SOURCE1} %{buildroot}%{_unitdir}
 
 # for additional args
 install -d %{buildroot}%{_sysconfdir}/sysconfig/
-install -p -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/sysconfig/docker
-install -p -m 644 %{SOURCE4} %{buildroot}%{_sysconfdir}/sysconfig/docker-storage
-install -p -m 644 %{SOURCE7} %{buildroot}%{_sysconfdir}/sysconfig/docker-network
+install -p -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/sysconfig/%{name}
+install -p -m 644 %{SOURCE4} %{buildroot}%{_sysconfdir}/sysconfig/%{name}-storage
+install -p -m 644 %{SOURCE7} %{buildroot}%{_sysconfdir}/sysconfig/%{name}-network
 
 # install SELinux interfaces
 %_format INTERFACES $x.if
 install -d %{buildroot}%{_datadir}/selinux/devel/include/%{moduletype}
-install -p -m 644 %{repo}-selinux-%{ds_commit}/$INTERFACES %{buildroot}%{_datadir}/selinux/devel/include/%{moduletype}
+install -p -m 644 %{name}-selinux-%{ds_commit}/$INTERFACES %{buildroot}%{_datadir}/selinux/devel/include/%{moduletype}
 
 # install policy modules
 %_format MODULES $x.pp.bz2
 install -d %{buildroot}%{_datadir}/selinux/packages
-install -m 0644 %{repo}-selinux-%{ds_commit}/$MODULES %{buildroot}%{_datadir}/selinux/packages
+install -m 0644 %{name}-selinux-%{ds_commit}/$MODULES %{buildroot}%{_datadir}/selinux/packages
 
 %if 0%{?with_unit_test}
-install -d -m 0755 %{buildroot}%{_sharedstatedir}/docker-unit-test/
-cp -pav VERSION Dockerfile %{buildroot}%{_sharedstatedir}/docker-unit-test/.
+install -d -m 0755 %{buildroot}%{_sharedstatedir}/%{name}-unit-test/
+cp -pav VERSION Dockerfile %{buildroot}%{_sharedstatedir}/%{name}-unit-test/.
 for d in */ ; do
-  cp -a $d %{buildroot}%{_sharedstatedir}/docker-unit-test/
+  cp -a $d %{buildroot}%{_sharedstatedir}/%{name}-unit-test/
 done
-# remove docker.initd as it requires /sbin/runtime no packages in Fedora
-rm -rf %{buildroot}%{_sharedstatedir}/docker-unit-test/contrib/init/openrc/docker.initd
+# remove %%{name}.initd as it requires /sbin/runtime no packages in Fedora
+rm -rf %{buildroot}%{_sharedstatedir}/%{name}-unit-test/contrib/init/openrc/%{name}.initd
 %endif
 
-# remove %{repo}-selinux rpm spec file
-rm -rf %{repo}-selinux-%{ds_commit}/%{repo}-selinux.spec
+# remove %%{name}-selinux rpm spec file
+rm -rf %{name}-selinux-%{ds_commit}/%{name}-selinux.spec
 
 # install secrets dir
 install -d -p -m 750 %{buildroot}/%{_datadir}/rhel/secrets
@@ -406,77 +269,45 @@ ln -s %{_sysconfdir}/pki/entitlement %{buildroot}%{_datadir}/rhel/secrets/etc-pk
 ln -s %{_sysconfdir}/rhsm %{buildroot}%{_datadir}/rhel/secrets/rhsm
 ln -s %{_sysconfdir}/yum.repos.d/redhat.repo %{buildroot}%{_datadir}/rhel/secrets/rhel7.repo
 
-mkdir -p %{buildroot}/etc/docker/certs.d/redhat.{com,io}
-ln -s %{_sysconfdir}/rhsm/ca/redhat-uep.pem %{buildroot}/%{_sysconfdir}/docker/certs.d/redhat.com/redhat-ca.crt
-ln -s %{_sysconfdir}/rhsm/ca/redhat-uep.pem %{buildroot}/%{_sysconfdir}/docker/certs.d/redhat.io/redhat-ca.crt
+mkdir -p %{buildroot}/etc/%{name}/certs.d/redhat.{com,io}
+ln -s %{_sysconfdir}/rhsm/ca/redhat-uep.pem %{buildroot}/%{_sysconfdir}/%{name}/certs.d/redhat.com/redhat-ca.crt
+ln -s %{_sysconfdir}/rhsm/ca/redhat-uep.pem %{buildroot}/%{_sysconfdir}/%{name}/certs.d/redhat.io/redhat-ca.crt
 
-# install docker config directory
-install -dp %{buildroot}%{_sysconfdir}/docker/
+# install %%{name} config directory
+install -dp %{buildroot}%{_sysconfdir}/%{name}/
 
-# install python-websocket-client
-pushd %{w_eggname}-%{w_version}
-%{__python} setup.py install -O1 --skip-build --root=%{buildroot}
-mv %{buildroot}/%{_bindir}/wsdump.py \
-    %{buildroot}/%{_bindir}/wsdump
-
-# unbundle cacert (python-websocket-client)
-rm %{buildroot}/%{python2_sitelib}/%{w_modname}/cacert.pem
-# And link in the mozilla ca (python-websocket-client)
-ln -s /etc/pki/tls/cert.pem \
-    %{buildroot}/%{python2_sitelib}/%{w_modname}/cacert.pem
-
-# remove tests that got installed into the buildroot (python-websocket-client)
-rm -rf %{buildroot}/%{python2_sitelib}/tests/
-
-# Remove executable bit from installed files. (python-websocket-client)
-find %{buildroot}/%{python2_sitelib} -type f -exec chmod -x {} \;
-popd
-
-# install docker-py
-pushd docker-py-%{dp_commit}
-%{__python} setup.py install --root %{buildroot}
-popd
-
-# install atomic
-pushd atomic-%{atomic_commit}
-make install DESTDIR=%{buildroot}
-popd
-
-# install docker-storage-setup
-pushd %{repo}-storage-setup-%{dss_commit}
+# install %%{name}-storage-setup
+pushd %{name}-storage-setup-%{dss_commit}
 install -d %{buildroot}%{_bindir}
-install -p -m 755 docker-storage-setup.sh %{buildroot}%{_bindir}/docker-storage-setup
+install -p -m 755 %{name}-storage-setup.sh %{buildroot}%{_bindir}/%{name}-storage-setup
 install -d %{buildroot}%{_unitdir}
-install -p -m 644 docker-storage-setup.service %{buildroot}%{_unitdir}
+install -p -m 644 %{name}-storage-setup.service %{buildroot}%{_unitdir}
 install -d %{buildroot}%{dss_libdir}
-install -p -m 644 docker-storage-setup.conf %{buildroot}%{dss_libdir}/docker-storage-setup
+install -p -m 644 %{name}-storage-setup.conf %{buildroot}%{dss_libdir}/%{name}-storage-setup
 install -p -m 755 libdss.sh %{buildroot}%{dss_libdir}
 install -d %{buildroot}%{_sysconfdir}/sysconfig
-install -p -m 644 docker-storage-setup-override.conf %{buildroot}%{_sysconfdir}/sysconfig/docker-storage-setup
+install -p -m 644 %{name}-storage-setup-override.conf %{buildroot}%{_sysconfdir}/sysconfig/%{name}-storage-setup
 install -d %{buildroot}%{_mandir}/man1
-install -p -m 644 docker-storage-setup.1 %{buildroot}%{_mandir}/man1
+install -p -m 644 %{name}-storage-setup.1 %{buildroot}%{_mandir}/man1
 popd
 
 %check
-[ ! -w /run/docker.sock ] || {
+[ ! -w /run/%{name}.sock ] || {
     mkdir test_dir
     pushd test_dir
     git clone https://%{import_path}
-    pushd docker
+    pushd %{name}
     make test
     popd
-    popd
-    pushd atomic-%{atomic_commit}
-    make test
     popd
 }
 
 %pre
-getent passwd dockerroot > /dev/null || %{_sbindir}/useradd -r -d %{_sharedstatedir}/docker -s /sbin/nologin -c "Docker User" dockerroot
+getent passwd %{name}root > /dev/null || %{_sbindir}/useradd -r -d %{_sharedstatedir}/%{name} -s /sbin/nologin -c "Docker User" %{name}root
 exit 0
 
 %post
-%systemd_post docker.service
+%systemd_post %{name}.service
 
 %post selinux
 # Install all modules in a single transaction
@@ -488,10 +319,10 @@ if %{_sbindir}/selinuxenabled ; then
 fi
 
 %preun
-%systemd_preun docker.service
+%systemd_preun %{name}.service
 
 %postun
-%systemd_postun_with_restart docker.service
+%systemd_postun_with_restart %{name}.service
 
 %postun selinux
 if [ $1 -eq 0 ]; then
@@ -505,82 +336,58 @@ fi
 %files
 %doc AUTHORS CHANGELOG.md CONTRIBUTING.md MAINTAINERS NOTICE
 %doc LICENSE* README*.md
-%{_mandir}/man1/docker*
+%{_mandir}/man1/%{name}*
 %{_mandir}/man5/*
-%{_bindir}/docker
+%{_bindir}/%{name}
 %dir %{_datadir}/rhel
 %dir %{_datadir}/rhel/secrets
 %{_datadir}/rhel/secrets/etc-pki-entitlement
 %{_datadir}/rhel/secrets/rhel7.repo
 %{_datadir}/rhel/secrets/rhsm
-%{_libexecdir}/docker
-%{_unitdir}/docker.service
-%config(noreplace) %{_sysconfdir}/sysconfig/docker
-%config(noreplace) %{_sysconfdir}/sysconfig/docker-storage
-%config(noreplace) %{_sysconfdir}/sysconfig/docker-network
-%{_datadir}/bash-completion/completions/docker
-%dir %{_sharedstatedir}/docker
-%{_udevrulesdir}/80-docker.rules
+%{_libexecdir}/%{name}
+%{_unitdir}/%{name}.service
+%config(noreplace) %{_sysconfdir}/sysconfig/%{name}
+%config(noreplace) %{_sysconfdir}/sysconfig/%{name}-storage
+%config(noreplace) %{_sysconfdir}/sysconfig/%{name}-network
+%{_datadir}/bash-completion/completions/%{name}
+%dir %{_sharedstatedir}/%{name}
+%{_udevrulesdir}/80-%{name}.rules
 %dir %{_datadir}/fish/vendor_completions.d/
-%{_datadir}/fish/vendor_completions.d/docker.fish
+%{_datadir}/fish/vendor_completions.d/%{name}.fish
 %dir %{_datadir}/vim/vimfiles/doc
-%{_datadir}/vim/vimfiles/doc/dockerfile.txt
+%{_datadir}/vim/vimfiles/doc/%{name}file.txt
 %dir %{_datadir}/vim/vimfiles/ftdetect
-%{_datadir}/vim/vimfiles/ftdetect/dockerfile.vim
+%{_datadir}/vim/vimfiles/ftdetect/%{name}file.vim
 %dir %{_datadir}/vim/vimfiles/syntax
-%{_datadir}/vim/vimfiles/syntax/dockerfile.vim
+%{_datadir}/vim/vimfiles/syntax/%{name}file.vim
 %dir %{_datadir}/zsh/site-functions
-%{_datadir}/zsh/site-functions/_docker
-%{_sysconfdir}/docker
-%{_bindir}/docker-fetch
-%{_bindir}/dockertarsum
-# docker-storage-setup specific
-%config(noreplace) %{_sysconfdir}/sysconfig/docker-storage-setup
-%{_unitdir}/docker-storage-setup.service
-%{_bindir}/docker-storage-setup
-%{dss_libdir}/docker-storage-setup
+%{_datadir}/zsh/site-functions/_%{name}
+%{_sysconfdir}/%{name}
+%{_bindir}/%{name}-fetch
+%{_bindir}/%{name}tarsum
+# %%{name}-storage-setup specific
+%config(noreplace) %{_sysconfdir}/sysconfig/%{name}-storage-setup
+%{_unitdir}/%{name}-storage-setup.service
+%{_bindir}/%{name}-storage-setup
+%{dss_libdir}/%{name}-storage-setup
 %{dss_libdir}/libdss.sh
 
 %if 0%{?with_unit_test}
 %files unit-test
-%{_sharedstatedir}/docker-unit-test/
+%{_sharedstatedir}/%{name}-unit-test/
 %endif
 
 %files logrotate
-%doc README.docker-logrotate
-%{_sysconfdir}/cron.daily/docker-logrotate
-
-%files -n python-websocket-client
-%doc %{w_eggname}-%{w_version}/{README.rst,LICENSE}
-%{python2_sitelib}/%{w_modname}/
-%{python2_sitelib}/%{w_eggname}*%{w_version}*
-%{_bindir}/wsdump
-
-%files python
-%doc docker-py-%{dp_commit}/{LICENSE,README.md}
-%{python_sitelib}/docker
-%{python_sitelib}/docker_py-%{dp_version}*
-
-%files -n atomic
-%doc atomic-%{atomic_commit}/COPYING atomic-%{atomic_commit}/README.md
-%config(noreplace) %{_sysconfdir}/sysconfig/atomic
-%{_sysconfdir}/profile.d/atomic.sh
-%{_sysconfdir}/dbus-1/system.d/org.atomic.conf
-%{_bindir}/atomic
-%{_mandir}/man1/atomic*
-%{_datadir}/bash-completion/completions/atomic
-%{_datadir}/atomic
-%{_datadir}/dbus-1/system-services/org.atomic.service
-%{_datadir}/polkit-1/actions/org.atomic.policy
-%{python_sitelib}/atomic*.egg-info
-%{python_sitelib}/Atomic
+%doc README.%{name}-logrotate
+%{_sysconfdir}/cron.daily/%{name}-logrotate
 
 %files selinux
-%doc %{repo}-selinux-%{ds_commit}/README.md
+%doc %{name}-selinux-%{ds_commit}/README.md
 %{_datadir}/selinux/*
 
 %changelog
-* Fri Sep 18 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.8.2-116
+* Fri Sep 18 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.8.2-1
+- package only provides docker, docker-selinux and docker-logrotate
 - Resolves: rhbz#1261329, rhbz#1263394, rhbz#1264090
 - built docker @rhatdan/rhel7-1.8 commit#23f26d9
 - built d-s-s master commit#6898d43
