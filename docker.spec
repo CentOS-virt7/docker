@@ -21,7 +21,7 @@
 
 # %%{name}-selinux stuff (prefix with ds_ for version/release etc.)
 # Some bits borrowed from the openstack-selinux package
-%global ds_commit b5281b76967235e95c901fae822af715991e70dd
+%global ds_commit d6560f808c5cf0704218783d9f10d519ae745eda
 %global ds_shortcommit %(c=%{ds_commit}; echo ${c:0:7})
 %global selinuxtype targeted
 %global moduletype services
@@ -45,7 +45,7 @@
 
 Name: %{repo}
 Version: %{d_version}
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -386,6 +386,9 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Mon Sep 21 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.8.2-2
+- built docker-selinux master commit#d6560f8
+
 * Fri Sep 18 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.8.2-1
 - package only provides docker, docker-selinux and docker-logrotate
 - Resolves: rhbz#1261329, rhbz#1263394, rhbz#1264090
