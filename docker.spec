@@ -45,7 +45,7 @@
 
 Name: %{repo}
 Version: %{d_version}
-Release: 4%{?dist}
+Release: 5%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -66,6 +66,8 @@ Source11: https://%{provider}.%{provider_tld}/vbatts/%{name}-utils/archive/%{uti
 Source12: https://%{provider}.%{provider_tld}/fedora-cloud/%{name}-selinux/archive/%{ds_commit}/%{name}-selinux-%{ds_shortcommit}.tar.gz
 # Source13 is the source tarball for %%{name}-storage-setup
 Source13: https://%{provider}.%{provider_tld}/projectatomic/%{name}-storage-setup/archive/%{dss_commit}/%{name}-storage-setup-%{dss_shortcommit}.tar.gz
+Patch0: dev-setup.patch
+Patch1: dev-dont-modify.patch
 BuildRequires: glibc-static
 BuildRequires: golang == 1.4.2
 BuildRequires: device-mapper-devel
@@ -135,6 +137,10 @@ SELinux policy modules for use with Docker.
 
 %prep
 %setup -qn %{name}-%{d_commit}
+%patch0 -p1
+pushd vendor/src/github.com/opencontainers/runc
+%patch1 -p1
+popd
 cp %{SOURCE6} .
 
 # unpack %%{name}-selinux
@@ -386,6 +392,11 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Wed Sep 30 2015 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.8.2-5
+- /dev behavior modifications
+- https://github.com/docker/docker/pull/16639
+- https://github.com/opencontainers/runc/commit/c9d58506297ed6c86c9d8a91d861e4de3772e699
+
 * Wed Sep 30 2015 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.8.2-4
 - built docker @rhatdan/rhel7-1.8 commit#23f26d9
 - built docker-selinux master commit#2ed73eb
