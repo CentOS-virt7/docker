@@ -45,7 +45,7 @@
 
 Name: %{repo}
 Version: %{d_version}
-Release: 2%{?dist}
+Release: 3%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -67,7 +67,7 @@ Source12: https://%{provider}.%{provider_tld}/fedora-cloud/%{name}-selinux/archi
 # Source13 is the source tarball for %%{name}-storage-setup
 Source13: https://%{provider}.%{provider_tld}/projectatomic/%{name}-storage-setup/archive/%{dss_commit}/%{name}-storage-setup-%{dss_shortcommit}.tar.gz
 BuildRequires: glibc-static
-BuildRequires: golang >= 1.4.2
+BuildRequires: golang == 1.4.2
 BuildRequires: device-mapper-devel
 BuildRequires: btrfs-progs-devel
 BuildRequires: sqlite-devel
@@ -386,6 +386,15 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Wed Sep 30 2015 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.8.2-3
+- Resolves: rhbz#1264557 (extras-rhel-7.1.6) - rebase to 1.8.2
+- Resolves: rhbz#1265810 (extras-rhel-7.2) - rebase to 1.8.2
+- built docker @rhatdan/rhel7-1.8 commit#23f26d9
+- built docker-selinux master commit#d6560f8
+- built d-s-s master commit#6898d43
+- built docker-utils master commit#dab51ac
+- use golang == 1.4.2
+
 * Mon Sep 21 2015 Lokesh Mandvekar <lsm5@redhat.com> - 1.8.2-2
 - built docker-selinux master commit#d6560f8
 
