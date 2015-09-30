@@ -393,7 +393,7 @@ fi
 
 %changelog
 * Wed Sep 30 2015 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.8.2-5
-- /dev behavior modifications
+- Resolves: rhbz#1267743
 - https://github.com/docker/docker/pull/16639
 - https://github.com/opencontainers/runc/commit/c9d58506297ed6c86c9d8a91d861e4de3772e699
 
