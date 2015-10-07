@@ -14,14 +14,14 @@
 %global import_path %{common_path}/%{repo}
 %global import_path_libcontainer %{common_path}/libcontainer
 
-%global d_commit 23f26d9e4fc5bd8de44fb08eae6d898b9c754897
+%global d_commit bb472f05c975b343fb13e55325a985f4ac1d0ca2
 %global d_shortcommit %(c=%{d_commit}; echo ${c:0:7})
 
 %global utils_commit dab51acd1b1a77f7cb01a1b7e2129ec85c846b71
 
 # %%{name}-selinux stuff (prefix with ds_ for version/release etc.)
 # Some bits borrowed from the openstack-selinux package
-%global ds_commit 2ed73eb5066f2a4e0e7fa84c260816d754433bc6
+%global ds_commit 44abd21628c8f4c054343f12d609d03de4644234
 %global ds_shortcommit %(c=%{ds_commit}; echo ${c:0:7})
 %global selinuxtype targeted
 %global moduletype services
@@ -49,7 +49,7 @@
 
 Name: %{repo}
 Version: %{d_version}
-Release: 5%{?dist}
+Release: 6%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -399,6 +399,12 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Wed Oct 07 2015 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.8.2-6
+- built docker @rhatdan/rhel7-1.8 commit#bb472f0
+- built docker-selinux master commit#44abd21
+- built d-s-s master commit#6898d43
+- built docker-utils master commit#dab51ac
+
 * Wed Sep 30 2015 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.8.2-5
 - Resolves: rhbz#1267743
 - https://github.com/docker/docker/pull/16639
