@@ -70,8 +70,6 @@ Source11: https://%{provider}.%{provider_tld}/vbatts/%{name}-utils/archive/%{uti
 Source12: https://%{provider}.%{provider_tld}/fedora-cloud/%{name}-selinux/archive/%{ds_commit}/%{name}-selinux-%{ds_shortcommit}.tar.gz
 # Source13 is the source tarball for %%{name}-storage-setup
 Source13: https://%{provider}.%{provider_tld}/projectatomic/%{name}-storage-setup/archive/%{dss_commit}/%{name}-storage-setup-%{dss_shortcommit}.tar.gz
-Patch0: libcontainer.patch
-Patch1: dev.patch
 BuildRequires: glibc-static
 BuildRequires: golang == 1.4.2
 BuildRequires: device-mapper-devel
@@ -141,8 +139,6 @@ SELinux policy modules for use with Docker.
 
 %prep
 %setup -qn %{name}-%{d_commit}
-%patch0 -p1
-%patch1 -p1
 cp %{SOURCE6} .
 
 # unpack %%{name}-selinux
