@@ -187,7 +187,7 @@ man/md2man-all.sh
 %install
 # install binary
 install -d %{buildroot}%{_bindir}
-install -p -m 755 bundles/%{d_version}/dynbinary/%{name}-%{d_version} %{buildroot}%{_bindir}/%{name}
+install -p -m 755 bundles/%{d_version}-rc1/dynbinary/%{name}-%{d_version}-rc1 %{buildroot}%{_bindir}/%{name}
 
 # install %%{name}tarsum and %%{name}-fetch
 install -p -m 755 _build/src/%{name}-fetch %{buildroot}%{_bindir}
@@ -195,7 +195,7 @@ install -p -m 755 _build/src/%{name}tarsum %{buildroot}%{_bindir}
 
 # install %%{name}init
 install -d %{buildroot}%{_libexecdir}/%{name}
-install -p -m 755 bundles/%{d_version}/dynbinary/%{name}init-%{d_version} %{buildroot}%{_libexecdir}/%{name}/%{name}init
+install -p -m 755 bundles/%{d_version}-rc1/dynbinary/%{name}init-%{d_version}-rc1 %{buildroot}%{_libexecdir}/%{name}/%{name}init
 
 # install manpages
 install -d %{buildroot}%{_mandir}/man1
