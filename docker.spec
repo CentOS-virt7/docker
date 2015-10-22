@@ -176,7 +176,7 @@ make SHARE="%{_datadir}" TARGETS="%{modulenames}"
 popd
 
 pushd $(pwd)/_build/src
-# build %{name}tarsum and %{name}-fetch
+# build %{repo}tarsum and %{repo}-fetch
 go build %{provider}.%{provider_tld}/vbatts/%{name}-utils/cmd/%{name}-fetch
 go build %{provider}.%{provider_tld}/vbatts/%{name}-utils/cmd/%{name}tarsum
 popd
@@ -187,15 +187,20 @@ man/md2man-all.sh
 %install
 # install binary
 install -d %{buildroot}%{_bindir}
-install -p -m 755 bundles/%{d_version}-rc3/dynbinary/%{name}-%{d_version}-rc3 %{buildroot}%{_bindir}/%{name}
+install -d %{buildroot}%{_libexecdir}/%{name}
 
 # install %%{name}tarsum and %%{name}-fetch
 install -p -m 755 _build/src/%{name}-fetch %{buildroot}%{_bindir}
 install -p -m 755 _build/src/%{name}tarsum %{buildroot}%{_bindir}
 
-# install %%{name}init
-install -d %{buildroot}%{_libexecdir}/%{name}
-install -p -m 755 bundles/%{d_version}-rc3/dynbinary/%{name}init-%{d_version}-rc3 %{buildroot}%{_libexecdir}/%{name}/%{name}init
+for x in bundles/*%{d_dist}; do
+    if ! test -d $x/dynbinary; then
+	continue
+    fi
+    install -p -m 755 $x/dynbinary/%{repo}-*%{d_dist} %{buildroot}%{_bindir}/%{repo}
+    install -p -m 755 $x/dynbinary/%{repo}init-*%{d_dist} %{buildroot}%{_libexecdir}/%{repo}/%{repo}init
+    break
+done
 
 # install manpages
 install -d %{buildroot}%{_mandir}/man1
