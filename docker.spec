@@ -14,14 +14,14 @@
 %global import_path %{common_path}/%{repo}
 %global import_path_libcontainer %{common_path}/libcontainer
 
-%global d_commit a01dc02d9c369141f8bbbea0f51e8759dd6e5b93
+%global d_commit 1ea7f30f42694f08818bb5b0e9df35149f90e761
 %global d_shortcommit %(c=%{d_commit}; echo ${c:0:7})
 
 %global utils_commit dab51acd1b1a77f7cb01a1b7e2129ec85c846b71
 
 # %%{name}-selinux stuff (prefix with ds_ for version/release etc.)
 # Some bits borrowed from the openstack-selinux package
-%global ds_commit e2a52267a0ae0b8a0f93334747dd5f1d0cf0d368
+%global ds_commit fe61432d2d0a64b1337058248da96c07a50f65e4
 %global ds_shortcommit %(c=%{ds_commit}; echo ${c:0:7})
 %global selinuxtype targeted
 %global moduletype services
@@ -29,7 +29,7 @@
 
 # %%{name}-storage-setup stuff (prefix with dss_ for version/release etc.)
 %global dss_libdir %{_prefix}/lib/%{name}-storage-setup
-%global dss_commit 6898d433f7c7666475656ab89565ec02d08c4c55
+%global dss_commit 01df51290475e7bd0243bca50725cb85c4915f36
 %global dss_shortcommit %(c=%{dss_commit}; echo ${c:0:7})
 
 # Usage: _format var format
@@ -49,7 +49,7 @@
 
 Name: %{repo}
 Version: %{d_version}
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -394,6 +394,12 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Thu Oct 22 2015 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.9.0-2
+- built docker @projectatomic/rhel7-1.9 commit#1ea7f30
+- built docker-selinux commit#fe61432
+- built d-s-s commit#01df512
+- built docker-utils commit#dab51ac
+
 * Wed Oct 14 2015 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.8.2-8
 - built docker @rhatdan/rhel7-1.8 commit#a01dc02
 - built docker-selinux master commit#e2a5226
