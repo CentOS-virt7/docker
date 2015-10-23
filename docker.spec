@@ -56,8 +56,8 @@ URL: https://%{import_path}
 # only x86_64 for now: https://%%{provider}.%%{provider_tld}/%%{name}/%%{name}/issues/136
 ExclusiveArch: x86_64
 # Branch used available at
-# https://%%{provider}.%%{provider_tld}/rhatdan/%%{name}/commits/rhel7-1.8
-Source0: https://%{provider}.%{provider_tld}/rhatdan/%{name}/archive/%{d_commit}.tar.gz
+# https://%%{provider}.%%{provider_tld}/projectatomic/%%{name}/commits/rhel7-1.8
+Source0: https://%{provider}.%{provider_tld}/projectatomic/%{name}/archive/%{d_commit}.tar.gz
 Source1: %{name}.service
 Source3: %{name}.sysconfig
 Source4: %{name}-storage.sysconfig
@@ -187,7 +187,7 @@ man/md2man-all.sh
 %install
 # install binary
 install -d %{buildroot}%{_bindir}
-install -p -m 755 bundles/%{d_version}-rc1/dynbinary/%{name}-%{d_version}-rc1 %{buildroot}%{_bindir}/%{name}
+install -p -m 755 bundles/%{d_version}-rc2/dynbinary/%{name}-%{d_version}-rc2 %{buildroot}%{_bindir}/%{name}
 
 # install %%{name}tarsum and %%{name}-fetch
 install -p -m 755 _build/src/%{name}-fetch %{buildroot}%{_bindir}
@@ -195,7 +195,7 @@ install -p -m 755 _build/src/%{name}tarsum %{buildroot}%{_bindir}
 
 # install %%{name}init
 install -d %{buildroot}%{_libexecdir}/%{name}
-install -p -m 755 bundles/%{d_version}-rc1/dynbinary/%{name}init-%{d_version}-rc1 %{buildroot}%{_libexecdir}/%{name}/%{name}init
+install -p -m 755 bundles/%{d_version}-rc2/dynbinary/%{name}init-%{d_version}-rc2 %{buildroot}%{_libexecdir}/%{name}/%{name}init
 
 # install manpages
 install -d %{buildroot}%{_mandir}/man1
