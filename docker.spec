@@ -14,7 +14,7 @@
 %global import_path %{common_path}/%{repo}
 %global import_path_libcontainer %{common_path}/libcontainer
 
-%global d_commit 6897d7881f04d132ad1538efdf62a7217d2d3a4a
+%global d_commit 166d43b20aafc769cef8c5439b97a8f4d9a9a3ee
 %global d_shortcommit %(c=%{d_commit}; echo ${c:0:7})
 
 %global utils_commit dab51acd1b1a77f7cb01a1b7e2129ec85c846b71
@@ -49,7 +49,7 @@
 
 Name: %{repo}
 Version: %{d_version}
-Release: 5%{?dist}
+Release: 6%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -187,7 +187,7 @@ man/md2man-all.sh
 %install
 # install binary
 install -d %{buildroot}%{_bindir}
-install -p -m 755 bundles/%{d_version}-rc2/dynbinary/%{name}-%{d_version}-rc2 %{buildroot}%{_bindir}/%{name}
+install -p -m 755 bundles/%{d_version}-rc3/dynbinary/%{name}-%{d_version}-rc3 %{buildroot}%{_bindir}/%{name}
 
 # install %%{name}tarsum and %%{name}-fetch
 install -p -m 755 _build/src/%{name}-fetch %{buildroot}%{_bindir}
@@ -195,7 +195,7 @@ install -p -m 755 _build/src/%{name}tarsum %{buildroot}%{_bindir}
 
 # install %%{name}init
 install -d %{buildroot}%{_libexecdir}/%{name}
-install -p -m 755 bundles/%{d_version}-rc2/dynbinary/%{name}init-%{d_version}-rc2 %{buildroot}%{_libexecdir}/%{name}/%{name}init
+install -p -m 755 bundles/%{d_version}-rc3/dynbinary/%{name}init-%{d_version}-rc3 %{buildroot}%{_libexecdir}/%{name}/%{name}init
 
 # install manpages
 install -d %{buildroot}%{_mandir}/man1
@@ -394,6 +394,12 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Wed Oct 28 2015 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.9.0-6
+- built docker @projectatomic/rhel7-1.9 commit#166d43b
+- built docker-selinux commit#dbfad05
+- built d-s-s commit#e9722cc
+- built docker-utils commit#dab51ac
+
 * Mon Oct 26 2015 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.9.0-5
 - built docker @projectatomic/rhel7-1.9 commit#6897d78
 - built docker-selinux commit#dbfad05
