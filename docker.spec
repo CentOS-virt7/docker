@@ -166,7 +166,7 @@ export GOPATH=$(pwd)/_build:$(pwd)/vendor:%{gopath}
 
 # build %%{name} binary
 sed -i '/rm -r autogen/d' hack/make.sh
-DEBUG=1 hack/make.sh dynbinary
+DOCKER_DEBUG=1 hack/make.sh dynbinary
 cp contrib/syntax/vim/LICENSE LICENSE-vim-syntax
 cp contrib/syntax/vim/README.md README-vim-syntax.md
 
