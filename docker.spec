@@ -16,6 +16,7 @@
 
 %global d_commit 61fd96540364a9fa06885a426a33021555f569eb
 %global d_shortcommit %(c=%{d_commit}; echo ${c:0:7})
+%global d_dist %(echo %{?dist} | sed 's/./-/')
 
 %global utils_commit dab51acd1b1a77f7cb01a1b7e2129ec85c846b71
 
@@ -166,6 +167,7 @@ export GOPATH=$(pwd)/_build:$(pwd)/vendor:%{gopath}
 
 # build %%{name} binary
 sed -i '/rm -r autogen/d' hack/make.sh
+sed -i 's/$/%{d_dist}/' VERSION
 DOCKER_DEBUG=1 hack/make.sh dynbinary
 cp contrib/syntax/vim/LICENSE LICENSE-vim-syntax
 cp contrib/syntax/vim/README.md README-vim-syntax.md
