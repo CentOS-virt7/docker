@@ -402,6 +402,7 @@ fi
 
 %changelog
 * Mon Nov 02 2015 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.9.0-8
+- Resolves: rhbz#1225093 (partially)
 - built docker @projectatomic/rhel7-1.9 commit#cdd3941
 - built docker-selinux commit#dbfad05
 - built d-s-s commit#e9722cc
