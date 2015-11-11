@@ -9,12 +9,12 @@
 %global project docker
 %global repo %{project}
 %global common_path %{provider}.%{provider_tld}/%{project}
-%global d_version 1.9.0
+%global d_version 1.8.2
 
 %global import_path %{common_path}/%{repo}
 %global import_path_libcontainer %{common_path}/libcontainer
 
-%global d_commit cdd3941a5491142151441cf7e47af2fd7fd885cd
+%global d_commit a01dc02d9c369141f8bbbea0f51e8759dd6e5b93
 %global d_shortcommit %(c=%{d_commit}; echo ${c:0:7})
 %global d_dist %(echo %{?dist} | sed 's/./-/')
 
@@ -50,7 +50,7 @@
 
 Name: %{repo}
 Version: %{d_version}
-Release: 8%{?dist}
+Release: 9%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -401,6 +401,14 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Wed Nov 11 2015 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.8.2-9
+- Resolves: rhbz#1280068 - Build docker with DWARF
+- Move back to 1.8.2
+- built docker @rhatdan/rhel7-1.8 commit#a01dc02
+- built docker-selinux commit#dbfad05
+- built d-s-s commit#e9722cc
+- built docker-utils commit#dab51ac
+
 * Mon Nov 02 2015 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.9.0-8
 - Resolves: rhbz#1225093 (partially)
 - built docker @projectatomic/rhel7-1.9 commit#cdd3941
