@@ -21,6 +21,7 @@ LimitNPROC=1048576
 LimitCORE=infinity
 MountFlags=slave
 TimeoutStartSec=1min
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target

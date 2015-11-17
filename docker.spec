@@ -50,7 +50,7 @@
 
 Name: %{repo}
 Version: %{d_version}
-Release: 9%{?dist}
+Release: 10%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -97,6 +97,9 @@ Requires(pre): %{name}-selinux >= %{version}-%{release}
 # rhbz#1214070 - update deps for d-s-s
 Requires: lvm2 >= 2.02.112
 Requires: xfsprogs
+
+# rhbz#1282898 - obsolete docker-storage-setup
+Obsoletes: %{repo}-storage-setup <= 0.0.4-2
 
 %description
 Docker is an open-source engine that automates the deployment of any
@@ -329,7 +332,7 @@ if %{_sbindir}/selinuxenabled ; then
     %{_sbindir}/load_policy
     %relabel_files
     if [ $1 -eq 1 ]; then
-    restorecon -R %{_sharedstatedir}/%{repo}
+    restorecon -R %{_sharedstatedir}/%{repo} &> /dev/null || :
     fi
 fi
 
@@ -401,6 +404,10 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Wed Nov 11 2015 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.8.2-10
+- Resolves: rhbz#1281805, rhbz#1271229, rhbz#1276346
+- Resolves: rhbz#1275376, rhbz#1282898
+
 * Wed Nov 11 2015 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.8.2-9
 - Resolves: rhbz#1280068 - Build docker with DWARF
 - Move back to 1.8.2
