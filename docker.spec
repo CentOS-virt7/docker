@@ -50,7 +50,7 @@
 
 Name: %{repo}
 Version: %{d_version}
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -404,6 +404,9 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Tue Nov 24 2015 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.9.1-2
+- Resolves: rhbz#1263394 - set unitfile to 5 mins
+
 * Tue Nov 24 2015 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.9.1-1
 - use correct version number, no other change since last build
 

@@ -20,7 +20,7 @@ LimitNOFILE=1048576
 LimitNPROC=1048576
 LimitCORE=infinity
 MountFlags=slave
-TimeoutStartSec=1min
+TimeoutStartSec=5min
 Restart=on-failure
 
 [Install]
