@@ -9,7 +9,7 @@
 %global project docker
 %global repo %{project}
 %global common_path %{provider}.%{provider_tld}/%{project}
-%global d_version 1.9.0
+%global d_version 1.9.1
 
 %global import_path %{common_path}/%{repo}
 %global import_path_libcontainer %{common_path}/libcontainer
@@ -50,7 +50,7 @@
 
 Name: %{repo}
 Version: %{d_version}
-Release: 11%{?dist}
+Release: 1%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -404,6 +404,9 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Tue Nov 24 2015 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.9.1-1
+- use correct version number, no other change since last build
+
 * Tue Nov 24 2015 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.9.0-11
 - Resolves: rhbz#1275399
 - built docker @projectatomic/rhel7-1.9 commit#f1cda67
