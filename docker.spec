@@ -14,7 +14,7 @@
 %global import_path %{common_path}/%{repo}
 %global import_path_libcontainer %{common_path}/libcontainer
 
-%global d_commit 390a4663e4bf639b1dd340dad2b8ba18fc2735c4
+%global d_commit 32fb3222d7751d5add80c6b08108fe1a79746e65
 %global d_shortcommit %(c=%{d_commit}; echo ${c:0:7})
 %global d_dist %(echo %{?dist} | sed 's/./-/')
 
@@ -50,7 +50,7 @@
 
 Name: %{repo}
 Version: %{d_version}
-Release: 4%{?dist}
+Release: 5%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -404,6 +404,12 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Mon Nov 30 2015 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.9.1-5
+- built docker @projectatomic/rhel7-1.9 commit#32fb322
+- built docker-selinux commit#dbfad05
+- built d-s-s commit#0814c26
+- built docker-utils commit#dab51ac
+
 * Wed Nov 25 2015 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.9.1-4
 - Resolves: rhbz#1275399
 - built docker @projectatomic/rhel7-1.9 commit#390a466
