@@ -50,7 +50,7 @@
 
 Name: %{repo}
 Version: %{d_version}
-Release: 6%{?dist}
+Release: 7%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -404,6 +404,12 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Wed Dec 02 2015 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.9.1-7
+- built docker @projectatomic/rhel7-1.9 commit#32fb322
+- built docker-selinux commit#441f312
+- built d-s-s commit#0814c26
+- built docker-utils commit#dab51ac
+
 * Wed Dec 02 2015 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.9.1-6
 - built docker @projectatomic/rhel7-1.9 commit#32fb322
 - built docker-selinux commit#441f312
