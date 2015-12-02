@@ -22,7 +22,7 @@
 
 # %%{name}-selinux stuff (prefix with ds_ for version/release etc.)
 # Some bits borrowed from the openstack-selinux package
-%global ds_commit dbfad05ac749c9cdf5df57f6a5132f4cc0493098
+%global ds_commit 441f312c8f1b7fd4fdc21c007bee6091374d3b99
 %global ds_shortcommit %(c=%{ds_commit}; echo ${c:0:7})
 %global selinuxtype targeted
 %global moduletype services
@@ -50,7 +50,7 @@
 
 Name: %{repo}
 Version: %{d_version}
-Release: 5%{?dist}
+Release: 6%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -404,6 +404,12 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Wed Dec 02 2015 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.9.1-6
+- built docker @projectatomic/rhel7-1.9 commit#32fb322
+- built docker-selinux commit#441f312
+- built d-s-s commit#0814c26
+- built docker-utils commit#dab51ac
+
 * Mon Nov 30 2015 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.9.1-5
 - built docker @projectatomic/rhel7-1.9 commit#32fb322
 - built docker-selinux commit#dbfad05
