@@ -30,7 +30,7 @@
 
 # %%{name}-storage-setup stuff (prefix with dss_ for version/release etc.)
 %global dss_libdir %{_prefix}/lib/%{name}-storage-setup
-%global dss_commit 0814c269bea1d0daf61c794ee8a48de582dd2658
+%global dss_commit e38b94d537b131a7f24daf36687e86c4274e9b5d
 %global dss_shortcommit %(c=%{dss_commit}; echo ${c:0:7})
 
 # Usage: _format var format
@@ -50,7 +50,7 @@
 
 Name: %{repo}
 Version: %{d_version}
-Release: 7%{?dist}
+Release: 8%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -404,6 +404,12 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Fri Dec 04 2015 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.9.1-8
+- built docker @projectatomic/rhel7-1.9 commit#32fb322
+- built docker-selinux commit#441f312
+- built d-s-s commit#e38b94d
+- built docker-utils commit#dab51ac
+
 * Wed Dec 02 2015 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.9.1-7
 - built docker @projectatomic/rhel7-1.9 commit#32fb322
 - built docker-selinux commit#441f312
