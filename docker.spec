@@ -1,3 +1,11 @@
+%if 0%{?fedora}
+%global with_devel 1
+%global with_unit_test 1
+%else
+%global with_devel 0
+%global with_unit_test 0
+%endif
+
 %global with_unit_test 1
 # modifying the dockerinit binary breaks the SHA1 sum check by docker
 %global __os_install_post %{_rpmconfigdir}/brp-compress
@@ -8,30 +16,36 @@
 %global provider github
 %global project docker
 %global repo %{project}
-%global common_path %{provider}.%{provider_tld}/%{project}
-%global d_version 1.9.1
 
-%global import_path %{common_path}/%{repo}
-%global import_path_libcontainer %{common_path}/libcontainer
+%global import_path %{provider}.%{provider_tld}/%{project}/%{repo}
 
-%global d_commit 32fb3222d7751d5add80c6b08108fe1a79746e65
-%global d_shortcommit %(c=%{d_commit}; echo ${c:0:7})
+# docker
+%global git0 https://github.com/projectatomic/docker
+%global commit0 32fb3222d7751d5add80c6b08108fe1a79746e65
+%global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 %global d_dist %(echo %{?dist} | sed 's/./-/')
 
-%global utils_commit dab51acd1b1a77f7cb01a1b7e2129ec85c846b71
+# d-s-s
+%global git1 https://github.com/projectatomic/docker-storage-setup
+%global commit1 e38b94d537b131a7f24daf36687e86c4274e9b5d
+%global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
+%global dss_libdir %{_exec_prefix}/lib/%{name}-storage-setup
+
+# docker-selinux
+%global git2 https://github.com/fedora-cloud/docker-selinux
+%global commit2 441f312c8f1b7fd4fdc21c007bee6091374d3b99
+%global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
+
+# docker-utils
+%global git3 https://github.com/vbatts/docker-utils
+%global commit3 dab51acd1b1a77f7cb01a1b7e2129ec85c846b71
+%global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 
 # %%{name}-selinux stuff (prefix with ds_ for version/release etc.)
 # Some bits borrowed from the openstack-selinux package
-%global ds_commit 441f312c8f1b7fd4fdc21c007bee6091374d3b99
-%global ds_shortcommit %(c=%{ds_commit}; echo ${c:0:7})
 %global selinuxtype targeted
 %global moduletype services
-%global modulenames %{name}
-
-# %%{name}-storage-setup stuff (prefix with dss_ for version/release etc.)
-%global dss_libdir %{_prefix}/lib/%{name}-storage-setup
-%global dss_commit e38b94d537b131a7f24daf36687e86c4274e9b5d
-%global dss_shortcommit %(c=%{dss_commit}; echo ${c:0:7})
+%global modulenames %{repo}
 
 # Usage: _format var format
 # Expand 'modulenames' into various formats as needed
@@ -49,7 +63,7 @@
 %endif
 
 Name: %{repo}
-Version: %{d_version}
+Version: 1.9.1
 Release: 8%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
@@ -58,7 +72,7 @@ URL: https://%{import_path}
 ExclusiveArch: x86_64
 # Branch used available at
 # https://%%{provider}.%%{provider_tld}/projectatomic/%%{name}/commits/rhel7-1.8
-Source0: https://%{provider}.%{provider_tld}/projectatomic/%{name}/archive/%{d_commit}.tar.gz
+Source0: https://%{provider}.%{provider_tld}/projectatomic/%{name}/archive/%{commit0}.tar.gz
 Source1: %{name}.service
 Source3: %{name}.sysconfig
 Source4: %{name}-storage.sysconfig
@@ -66,11 +80,11 @@ Source5: %{name}-logrotate.sh
 Source6: README.%{name}-logrotate
 Source7: %{name}-network.sysconfig
 # Source11 is the source tarball for %%{name}tarsum and %%{name}-fetch
-Source11: https://%{provider}.%{provider_tld}/vbatts/%{name}-utils/archive/%{utils_commit}.tar.gz
+Source11: https://%{provider}.%{provider_tld}/vbatts/%{name}-utils/archive/%{commit3}.tar.gz
 # Source12 is the source tarball for %%{name}-selinux
-Source12: https://%{provider}.%{provider_tld}/fedora-cloud/%{name}-selinux/archive/%{ds_commit}/%{name}-selinux-%{ds_shortcommit}.tar.gz
+Source12: https://%{provider}.%{provider_tld}/fedora-cloud/%{name}-selinux/archive/%{commit2}/%{name}-selinux-%{shortcommit2}.tar.gz
 # Source13 is the source tarball for %%{name}-storage-setup
-Source13: https://%{provider}.%{provider_tld}/projectatomic/%{name}-storage-setup/archive/%{dss_commit}/%{name}-storage-setup-%{dss_shortcommit}.tar.gz
+Source13: https://%{provider}.%{provider_tld}/projectatomic/%{name}-storage-setup/archive/%{commit1}/%{name}-storage-setup-%{shortcommit1}.tar.gz
 BuildRequires: glibc-static
 BuildRequires: golang == 1.4.2
 BuildRequires: device-mapper-devel
@@ -79,7 +93,6 @@ BuildRequires: btrfs-progs-devel
 BuildRequires: sqlite-devel
 BuildRequires: go-md2man
 BuildRequires: pkgconfig(systemd)
-# appropriate systemd version as per rhbz#1171054
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
@@ -87,8 +100,8 @@ Requires(postun): systemd
 Requires: xz
 Requires: device-mapper-libs >= 7:1.02.90-1
 Requires: subscription-manager
-Provides: lxc-%{name} = %{d_version}-%{release}
-Provides: %{name}-io = %{d_version}-%{release}
+Provides: lxc-%{name} = %{version}-%{release}
+Provides: %{name}-io = %{version}-%{release}
 
 # RE: rhbz#1195804 - ensure min NVR for selinux-policy
 Requires: selinux-policy >= 3.13.1-23
@@ -99,7 +112,7 @@ Requires: lvm2 >= 2.02.112
 Requires: xfsprogs
 
 # rhbz#1282898 - obsolete docker-storage-setup
-Obsoletes: %{repo}-storage-setup <= 0.0.4-2
+Obsoletes: %{name}-storage-setup <= 0.0.4-2
 
 %description
 Docker is an open-source engine that automates the deployment of any
@@ -121,8 +134,8 @@ Summary: %{summary} - for running unit tests
 
 %package logrotate
 Summary: cron job to run logrotate on Docker containers
-Requires: %{name} = %{d_version}-%{release}
-Provides: %{name}-io-logrotate = %{d_version}-%{release}
+Requires: %{name} = %{version}-%{release}
+Provides: %{name}-io-logrotate = %{version}-%{release}
 
 %description logrotate
 This package installs %{summary}. logrotate is assumed to be installed on
@@ -143,7 +156,7 @@ Provides: %{name}-io-selinux
 SELinux policy modules for use with Docker.
 
 %prep
-%setup -qn %{name}-%{d_commit}
+%setup -qn %{name}-%{commit0}
 cp %{SOURCE6} .
 
 # unpack %%{name}-selinux
@@ -161,10 +174,10 @@ mkdir _build
 pushd _build
   mkdir -p src/%{provider}.%{provider_tld}/{%{name},vbatts}
   ln -s $(dirs +1 -l) src/%{import_path}
-  ln -s $(dirs +1 -l)/%{name}-utils-%{utils_commit} src/%{provider}.%{provider_tld}/vbatts/%{name}-utils
+  ln -s $(dirs +1 -l)/%{name}-utils-%{commit3} src/%{provider}.%{provider_tld}/vbatts/%{name}-utils
 popd
 
-export DOCKER_GITCOMMIT="%{d_shortcommit}/%{d_version}"
+export DOCKER_GITCOMMIT="%{shortcommit0}/%{version}"
 export DOCKER_BUILDTAGS='selinux btrfs_noversion'
 export GOPATH=$(pwd)/_build:$(pwd)/vendor:%{gopath}
 
@@ -176,12 +189,12 @@ cp contrib/syntax/vim/LICENSE LICENSE-vim-syntax
 cp contrib/syntax/vim/README.md README-vim-syntax.md
 
 # build %%{name}-selinux
-pushd %{name}-selinux-%{ds_commit}
+pushd %{name}-selinux-%{commit2}
 make SHARE="%{_datadir}" TARGETS="%{modulenames}"
 popd
 
 pushd $(pwd)/_build/src
-# build %{repo}tarsum and %{repo}-fetch
+# build %%{name}tarsum and %%{name}-fetch
 go build %{provider}.%{provider_tld}/vbatts/%{name}-utils/cmd/%{name}-fetch
 go build %{provider}.%{provider_tld}/vbatts/%{name}-utils/cmd/%{name}tarsum
 popd
@@ -202,8 +215,8 @@ for x in bundles/*%{d_dist}; do
     if ! test -d $x/dynbinary; then
 	continue
     fi
-    install -p -m 755 $x/dynbinary/%{repo}-*%{d_dist} %{buildroot}%{_bindir}/%{repo}
-    install -p -m 755 $x/dynbinary/%{repo}init-*%{d_dist} %{buildroot}%{_libexecdir}/%{repo}/%{repo}init
+    install -p -m 755 $x/dynbinary/%{name}-*%{d_dist} %{buildroot}%{_bindir}/%{name}
+    install -p -m 755 $x/dynbinary/%{name}init-*%{d_dist} %{buildroot}%{_libexecdir}/%{name}/%{repo}init
     break
 done
 
@@ -218,7 +231,7 @@ install -d %{buildroot}%{_datadir}/bash-completion/completions/
 install -p -m 644 contrib/completion/bash/%{name} %{buildroot}%{_datadir}/bash-completion/completions/
 
 # install fish completion
-# create, install and own /usr/share/fish/vendor_completions.d until
+# create, install and own %%{_datadir}/fish/vendor_completions.d until
 # upstream fish provides it
 install -dp %{buildroot}%{_datadir}/fish/vendor_completions.d
 install -p -m 644 contrib/completion/fish/%{name}.fish %{buildroot}%{_datadir}/fish/vendor_completions.d
@@ -257,12 +270,12 @@ install -p -m 644 %{SOURCE7} %{buildroot}%{_sysconfdir}/sysconfig/%{name}-networ
 # install SELinux interfaces
 %_format INTERFACES $x.if
 install -d %{buildroot}%{_datadir}/selinux/devel/include/%{moduletype}
-install -p -m 644 %{name}-selinux-%{ds_commit}/$INTERFACES %{buildroot}%{_datadir}/selinux/devel/include/%{moduletype}
+install -p -m 644 %{name}-selinux-%{commit2}/$INTERFACES %{buildroot}%{_datadir}/selinux/devel/include/%{moduletype}
 
 # install policy modules
 %_format MODULES $x.pp.bz2
 install -d %{buildroot}%{_datadir}/selinux/packages
-install -m 0644 %{name}-selinux-%{ds_commit}/$MODULES %{buildroot}%{_datadir}/selinux/packages
+install -m 0644 %{name}-selinux-%{commit2}/$MODULES %{buildroot}%{_datadir}/selinux/packages
 
 %if 0%{?with_unit_test}
 install -d -m 0755 %{buildroot}%{_sharedstatedir}/%{name}-unit-test/
@@ -275,7 +288,7 @@ rm -rf %{buildroot}%{_sharedstatedir}/%{name}-unit-test/contrib/init/openrc/%{na
 %endif
 
 # remove %%{name}-selinux rpm spec file
-rm -rf %{name}-selinux-%{ds_commit}/%{name}-selinux.spec
+rm -rf %{name}-selinux-%{commit2}/%{name}-selinux.spec
 
 # install secrets dir
 install -d -p -m 750 %{buildroot}/%{_datadir}/rhel/secrets
@@ -292,7 +305,7 @@ ln -s %{_sysconfdir}/rhsm/ca/redhat-uep.pem %{buildroot}/%{_sysconfdir}/%{name}/
 install -dp %{buildroot}%{_sysconfdir}/%{name}/
 
 # install %%{name}-storage-setup
-pushd %{name}-storage-setup-%{dss_commit}
+pushd %{name}-storage-setup-%{commit1}
 install -d %{buildroot}%{_bindir}
 install -p -m 755 %{name}-storage-setup.sh %{buildroot}%{_bindir}/%{name}-storage-setup
 install -d %{buildroot}%{_unitdir}
@@ -400,7 +413,7 @@ fi
 %{_sysconfdir}/cron.daily/%{name}-logrotate
 
 %files selinux
-%doc %{name}-selinux-%{ds_commit}/README.md
+%doc %{name}-selinux-%{commit2}/README.md
 %{_datadir}/selinux/*
 
 %changelog
