@@ -21,19 +21,19 @@
 
 # docker
 %global git0 https://github.com/projectatomic/docker
-%global commit0 32fb3222d7751d5add80c6b08108fe1a79746e65
+%global commit0 401dfeed92a99611a6295ae98febb9478730cd7f
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 %global d_dist %(echo %{?dist} | sed 's/./-/')
 
 # d-s-s
 %global git1 https://github.com/projectatomic/docker-storage-setup
-%global commit1 e38b94d537b131a7f24daf36687e86c4274e9b5d
+%global commit1  91d6cfde411d6e6b73cfb829d3c95e6dfd336c8f
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global dss_libdir %{_exec_prefix}/lib/%{name}-storage-setup
 
 # docker-selinux
 %global git2 https://github.com/fedora-cloud/docker-selinux
-%global commit2 441f312c8f1b7fd4fdc21c007bee6091374d3b99
+%global commit2 e2e1f2298f7909c7134b71862f22955499e05a15
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 
 # docker-utils
@@ -64,7 +64,7 @@
 
 Name: %{repo}
 Version: 1.9.1
-Release: 8%{?dist}
+Release: 9%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -417,6 +417,12 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Sat Dec 12 2015 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.9.1-9
+- built docker @projectatomic/rhel7-1.9 commit#401dfee
+- built docker-selinux commit#e2e1f22
+- built d-s-s commit#91d6cfd
+- built docker-utils commit#dab51ac
+
 * Fri Dec 04 2015 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.9.1-8
 - built docker @projectatomic/rhel7-1.9 commit#32fb322
 - built docker-selinux commit#441f312
