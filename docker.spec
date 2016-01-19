@@ -91,7 +91,7 @@ BuildRequires: device-mapper-devel
 BuildRequires: pkgconfig(audit)
 BuildRequires: btrfs-progs-devel
 BuildRequires: sqlite-devel
-BuildRequires: go-md2man
+BuildRequires: go-md2man >= 1.0.4
 BuildRequires: pkgconfig(systemd)
 Requires(post): systemd
 Requires(preun): systemd
