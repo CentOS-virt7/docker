@@ -23,7 +23,6 @@
 %global git0 https://github.com/projectatomic/docker
 %global commit0 2dbcc379d6a5d5a9769cd8756e6be428988368bc
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global d_dist %(echo %{?dist} | sed 's/./-/')
 
 # d-s-s
 %global git1 https://github.com/projectatomic/docker-storage-setup
@@ -183,7 +182,6 @@ export GOPATH=$(pwd)/_build:$(pwd)/vendor:%{gopath}
 
 # build %%{name} binary
 sed -i '/rm -r autogen/d' hack/make.sh
-sed -i 's/$/%{d_dist}/' VERSION
 DOCKER_DEBUG=1 hack/make.sh dynbinary
 cp contrib/syntax/vim/LICENSE LICENSE-vim-syntax
 cp contrib/syntax/vim/README.md README-vim-syntax.md
@@ -211,12 +209,12 @@ install -d %{buildroot}%{_libexecdir}/%{name}
 install -p -m 755 _build/src/%{name}-fetch %{buildroot}%{_bindir}
 install -p -m 755 _build/src/%{name}tarsum %{buildroot}%{_bindir}
 
-for x in bundles/*%{d_dist}; do
+for x in bundles/latest; do
     if ! test -d $x/dynbinary; then
 	continue
     fi
-    install -p -m 755 $x/dynbinary/%{name}-*%{d_dist} %{buildroot}%{_bindir}/%{name}
-    install -p -m 755 $x/dynbinary/%{name}init-*%{d_dist} %{buildroot}%{_libexecdir}/%{name}/%{repo}init
+    install -p -m 755 $x/dynbinary/%{name}-%{version} %{buildroot}%{_bindir}/%{name}
+    install -p -m 755 $x/dynbinary/%{name}init-%{version} %{buildroot}%{_libexecdir}/%{name}/%{repo}init
     break
 done
 
