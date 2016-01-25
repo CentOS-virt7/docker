@@ -63,7 +63,7 @@
 
 Name: %{repo}
 Version: 1.9.1
-Release: 12%{?dist}
+Release: 13%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -415,6 +415,9 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Mon Jan 25 2016 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.9.1-13
+- Resolves: rhbz#1301199 - do not append distro tag to docker version
+
 * Wed Jan 20 2016 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.9.1-12
 - built docker @projectatomic/rhel7-1.9 commit#2dbcc37
 - built docker-selinux commit#e2e1f22
