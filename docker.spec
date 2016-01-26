@@ -21,7 +21,7 @@
 
 # docker
 %global git0 https://github.com/projectatomic/docker
-%global commit0 2dbcc379d6a5d5a9769cd8756e6be428988368bc
+%global commit0 fe0b5901ea159fd358d3f2f185f36628786bfc81
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 
 # d-s-s
@@ -63,7 +63,7 @@
 
 Name: %{repo}
 Version: 1.9.1
-Release: 13%{?dist}
+Release: 14%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -415,6 +415,12 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Tue Jan 26 2016 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.9.1-14
+- built docker @projectatomic/rhel7-1.9 commit#fe0b590
+- built docker-selinux commit#e2e1f22
+- built d-s-s commit#1c2b95b
+- built docker-utils commit#dab51ac
+
 * Mon Jan 25 2016 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.9.1-13
 - Resolves: rhbz#1301199 - do not append distro tag to docker version
 
