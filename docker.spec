@@ -21,7 +21,7 @@
 
 # docker
 %global git0 https://github.com/projectatomic/docker
-%global commit0 fe0b5901ea159fd358d3f2f185f36628786bfc81
+%global commit0 50e78a01724474659f4361019eddf487d8730d44
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 
 # d-s-s
@@ -63,7 +63,7 @@
 
 Name: %{repo}
 Version: 1.9.1
-Release: 14%{?dist}
+Release: 15%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -415,6 +415,13 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Thu Jan 28 2016 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.9.1-15
+- Resolves: rhbz#1302411
+- built docker @projectatomic/rhel7-1.9 commit#50e78a0
+- built docker-selinux commit#e2e1f22
+- built d-s-s commit#1c2b95b
+- built docker-utils commit#dab51ac
+
 * Tue Jan 26 2016 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.9.1-14
 - built docker @projectatomic/rhel7-1.9 commit#fe0b590
 - built docker-selinux commit#e2e1f22
