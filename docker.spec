@@ -85,7 +85,7 @@ Source12: https://%{provider}.%{provider_tld}/fedora-cloud/%{name}-selinux/archi
 # Source13 is the source tarball for %%{name}-storage-setup
 Source13: https://%{provider}.%{provider_tld}/projectatomic/%{name}-storage-setup/archive/%{commit1}/%{name}-storage-setup-%{shortcommit1}.tar.gz
 BuildRequires: glibc-static
-BuildRequires: golang == 1.4.2
+BuildRequires: golang >= 1.4.2
 BuildRequires: device-mapper-devel
 BuildRequires: pkgconfig(audit)
 BuildRequires: btrfs-progs-devel
