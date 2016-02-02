@@ -63,7 +63,7 @@
 
 Name: %{repo}
 Version: 1.9.1
-Release: 15%{?dist}
+Release: 16%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -112,6 +112,9 @@ Requires: xfsprogs
 
 # rhbz#1282898 - obsolete docker-storage-setup
 Obsoletes: %{name}-storage-setup <= 0.0.4-2
+
+# rhbz#1304038
+Conflicts: openshift <= 3.1
 
 %description
 Docker is an open-source engine that automates the deployment of any
@@ -415,6 +418,10 @@ fi
 %{_datadir}/selinux/*
 
 %changelog
+* Tue Feb 02 2016 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.9.1-16
+- Resolves: rhbz#1304038 - conflict with openshift 3.1
+- allow golang >= 1.4.2
+
 * Thu Jan 28 2016 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.9.1-15
 - Resolves: rhbz#1302411
 - built docker @projectatomic/rhel7-1.9 commit#50e78a0
