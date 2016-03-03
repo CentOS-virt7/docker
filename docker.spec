@@ -97,7 +97,7 @@ Requires(preun): systemd
 Requires(postun): systemd
 # need xz to work with ubuntu images
 Requires: xz
-Requires: device-mapper-libs >= 7:1.02.90-1
+Requires: device-mapper-libs >= 7:1.02.97
 Requires: subscription-manager
 Provides: lxc-%{name} = %{version}-%{release}
 Provides: %{name}-io = %{version}-%{release}
