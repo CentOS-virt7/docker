@@ -17,16 +17,16 @@
 %global project docker
 %global repo %{project}
 
-%global import_path %{provider}.%{provider_tld}/%{project}/%{repo}
+%global import_path %{provider}.%{provider_tld}/%{project}/%{name}
 
 # docker
 %global git0 https://github.com/projectatomic/docker
-%global commit0 50e78a01724474659f4361019eddf487d8730d44
+%global commit0 185277d42f7d6c82bd8c2cf4612491abe9d5b224
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 
 # d-s-s
 %global git1 https://github.com/projectatomic/docker-storage-setup
-%global commit1  1c2b95b33b917adb9b681a953f2c6b6b2befae6d
+%global commit1  03dfc7b8f98a2f416c253973e76c22f5377bb12a
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global dss_libdir %{_exec_prefix}/lib/%{name}-storage-setup
 
@@ -37,14 +37,19 @@
 
 # docker-utils
 %global git3 https://github.com/vbatts/docker-utils
-%global commit3 dab51acd1b1a77f7cb01a1b7e2129ec85c846b71
+%global commit3  b851c03ddae1db30a4acf5e4cc5e31b6a671af35
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
+
+# forward-journald
+%global git6 https://github.com/projectatomic/forward-journald
+%global commit6  48b9599ae60d23e9751bebe89fda3de1d290306e
+%global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 
 # %%{name}-selinux stuff (prefix with ds_ for version/release etc.)
 # Some bits borrowed from the openstack-selinux package
 %global selinuxtype targeted
 %global moduletype services
-%global modulenames %{repo}
+%global modulenames %{name}
 
 # Usage: _format var format
 # Expand 'modulenames' into various formats as needed
@@ -52,7 +57,7 @@
 %global _format() export %1=""; for x in %{modulenames}; do %1+=%2; %1+=" "; done;
 
 # Relabel files
-%global relabel_files() %{_sbindir}/restorecon -R %{_bindir}/%{repo} %{_localstatedir}/run/%{repo}.sock %{_localstatedir}/run/%{repo}.pid %{_sysconfdir}/%{repo} %{_localstatedir}/log/%{repo} %{_localstatedir}/log/lxc %{_localstatedir}/lock/lxc %{_unitdir}/%{repo}.service %{_sysconfdir}/%{repo} &> /dev/null || :
+%global relabel_files() %{_sbindir}/restorecon -R %{_bindir}/%{name} %{_localstatedir}/run/%{name}.sock %{_localstatedir}/run/%{name}.pid %{_sysconfdir}/%{name} %{_localstatedir}/log/%{name} %{_localstatedir}/log/lxc %{_localstatedir}/lock/lxc %{_unitdir}/%{name}.service %{_sysconfdir}/%{name} &> /dev/null || :
 
 # Version of SELinux we were using
 %if 0%{?fedora} >= 22
@@ -63,7 +68,7 @@
 
 Name: %{repo}
 Version: 1.9.1
-Release: 16%{?dist}
+Release: 17%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -84,6 +89,7 @@ Source11: https://%{provider}.%{provider_tld}/vbatts/%{name}-utils/archive/%{com
 Source12: https://%{provider}.%{provider_tld}/fedora-cloud/%{name}-selinux/archive/%{commit2}/%{name}-selinux-%{shortcommit2}.tar.gz
 # Source13 is the source tarball for %%{name}-storage-setup
 Source13: https://%{provider}.%{provider_tld}/projectatomic/%{name}-storage-setup/archive/%{commit1}/%{name}-storage-setup-%{shortcommit1}.tar.gz
+Source14: %{git6}/archive/%{commit6}/forward-journald-%{shortcommit6}.tar.gz
 BuildRequires: glibc-static
 BuildRequires: golang >= 1.4.2
 BuildRequires: device-mapper-devel
@@ -114,7 +120,11 @@ Requires: xfsprogs
 Obsoletes: %{name}-storage-setup <= 0.0.4-2
 
 # rhbz#1304038
-Conflicts: openshift <= 3.1
+Conflicts: atomic-openshift < 3.2
+Conflicts: origin < 1.2
+
+# rhbz#1300076
+Requires: %{name}-forward-journald = %{version}-%{release}
 
 %description
 Docker is an open-source engine that automates the deployment of any
@@ -152,10 +162,22 @@ Requires(post): selinux-policy-targeted >= %{selinux_policyver}
 Requires(post): policycoreutils
 Requires(post): policycoreutils-python
 Requires(post): libselinux-utils
-Provides: %{name}-io-selinux
+Provides: %{name}-io-selinux = %{version}-%{release}
 
 %description selinux
 SELinux policy modules for use with Docker.
+
+%package forward-journald
+Summary: Forward stdin to journald
+License: ASL 2.0
+
+%description forward-journald
+Forward stdin to journald
+
+The main driver for this program is < go 1.6rc2 has a issue where 10
+SIGPIPE's on stdout or stderr cause go to generate a non-trappable SIGPIPE
+killing the process. This happens when journald is restarted while docker is
+running under systemd.
 
 %prep
 %setup -qn %{name}-%{commit0}
@@ -170,18 +192,22 @@ tar zxf %{SOURCE11}
 # untar d-s-s
 tar zxf %{SOURCE13}
 
+# untar forward-journald
+tar zxf %{SOURCE14}
+
 %build
 mkdir _build
 
 pushd _build
-  mkdir -p src/%{provider}.%{provider_tld}/{%{name},vbatts}
+  mkdir -p src/%{provider}.%{provider_tld}/{%{name},projectatomic,vbatts}
   ln -s $(dirs +1 -l) src/%{import_path}
   ln -s $(dirs +1 -l)/%{name}-utils-%{commit3} src/%{provider}.%{provider_tld}/vbatts/%{name}-utils
+  ln -s $(dirs +1 -l)/forward-journald-%{commit6} src/%{provider}.%{provider_tld}/projectatomic/forward-journald
 popd
 
 export DOCKER_GITCOMMIT="%{shortcommit0}/%{version}"
 export DOCKER_BUILDTAGS='selinux btrfs_noversion'
-export GOPATH=$(pwd)/_build:$(pwd)/vendor:%{gopath}
+export GOPATH=$(pwd)/_build:$(pwd)/vendor:%{gopath}:$(pwd)/forward-journald-%{commit6}/vendor
 
 # build %%{name} binary
 sed -i '/rm -r autogen/d' hack/make.sh
@@ -198,6 +224,7 @@ pushd $(pwd)/_build/src
 # build %%{name}tarsum and %%{name}-fetch
 go build %{provider}.%{provider_tld}/vbatts/%{name}-utils/cmd/%{name}-fetch
 go build %{provider}.%{provider_tld}/vbatts/%{name}-utils/cmd/%{name}tarsum
+go build %{provider}.%{provider_tld}/projectatomic/forward-journald
 popd
 
 # build %%{name} manpages
@@ -214,10 +241,10 @@ install -p -m 755 _build/src/%{name}tarsum %{buildroot}%{_bindir}
 
 for x in bundles/latest; do
     if ! test -d $x/dynbinary; then
-	continue
+        continue
     fi
     install -p -m 755 $x/dynbinary/%{name}-%{version} %{buildroot}%{_bindir}/%{name}
-    install -p -m 755 $x/dynbinary/%{name}init-%{version} %{buildroot}%{_libexecdir}/%{name}/%{repo}init
+    install -p -m 755 $x/dynbinary/%{name}init-%{version} %{buildroot}%{_libexecdir}/%{name}/%{name}init
     break
 done
 
@@ -320,11 +347,15 @@ install -d %{buildroot}%{_mandir}/man1
 install -p -m 644 %{name}-storage-setup.1 %{buildroot}%{_mandir}/man1
 popd
 
+# install forward-journald
+install -d %{buildroot}%{_bindir}
+install -p -m 700 _build/src/forward-journald %{buildroot}%{_bindir}
+
 %check
 [ ! -w /run/%{name}.sock ] || {
     mkdir test_dir
     pushd test_dir
-    git clone https://%{import_path}
+    git clone https://github.com/projectatomic/docker.git -b rhel7-1.9
     pushd %{name}
     make test
     popd
@@ -346,7 +377,7 @@ if %{_sbindir}/selinuxenabled ; then
     %{_sbindir}/load_policy
     %relabel_files
     if [ $1 -eq 1 ]; then
-    restorecon -R %{_sharedstatedir}/%{repo} &> /dev/null || :
+    restorecon -R %{_sharedstatedir}/%{name} &> /dev/null || :
     fi
 fi
 
@@ -368,8 +399,8 @@ fi
 %files
 %doc AUTHORS CHANGELOG.md CONTRIBUTING.md MAINTAINERS NOTICE
 %doc LICENSE* README*.md
-%{_mandir}/man1/%{name}*
-%{_mandir}/man5/*
+%{_mandir}/man1/%{name}*.1.gz
+%{_mandir}/man5/*.5.gz
 %{_bindir}/%{name}
 %dir %{_datadir}/rhel
 %dir %{_datadir}/rhel/secrets
@@ -417,7 +448,19 @@ fi
 %doc %{name}-selinux-%{commit2}/README.md
 %{_datadir}/selinux/*
 
+%files forward-journald
+%doc forward-journald-%{commit6}/LICENSE
+%doc forward-journald-%{commit6}/README.md
+%{_bindir}/forward-journald
+
 %changelog
+* Tue Mar 08 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-17
+- built docker @projectatomic/rhel7-1.9 commit#185277d
+- built docker-selinux commit#e2e1f22
+- built d-s-s commit#03dfc7b
+- built docker-utils commit#b851c03
+- built forward-journald commit#48b9599
+
 * Tue Feb 02 2016 Lokesh Mandvekar <lsm5@fedoraproject.org> - 1.9.1-16
 - Resolves: rhbz#1304038 - conflict with openshift 3.1
 - allow golang >= 1.4.2
@@ -1254,7 +1297,7 @@ job
 - Fix docker-registry patch to handle search
 
 * Thu Jul 10 2014 Dan Walsh <dwalsh@redhat.com> - 1.0.0-8
-- Re-add %{_datadir}/rhel/secrets/rhel7.repo
+- Re-add %%{_datadir}/rhel/secrets/rhel7.repo
 
 * Wed Jul 9 2014 Dan Walsh <dwalsh@redhat.com> - 1.0.0-7
 - Patch: Save "COMMENT" field in Dockerfile into image content.
