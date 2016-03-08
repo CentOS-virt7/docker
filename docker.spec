@@ -42,7 +42,7 @@
 
 # forward-journald
 %global git6 https://github.com/projectatomic/forward-journald
-%global commit6  48b9599ae60d23e9751bebe89fda3de1d290306e
+%global commit6 77e02a9774a6ca054e41c27f6f319d701f1cbaea
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 
 # %%{name}-selinux stuff (prefix with ds_ for version/release etc.)
@@ -68,7 +68,7 @@
 
 Name: %{repo}
 Version: 1.9.1
-Release: 17%{?dist}
+Release: 18%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -454,6 +454,12 @@ fi
 %{_bindir}/forward-journald
 
 %changelog
+* Tue Mar 08 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-18
+- Resolves: rhbz#1286765 - set TimeoutStartSec=0 in unitfile
+- Resolves: rhbz#1298363, rhbz#1300076, rhbz#1304038, rhbz#1302418
+- built forward-journald commit#77e02a9 - other subpackage commits same as
+previous build
+
 * Tue Mar 08 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-17
 - built docker @projectatomic/rhel7-1.9 commit#185277d
 - built docker-selinux commit#e2e1f22
