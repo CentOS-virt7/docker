@@ -68,7 +68,7 @@
 
 Name: %{repo}
 Version: 1.9.1
-Release: 18%{?dist}
+Release: 19%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -454,6 +454,9 @@ fi
 %{_bindir}/forward-journald
 
 %changelog
+* Wed Mar 09 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-19
+- Resolves: rhbz#1316190 - set NotifyAccess=all in unitfile
+
 * Tue Mar 08 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-18
 - Resolves: rhbz#1286765 - set TimeoutStartSec=0 in unitfile
 - Resolves: rhbz#1298363, rhbz#1300076, rhbz#1304038, rhbz#1302418

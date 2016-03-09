@@ -6,6 +6,7 @@ Wants=docker-storage-setup.service
 
 [Service]
 Type=notify
+NotifyAccess=all
 EnvironmentFile=-/etc/sysconfig/docker
 EnvironmentFile=-/etc/sysconfig/docker-storage
 EnvironmentFile=-/etc/sysconfig/docker-network
