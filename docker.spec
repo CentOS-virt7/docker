@@ -21,7 +21,7 @@
 
 # docker
 %global git0 https://github.com/projectatomic/docker
-%global commit0 185277d42f7d6c82bd8c2cf4612491abe9d5b224
+%global commit0 02759146e0c612e39b2eaab26197394e34a8216d
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 
 # d-s-s
@@ -31,8 +31,8 @@
 %global dss_libdir %{_exec_prefix}/lib/%{name}-storage-setup
 
 # docker-selinux
-%global git2 https://github.com/fedora-cloud/docker-selinux
-%global commit2 e2e1f2298f7909c7134b71862f22955499e05a15
+%global git2 https://github.com/projectatomic/docker-selinux
+%global commit2 69be4dc445fb6f108dfa9c64189871e66041260d
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 
 # docker-utils
@@ -42,7 +42,7 @@
 
 # forward-journald
 %global git6 https://github.com/projectatomic/forward-journald
-%global commit6 77e02a9774a6ca054e41c27f6f319d701f1cbaea
+%global commit6  77e02a9774a6ca054e41c27f6f319d701f1cbaea
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 
 # %%{name}-selinux stuff (prefix with ds_ for version/release etc.)
@@ -68,15 +68,15 @@
 
 Name: %{repo}
 Version: 1.9.1
-Release: 19%{?dist}
+Release: 20%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
 # only x86_64 for now: https://%%{provider}.%%{provider_tld}/%%{name}/%%{name}/issues/136
 ExclusiveArch: x86_64
 # Branch used available at
-# https://%%{provider}.%%{provider_tld}/projectatomic/%%{name}/commits/rhel7-1.8
-Source0: https://%{provider}.%{provider_tld}/projectatomic/%{name}/archive/%{commit0}.tar.gz
+# https://%%{provider}.%%{provider_tld}/projectatomic/%%{name}/commits/rhel7-1.9
+Source0: %{git0}/archive/%{commit0}.tar.gz
 Source1: %{name}.service
 Source3: %{name}.sysconfig
 Source4: %{name}-storage.sysconfig
@@ -84,11 +84,11 @@ Source5: %{name}-logrotate.sh
 Source6: README.%{name}-logrotate
 Source7: %{name}-network.sysconfig
 # Source11 is the source tarball for %%{name}tarsum and %%{name}-fetch
-Source11: https://%{provider}.%{provider_tld}/vbatts/%{name}-utils/archive/%{commit3}.tar.gz
+Source11: %{git3}/archive/%{commit3}.tar.gz
 # Source12 is the source tarball for %%{name}-selinux
-Source12: https://%{provider}.%{provider_tld}/fedora-cloud/%{name}-selinux/archive/%{commit2}/%{name}-selinux-%{shortcommit2}.tar.gz
+Source12: %{git2}/archive/%{commit2}/%{name}-selinux-%{shortcommit2}.tar.gz
 # Source13 is the source tarball for %%{name}-storage-setup
-Source13: https://%{provider}.%{provider_tld}/projectatomic/%{name}-storage-setup/archive/%{commit1}/%{name}-storage-setup-%{shortcommit1}.tar.gz
+Source13: %{git1}/archive/%{commit1}/%{name}-storage-setup-%{shortcommit1}.tar.gz
 Source14: %{git6}/archive/%{commit6}/forward-journald-%{shortcommit6}.tar.gz
 BuildRequires: glibc-static
 BuildRequires: golang >= 1.4.2
@@ -253,6 +253,8 @@ install -d %{buildroot}%{_mandir}/man1
 install -p -m 644 man/man1/* %{buildroot}%{_mandir}/man1
 install -d %{buildroot}%{_mandir}/man5
 install -p -m 644 man/man5/* %{buildroot}%{_mandir}/man5
+install -d %{buildroot}%{_mandir}/man8
+install -p -m 644 man/man8/%{repo}*.8 %{buildroot}%{_mandir}/man8
 
 # install bash completion
 install -d %{buildroot}%{_datadir}/bash-completion/completions/
@@ -401,6 +403,7 @@ fi
 %doc LICENSE* README*.md
 %{_mandir}/man1/%{name}*.1.gz
 %{_mandir}/man5/*.5.gz
+%{_mandir}/man8/*.8.gz
 %{_bindir}/%{name}
 %dir %{_datadir}/rhel
 %dir %{_datadir}/rhel/secrets
@@ -454,6 +457,15 @@ fi
 %{_bindir}/forward-journald
 
 %changelog
+* Mon Mar 14 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-20
+- Resolves: rhbz#1317662 - include manpage for docker run
+- Resolves: rhbz#1317627 - ensure that we join all the cgroups
+- built docker @projectatomic/rhel7-1.9 commit#0275914
+- built docker-selinux commit#69be4dc
+- built d-s-s commit#03dfc7b
+- built docker-utils commit#b851c03
+- built forward-journald commit#77e02a9
+
 * Wed Mar 09 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-19
 - Resolves: rhbz#1316190 - set NotifyAccess=all in unitfile
 
