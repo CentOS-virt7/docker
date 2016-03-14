@@ -68,7 +68,7 @@
 
 Name: %{repo}
 Version: 1.9.1
-Release: 20%{?dist}
+Release: 21%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -457,6 +457,9 @@ fi
 %{_bindir}/forward-journald
 
 %changelog
+* Mon Mar 14 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-21
+- Resolves: rhbz#1317662 - include manpage for docker daemon (corrected)
+
 * Mon Mar 14 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-20
 - Resolves: rhbz#1317662 - include manpage for docker run
 - Resolves: rhbz#1317627 - ensure that we join all the cgroups
