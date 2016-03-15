@@ -21,7 +21,7 @@
 
 # docker
 %global git0 https://github.com/projectatomic/docker
-%global commit0 02759146e0c612e39b2eaab26197394e34a8216d
+%global commit0 f97fb16bd32220f81ccb592399859d18b8767618
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 
 # d-s-s
@@ -68,7 +68,7 @@
 
 Name: %{repo}
 Version: 1.9.1
-Release: 21%{?dist}
+Release: 22%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -457,6 +457,14 @@ fi
 %{_bindir}/forward-journald
 
 %changelog
+* Tue Mar 15 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-22
+- Resolves: rhbz#1317991 - Set Delegate=yes for cgroup transient units
+- built docker @projectatomic/rhel7-1.9 commit#f97fb16
+- built docker-selinux commit#69be4dc
+- built d-s-s commit#03dfc7b
+- built docker-utils commit#b851c03
+- built forward-journald commit#77e02a9
+
 * Mon Mar 14 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-21
 - Resolves: rhbz#1317662 - include manpage for docker daemon (corrected)
 
