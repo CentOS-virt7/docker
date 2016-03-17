@@ -26,13 +26,13 @@
 
 # d-s-s
 %global git1 https://github.com/projectatomic/docker-storage-setup
-%global commit1  03dfc7b8f98a2f416c253973e76c22f5377bb12a
+%global commit1  c6f0553f248be2523a8b1bf345529d9958e1b82e
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global dss_libdir %{_exec_prefix}/lib/%{name}-storage-setup
 
 # docker-selinux
 %global git2 https://github.com/projectatomic/docker-selinux
-%global commit2 69be4dc445fb6f108dfa9c64189871e66041260d
+%global commit2 8718b6204b7e9ffd151230380fe3dc71f58e14d3
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 
 # docker-utils
@@ -68,7 +68,7 @@
 
 Name: %{repo}
 Version: 1.9.1
-Release: 22%{?dist}
+Release: 23%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -457,6 +457,14 @@ fi
 %{_bindir}/forward-journald
 
 %changelog
+* Thu Mar 17 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-23
+- Resolves: rhbz#1318360 - delete bounds checking rules
+- built docker @projectatomic/rhel7-1.9 commit#f97fb16
+- built docker-selinux commit#8718b62
+- built d-s-s commit#c6f0553
+- built docker-utils commit#b851c03
+- built forward-journald commit#77e02a9
+
 * Tue Mar 15 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-22
 - Resolves: rhbz#1317991 - Set Delegate=yes for cgroup transient units
 - built docker @projectatomic/rhel7-1.9 commit#f97fb16
