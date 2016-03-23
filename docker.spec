@@ -21,7 +21,7 @@
 
 # docker
 %global git0 https://github.com/projectatomic/docker
-%global commit0 f97fb16bd32220f81ccb592399859d18b8767618
+%global commit0 78ee77d1ede95dcbc0c021ec722ed85178dc38ed
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 
 # d-s-s
@@ -68,7 +68,7 @@
 
 Name: %{repo}
 Version: 1.9.1
-Release: 23%{?dist}
+Release: 24%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -457,6 +457,13 @@ fi
 %{_bindir}/forward-journald
 
 %changelog
+* Wed Mar 23 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-24
+- built docker @projectatomic/rhel7-1.9 commit#78ee77d
+- built docker-selinux commit#8718b62
+- built d-s-s commit#c6f0553
+- built docker-utils commit#b851c03
+- built forward-journald commit#77e02a9
+
 * Thu Mar 17 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-23
 - Resolves: rhbz#1318360 - delete bounds checking rules
 - built docker @projectatomic/rhel7-1.9 commit#f97fb16
