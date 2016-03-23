@@ -68,7 +68,7 @@
 
 Name: %{repo}
 Version: 1.9.1
-Release: 24%{?dist}
+Release: 25%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -457,6 +457,10 @@ fi
 %{_bindir}/forward-journald
 
 %changelog
+* Wed Mar 23 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-25
+- Resolves: rhbz#1320302 - Backport fix for --cgroup-parent in docker
+- same commits as release -24, only added bug number
+
 * Wed Mar 23 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-24
 - built docker @projectatomic/rhel7-1.9 commit#78ee77d
 - built docker-selinux commit#8718b62
