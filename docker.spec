@@ -21,18 +21,18 @@
 
 # docker
 %global git0 https://github.com/projectatomic/docker
-%global commit0 78ee77d1ede95dcbc0c021ec722ed85178dc38ed
+%global commit0 b795b73f3d717835fe7412ef727bc3da98a5a8ab
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 
 # d-s-s
 %global git1 https://github.com/projectatomic/docker-storage-setup
-%global commit1  c6f0553f248be2523a8b1bf345529d9958e1b82e
+%global commit1  346018ed6cf94719298e3fba9c848790e64d314e
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global dss_libdir %{_exec_prefix}/lib/%{name}-storage-setup
 
 # docker-selinux
 %global git2 https://github.com/projectatomic/docker-selinux
-%global commit2 8718b6204b7e9ffd151230380fe3dc71f58e14d3
+%global commit2 e72d8d7a3006031a1060b3b4ada7c7f1a942d817
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 
 # docker-utils
@@ -68,7 +68,7 @@
 
 Name: %{repo}
 Version: 1.9.1
-Release: 25%{?dist}
+Release: 26%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -457,6 +457,15 @@ fi
 %{_bindir}/forward-journald
 
 %changelog
+* Mon Apr 04 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-26
+- Resolves: rhbz#1323819 - allow images with VOLUME(s) when binds destination
+override volume definition
+- built docker @projectatomic/rhel7-1.9 commit#b795b73
+- built docker-selinux commit#e72d8d7
+- built d-s-s commit#346018e
+- built docker-utils commit#b851c03
+- built forward-journald commit#77e02a9
+
 * Wed Mar 23 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-25
 - Resolves: rhbz#1320302 - Backport fix for --cgroup-parent in docker
 - same commits as release -24, only added bug number
