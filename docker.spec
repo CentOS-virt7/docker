@@ -17,7 +17,7 @@
 %global project docker
 %global repo %{project}
 
-%global import_path %{provider}.%{provider_tld}/%{project}/%{name}
+%global import_path %{provider}.%{provider_tld}/%{project}/%{repo}
 
 # docker
 %global git0 https://github.com/projectatomic/docker
@@ -26,13 +26,13 @@
 
 # d-s-s
 %global git1 https://github.com/projectatomic/docker-storage-setup
-%global commit1  346018ed6cf94719298e3fba9c848790e64d314e
+%global commit1  ac50cee05cec521a0b23ebe16d0f5376e4b6a8cc
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global dss_libdir %{_exec_prefix}/lib/%{name}-storage-setup
 
 # docker-selinux
 %global git2 https://github.com/projectatomic/docker-selinux
-%global commit2 e72d8d7a3006031a1060b3b4ada7c7f1a942d817
+%global commit2 39c092ce65cc68c86197d1e2f1a7d64abaf3203e
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 
 # docker-utils
@@ -68,7 +68,7 @@
 
 Name: %{repo}
 Version: 1.9.1
-Release: 26%{?dist}
+Release: 28%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -126,6 +126,10 @@ Conflicts: origin < 1.2
 # rhbz#1300076
 Requires: %{name}-forward-journald = %{version}-%{release}
 
+# split %%{name}-utils into its own subpackage and make main package depend
+# on it, so that %%{name}-latest can reuse it
+Requires: %{name}-utils = %{version}-%{release}
+
 %description
 Docker is an open-source engine that automates the deployment of any
 application as a lightweight, portable, self-sufficient container that will
@@ -135,6 +139,12 @@ Docker containers can encapsulate any payload, and will run consistently on
 and between virtually any server. The same container that a developer builds
 and tests on a laptop will run at scale, in production*, on VMs, bare-metal
 servers, OpenStack clusters, public instances, or combinations of the above.
+
+%package utils
+Summary: External utilities for the %{repo} experience
+
+%description utils
+%{summary}
 
 %if 0%{?with_unit_test}
 %package unit-test
@@ -244,7 +254,6 @@ for x in bundles/latest; do
         continue
     fi
     install -p -m 755 $x/dynbinary/%{name}-%{version} %{buildroot}%{_bindir}/%{name}
-    install -p -m 755 $x/dynbinary/%{name}init-%{version} %{buildroot}%{_libexecdir}/%{name}/%{name}init
     break
 done
 
@@ -401,20 +410,17 @@ fi
 %files
 %doc AUTHORS CHANGELOG.md CONTRIBUTING.md MAINTAINERS NOTICE
 %doc LICENSE* README*.md
+%config(noreplace) %{_sysconfdir}/sysconfig/%{name}*
+%dir %{_sysconfdir}/%{name}
+%{_sysconfdir}/%{name}/*
 %{_mandir}/man1/%{name}*.1.gz
 %{_mandir}/man5/*.5.gz
 %{_mandir}/man8/*.8.gz
-%{_bindir}/%{name}
+%{_bindir}/%{name}*
 %dir %{_datadir}/rhel
-%dir %{_datadir}/rhel/secrets
-%{_datadir}/rhel/secrets/etc-pki-entitlement
-%{_datadir}/rhel/secrets/rhel7.repo
-%{_datadir}/rhel/secrets/rhsm
+%{_datadir}/rhel/*
 %{_libexecdir}/%{name}
-%{_unitdir}/%{name}.service
-%config(noreplace) %{_sysconfdir}/sysconfig/%{name}
-%config(noreplace) %{_sysconfdir}/sysconfig/%{name}-storage
-%config(noreplace) %{_sysconfdir}/sysconfig/%{name}-network
+%{_unitdir}/%{name}*
 %{_datadir}/bash-completion/completions/%{name}
 %dir %{_sharedstatedir}/%{name}
 %{_udevrulesdir}/80-%{name}.rules
@@ -428,15 +434,8 @@ fi
 %{_datadir}/vim/vimfiles/syntax/%{name}file.vim
 %dir %{_datadir}/zsh/site-functions
 %{_datadir}/zsh/site-functions/_%{name}
-%{_sysconfdir}/%{name}
-%{_bindir}/%{name}-fetch
-%{_bindir}/%{name}tarsum
-# %%{name}-storage-setup specific
-%config(noreplace) %{_sysconfdir}/sysconfig/%{name}-storage-setup
-%{_unitdir}/%{name}-storage-setup.service
-%{_bindir}/%{name}-storage-setup
-%{dss_libdir}/%{name}-storage-setup
-%{dss_libdir}/libdss.sh
+%dir %{dss_libdir}
+%{dss_libdir}/*
 
 %if 0%{?with_unit_test}
 %files unit-test
@@ -456,7 +455,25 @@ fi
 %doc forward-journald-%{commit6}/README.md
 %{_bindir}/forward-journald
 
+%files utils
+%{_bindir}/%{name}-fetch
+%{_bindir}/%{name}tarsum
+
 %changelog
+* Sun Apr 10 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-28
+- built docker @projectatomic/rhel7-1.9 commit#b795b73
+- built docker-selinux commit#39c092c
+- built d-s-s commit#ac50cee
+- built docker-utils commit#b851c03
+- built v1.10-migrator commit#c417a6a
+- built forward-journald commit#77e02a9
+
+* Sun Apr 10 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-27
+- split docker-utils into a subpackage so docker-latest can reuse it.
+- docker requires docker-utils at runtime
+- do not ship dockerinit
+- spec cleanups
+
 * Mon Apr 04 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-26
 - Resolves: rhbz#1323819 - allow images with VOLUME(s) when binds destination
 override volume definition
