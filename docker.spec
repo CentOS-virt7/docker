@@ -21,12 +21,12 @@
 
 # docker
 %global git0 https://github.com/projectatomic/docker
-%global commit0 b795b73f3d717835fe7412ef727bc3da98a5a8ab
+%global commit0 4b1ad2580c9a09cf0659320c98dae8909e648ce4
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 
 # d-s-s
 %global git1 https://github.com/projectatomic/docker-storage-setup
-%global commit1  ac50cee05cec521a0b23ebe16d0f5376e4b6a8cc
+%global commit1  04a3847d214a906c97b0f172f14cf6824f1d40b4
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global dss_libdir %{_exec_prefix}/lib/%{name}-storage-setup
 
@@ -34,11 +34,6 @@
 %global git2 https://github.com/projectatomic/docker-selinux
 %global commit2 39c092ce65cc68c86197d1e2f1a7d64abaf3203e
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
-
-# docker-utils
-%global git3 https://github.com/vbatts/docker-utils
-%global commit3  b851c03ddae1db30a4acf5e4cc5e31b6a671af35
-%global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 
 # forward-journald
 %global git6 https://github.com/projectatomic/forward-journald
@@ -68,7 +63,7 @@
 
 Name: %{repo}
 Version: 1.9.1
-Release: 28%{?dist}
+Release: 29%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -83,8 +78,6 @@ Source4: %{name}-storage.sysconfig
 Source5: %{name}-logrotate.sh
 Source6: README.%{name}-logrotate
 Source7: %{name}-network.sysconfig
-# Source11 is the source tarball for %%{name}tarsum and %%{name}-fetch
-Source11: %{git3}/archive/%{commit3}.tar.gz
 # Source12 is the source tarball for %%{name}-selinux
 Source12: %{git2}/archive/%{commit2}/%{name}-selinux-%{shortcommit2}.tar.gz
 # Source13 is the source tarball for %%{name}-storage-setup
@@ -119,16 +112,8 @@ Requires: xfsprogs
 # rhbz#1282898 - obsolete docker-storage-setup
 Obsoletes: %{name}-storage-setup <= 0.0.4-2
 
-# rhbz#1304038
-Conflicts: atomic-openshift < 3.2
-Conflicts: origin < 1.2
-
 # rhbz#1300076
 Requires: %{name}-forward-journald = %{version}-%{release}
-
-# split %%{name}-utils into its own subpackage and make main package depend
-# on it, so that %%{name}-latest can reuse it
-Requires: %{name}-utils = %{version}-%{release}
 
 %description
 Docker is an open-source engine that automates the deployment of any
@@ -196,9 +181,6 @@ cp %{SOURCE6} .
 # unpack %%{name}-selinux
 tar zxf %{SOURCE12}
 
-# untar %%{name}-utils tarball
-tar zxf %{SOURCE11}
-
 # untar d-s-s
 tar zxf %{SOURCE13}
 
@@ -209,19 +191,18 @@ tar zxf %{SOURCE14}
 mkdir _build
 
 pushd _build
-  mkdir -p src/%{provider}.%{provider_tld}/{%{name},projectatomic,vbatts}
+  mkdir -p src/%{provider}.%{provider_tld}/{%{name},projectatomic}
   ln -s $(dirs +1 -l) src/%{import_path}
-  ln -s $(dirs +1 -l)/%{name}-utils-%{commit3} src/%{provider}.%{provider_tld}/vbatts/%{name}-utils
   ln -s $(dirs +1 -l)/forward-journald-%{commit6} src/%{provider}.%{provider_tld}/projectatomic/forward-journald
 popd
 
 export DOCKER_GITCOMMIT="%{shortcommit0}/%{version}"
-export DOCKER_BUILDTAGS='selinux btrfs_noversion'
+export DOCKER_BUILDTAGS='selinux'
 export GOPATH=$(pwd)/_build:$(pwd)/vendor:%{gopath}:$(pwd)/forward-journald-%{commit6}/vendor
 
 # build %%{name} binary
-sed -i '/rm -r autogen/d' hack/make.sh
-DOCKER_DEBUG=1 hack/make.sh dynbinary
+sed -i '/LDFLAGS_STATIC/d' hack/make/.dockerinit
+IAMSTATIC=false DOCKER_DEBUG=1 hack/make.sh dynbinary
 cp contrib/syntax/vim/LICENSE LICENSE-vim-syntax
 cp contrib/syntax/vim/README.md README-vim-syntax.md
 
@@ -231,9 +212,6 @@ make SHARE="%{_datadir}" TARGETS="%{modulenames}"
 popd
 
 pushd $(pwd)/_build/src
-# build %%{name}tarsum and %%{name}-fetch
-go build %{provider}.%{provider_tld}/vbatts/%{name}-utils/cmd/%{name}-fetch
-go build %{provider}.%{provider_tld}/vbatts/%{name}-utils/cmd/%{name}tarsum
 go build %{provider}.%{provider_tld}/projectatomic/forward-journald
 popd
 
@@ -244,10 +222,6 @@ man/md2man-all.sh
 # install binary
 install -d %{buildroot}%{_bindir}
 install -d %{buildroot}%{_libexecdir}/%{name}
-
-# install %%{name}tarsum and %%{name}-fetch
-install -p -m 755 _build/src/%{name}-fetch %{buildroot}%{_bindir}
-install -p -m 755 _build/src/%{name}tarsum %{buildroot}%{_bindir}
 
 for x in bundles/latest; do
     if ! test -d $x/dynbinary; then
@@ -407,9 +381,12 @@ if %{_sbindir}/selinuxenabled ; then
 fi
 fi
 
+#define license tag if not already defined
+%{!?_licensedir:%global license %doc}
+
 %files
-%doc AUTHORS CHANGELOG.md CONTRIBUTING.md MAINTAINERS NOTICE
-%doc LICENSE* README*.md
+%license LICENSE*
+%doc AUTHORS CHANGELOG.md CONTRIBUTING.md MAINTAINERS NOTICE README*.md
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}*
 %dir %{_sysconfdir}/%{name}
 %{_sysconfdir}/%{name}/*
@@ -451,15 +428,17 @@ fi
 %{_datadir}/selinux/*
 
 %files forward-journald
-%doc forward-journald-%{commit6}/LICENSE
+%license forward-journald-%{commit6}/LICENSE
 %doc forward-journald-%{commit6}/README.md
 %{_bindir}/forward-journald
 
-%files utils
-%{_bindir}/%{name}-fetch
-%{_bindir}/%{name}tarsum
-
 %changelog
+* Mon Apr 18 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-29
+- built docker @projectatomic/rhel7-1.9 commit#4b1ad25
+- built docker-selinux commit#39c092c
+- built d-s-s commit#04a3847
+- built forward-journald commit#77e02a9
+
 * Sun Apr 10 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-28
 - built docker @projectatomic/rhel7-1.9 commit#b795b73
 - built docker-selinux commit#39c092c

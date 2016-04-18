@@ -23,7 +23,7 @@ LimitNPROC=1048576
 LimitCORE=infinity
 MountFlags=slave
 TimeoutStartSec=0
-Restart=on-failure
+Restart=on-abnormal
 StandardOutput=null
 StandardError=null
 
