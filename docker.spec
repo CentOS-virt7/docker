@@ -21,7 +21,7 @@
 
 # docker
 %global git0 https://github.com/projectatomic/docker
-%global commit0 4b1ad2580c9a09cf0659320c98dae8909e648ce4
+%global commit0 a1c9058c3e8141de730c6515f8f9f121598de080
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 
 # d-s-s
@@ -124,12 +124,6 @@ Docker containers can encapsulate any payload, and will run consistently on
 and between virtually any server. The same container that a developer builds
 and tests on a laptop will run at scale, in production*, on VMs, bare-metal
 servers, OpenStack clusters, public instances, or combinations of the above.
-
-%package utils
-Summary: External utilities for the %{repo} experience
-
-%description utils
-%{summary}
 
 %if 0%{?with_unit_test}
 %package unit-test
@@ -434,10 +428,16 @@ fi
 
 %changelog
 * Mon Apr 18 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-29
-- built docker @projectatomic/rhel7-1.9 commit#4b1ad25
+- Resolves: #1283718, #1277982, #1126555 #1134424, #1186066,
+    #1228777, #1255060, #1256832, #1261565, #1264562, #1266307,
+    #1266525 #1266902 #1268059 #1272143 #1277982 #1283718 #1300033,
+    #1303110 #1309739 #1316651 #1319783
+- remove conflicts with atomic-openshift and origin
+- built docker @projectatomic/rhel7-1.9 commit#a1c9058
 - built docker-selinux commit#39c092c
 - built d-s-s commit#04a3847
 - built forward-journald commit#77e02a9
+- do not even build dockerinit
 
 * Sun Apr 10 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-28
 - built docker @projectatomic/rhel7-1.9 commit#b795b73
