@@ -63,7 +63,7 @@
 
 Name: %{repo}
 Version: 1.9.1
-Release: 29%{?dist}
+Release: 30%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -427,6 +427,13 @@ fi
 %{_bindir}/forward-journald
 
 %changelog
+* Mon Apr 18 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-30
+- Bump release - previous git log had 2 docker commit values
+- built docker @projectatomic/rhel7-1.9 commit#a1c9058
+- built docker-selinux commit#39c092c
+- built d-s-s commit#04a3847
+- built forward-journald commit#77e02a9
+
 * Mon Apr 18 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-29
 - Resolves: #1283718, #1277982, #1126555 #1134424, #1186066,
     #1228777, #1255060, #1256832, #1261565, #1264562, #1266307,
