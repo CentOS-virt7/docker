@@ -20,8 +20,8 @@
 %global import_path %{provider}.%{provider_tld}/%{project}/%{repo}
 
 # docker
-%global git0 https://github.com/projectatomic/docker
-%global commit0 a1c9058c3e8141de730c6515f8f9f121598de080
+%global git0 https://github.com/runcom/docker
+%global commit0 9a6e5e149d4acfff484ae0eb68334012370cbfca
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 
 # d-s-s
@@ -63,7 +63,7 @@
 
 Name: %{repo}
 Version: 1.9.1
-Release: 30%{?dist}
+Release: 31%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -427,6 +427,9 @@ fi
 %{_bindir}/forward-journald
 
 %changelog
+* Thu Apr 21 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-31
+- test-fix for https://github.com/openshift/openshift-ansible/issues/1779
+
 * Mon Apr 18 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-30
 - Bump release - previous git log had 2 docker commit values
 - built docker @projectatomic/rhel7-1.9 commit#a1c9058
