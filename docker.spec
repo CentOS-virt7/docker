@@ -21,7 +21,7 @@
 
 # docker
 %global git0 https://github.com/projectatomic/docker
-%global commit0 7fd4fb01be119f611719c6d3e41d1ac57cc731cd
+%global commit0 639e05551dc78c9ef22e814a1908685668c357ad
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 
 # d-s-s
@@ -428,9 +428,10 @@ fi
 
 %changelog
 * Thu Apr 21 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-32
-- same as previous build, update upstream URL
-- Resolves: rhbz#1329423
-- built docker @projectatomic/rhel7-1.9 commit#7fd4fb0
+- update upstream URL
+- Resolves: #1329423 - skip /dev setup in container when it's bind mounted in
+- Resolves: #1329452 - CVE-2016-3697
+- built docker @projectatomic/rhel7-1.9 commit#639e055
 - built docker-selinux commit#39c092c
 - built d-s-s commit#04a3847
 - built forward-journald commit#77e02a9
