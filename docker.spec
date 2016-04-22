@@ -20,8 +20,8 @@
 %global import_path %{provider}.%{provider_tld}/%{project}/%{repo}
 
 # docker
-%global git0 https://github.com/runcom/docker
-%global commit0 9a6e5e149d4acfff484ae0eb68334012370cbfca
+%global git0 https://github.com/projectatomic/docker
+%global commit0 7fd4fb01be119f611719c6d3e41d1ac57cc731cd
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 
 # d-s-s
@@ -63,7 +63,7 @@
 
 Name: %{repo}
 Version: 1.9.1
-Release: 31%{?dist}
+Release: 32%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -427,6 +427,14 @@ fi
 %{_bindir}/forward-journald
 
 %changelog
+* Thu Apr 21 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-32
+- same as previous build, update upstream URL
+- Resolves: rhbz#1329423
+- built docker @projectatomic/rhel7-1.9 commit#7fd4fb0
+- built docker-selinux commit#39c092c
+- built d-s-s commit#04a3847
+- built forward-journald commit#77e02a9
+
 * Thu Apr 21 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-31
 - test-fix for https://github.com/openshift/openshift-ansible/issues/1779
 
