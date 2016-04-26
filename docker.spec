@@ -63,7 +63,7 @@
 
 Name: %{repo}
 Version: 1.9.1
-Release: 33%{?dist}
+Release: 34%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -450,6 +450,7 @@ fi
 
 %changelog
 * Tue Apr 26 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-34
+- Resolves: #1330595
 - use correct exec path for docker-current in unitfile
 
 * Mon Apr 25 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-33
