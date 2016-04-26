@@ -63,7 +63,7 @@
 
 Name: %{repo}
 Version: 1.9.1
-Release: 32%{?dist}
+Release: 33%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -83,6 +83,8 @@ Source12: %{git2}/archive/%{commit2}/%{name}-selinux-%{shortcommit2}.tar.gz
 # Source13 is the source tarball for %%{name}-storage-setup
 Source13: %{git1}/archive/%{commit1}/%{name}-storage-setup-%{shortcommit1}.tar.gz
 Source14: %{git6}/archive/%{commit6}/forward-journald-%{shortcommit6}.tar.gz
+Source15: %{name}-common.sh
+Source16: README-%{name}-common
 BuildRequires: glibc-static
 BuildRequires: golang >= 1.4.2
 BuildRequires: device-mapper-devel
@@ -91,6 +93,7 @@ BuildRequires: btrfs-progs-devel
 BuildRequires: sqlite-devel
 BuildRequires: go-md2man >= 1.0.4
 BuildRequires: pkgconfig(systemd)
+Requires: %{name}-common
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
@@ -168,6 +171,14 @@ SIGPIPE's on stdout or stderr cause go to generate a non-trappable SIGPIPE
 killing the process. This happens when journald is restarted while docker is
 running under systemd.
 
+%package common
+Summary: Common files for docker and docker-latest
+
+%description common
+This package contains the common files %{_bindir}/%{name} which will point to
+%{_bindir}/%{name}-current or %{_bindir}/%{name}-latest configurable via
+%{_sysconfdir}/sysconfig/%{repo}
+
 %prep
 %setup -qn %{name}-%{commit0}
 cp %{SOURCE6} .
@@ -180,6 +191,8 @@ tar zxf %{SOURCE13}
 
 # untar forward-journald
 tar zxf %{SOURCE14}
+
+cp %{SOURCE16} .
 
 %build
 mkdir _build
@@ -221,7 +234,7 @@ for x in bundles/latest; do
     if ! test -d $x/dynbinary; then
         continue
     fi
-    install -p -m 755 $x/dynbinary/%{name}-%{version} %{buildroot}%{_bindir}/%{name}
+    install -p -m 755 $x/dynbinary/%{name}-%{version} %{buildroot}%{_bindir}/%{name}-current
     break
 done
 
@@ -330,6 +343,10 @@ popd
 install -d %{buildroot}%{_bindir}
 install -p -m 700 _build/src/forward-journald %{buildroot}%{_bindir}
 
+# install %%{_bindir}/%{name}
+install -d %{buildroot}%{_bindir}
+install -p -m 755 %{SOURCE15} %{buildroot}%{_bindir}/%{name}
+
 %check
 [ ! -w /run/%{name}.sock ] || {
     mkdir test_dir
@@ -381,13 +398,13 @@ fi
 %files
 %license LICENSE*
 %doc AUTHORS CHANGELOG.md CONTRIBUTING.md MAINTAINERS NOTICE README*.md
-%config(noreplace) %{_sysconfdir}/sysconfig/%{name}*
+%config(noreplace) %{_sysconfdir}/sysconfig/%{name}-*
 %dir %{_sysconfdir}/%{name}
 %{_sysconfdir}/%{name}/*
 %{_mandir}/man1/%{name}*.1.gz
 %{_mandir}/man5/*.5.gz
 %{_mandir}/man8/*.8.gz
-%{_bindir}/%{name}*
+%{_bindir}/%{name}-*
 %dir %{_datadir}/rhel
 %{_datadir}/rhel/*
 %{_libexecdir}/%{name}
@@ -426,7 +443,16 @@ fi
 %doc forward-journald-%{commit6}/README.md
 %{_bindir}/forward-journald
 
+%files common
+%doc README-%{name}-common
+%{_bindir}/%{name}
+%config(noreplace) %{_sysconfdir}/sysconfig/%{name}
+
 %changelog
+* Mon Apr 25 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-33
+- Resolves: #1328219 - include docker-common subpackage
+- docker-common is a runtime requirement for both docker and docker-latest
+
 * Thu Apr 21 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-32
 - update upstream URL
 - Resolves: #1329423 - skip /dev setup in container when it's bind mounted in
