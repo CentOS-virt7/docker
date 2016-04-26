@@ -449,6 +449,9 @@ fi
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
 
 %changelog
+* Tue Apr 26 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-34
+- use correct exec path for docker-current in unitfile
+
 * Mon Apr 25 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-33
 - Resolves: #1328219 - include docker-common subpackage
 - docker-common is a runtime requirement for both docker and docker-latest
