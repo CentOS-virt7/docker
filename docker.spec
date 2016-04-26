@@ -63,7 +63,7 @@
 
 Name: %{repo}
 Version: 1.9.1
-Release: 35%{?dist}
+Release: 36%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -449,6 +449,9 @@ fi
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
 
 %changelog
+* Tue Apr 26 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-36
+- Resolves: #1330622 - don't allow $DOCKERBINARY==/usr/bin/docker
+
 * Tue Apr 26 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-35
 - #1330595 fix From: Ed Santiago <santiago@redhat.com>
 
