@@ -32,7 +32,7 @@
 
 # docker-selinux
 %global git2 https://github.com/projectatomic/docker-selinux
-%global commit2 39c092ce65cc68c86197d1e2f1a7d64abaf3203e
+%global commit2 501ea4c702fc813d5ba56795752b561cdd6da981
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 
 # forward-journald
@@ -63,7 +63,7 @@
 
 Name: %{repo}
 Version: 1.9.1
-Release: 37%{?dist}
+Release: 38%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -449,6 +449,10 @@ fi
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
 
 %changelog
+* Wed Apr 27 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-38
+- Resolves: #1331007 - fix selinux labels for new docker execs names
+- built docker-selinux commit#501ea4c
+
 * Tue Apr 26 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-37
 - Resolves: #1330622 - /usr/bin/docker handles docker/docker-latest
 conditions
