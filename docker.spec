@@ -26,7 +26,7 @@
 
 # d-s-s
 %global git1 https://github.com/projectatomic/docker-storage-setup
-%global commit1  04a3847d214a906c97b0f172f14cf6824f1d40b4
+%global commit1 df2af9439577cedc2c502512d887c8df10a33cbf
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global dss_libdir %{_exec_prefix}/lib/%{name}-storage-setup
 
@@ -63,7 +63,7 @@
 
 Name: %{repo}
 Version: 1.9.1
-Release: 36%{?dist}
+Release: 37%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -449,6 +449,13 @@ fi
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
 
 %changelog
+* Tue Apr 26 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-37
+- Resolves: #1330622 - /usr/bin/docker handles docker/docker-latest
+conditions
+- Resolves: #1330290 - d-s-s: do not pass devices which have 'creation of
+device node' in progress
+- built d-s-s commit#df2af94
+
 * Tue Apr 26 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-36
 - Resolves: #1330622 - don't allow $DOCKERBINARY==/usr/bin/docker
 
