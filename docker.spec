@@ -21,7 +21,7 @@
 
 # docker
 %global git0 https://github.com/projectatomic/docker
-%global commit0 639e05551dc78c9ef22e814a1908685668c357ad
+%global commit0 ab77bdeb3e2c012f3b533c35205c7a322d742f94
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 
 # d-s-s
@@ -32,7 +32,7 @@
 
 # docker-selinux
 %global git2 https://github.com/projectatomic/docker-selinux
-%global commit2 501ea4c702fc813d5ba56795752b561cdd6da981
+%global commit2 032bcda7b1eb6d9d75d3c0ce64d9d35cdb9c7b85
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 
 # forward-journald
@@ -63,7 +63,7 @@
 
 Name: %{repo}
 Version: 1.9.1
-Release: 38%{?dist}
+Release: 39%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -449,6 +449,11 @@ fi
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
 
 %changelog
+* Tue May 03 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-39
+- Resolves: #1332016, #1329743
+- built docker projectatomic/rhel7-1.9 commit ab77bde
+- built docker-selinux origin/rhel-1.10 commit 032bcda
+
 * Wed Apr 27 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-38
 - Resolves: #1331007 - fix selinux labels for new docker execs names
 - built docker-selinux commit#501ea4c
