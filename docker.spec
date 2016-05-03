@@ -63,7 +63,7 @@
 
 Name: %{repo}
 Version: 1.9.1
-Release: 39%{?dist}
+Release: 40%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{import_path}
@@ -93,7 +93,7 @@ BuildRequires: btrfs-progs-devel
 BuildRequires: sqlite-devel
 BuildRequires: go-md2man >= 1.0.4
 BuildRequires: pkgconfig(systemd)
-Requires: %{name}-common
+Requires: %{name}-common = %{version}-%{release}
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
@@ -449,6 +449,10 @@ fi
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
 
 %changelog
+* Tue May 03 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-40
+- Resolves: #1332592 - requires docker-common = version-release
+- From: Ed Santiago <santiago@redhat.com>
+
 * Tue May 03 2016 Lokesh Mandvekar <lsm5@redhat.com> - 1.9.1-39
 - Resolves: #1332016, #1329743
 - built docker projectatomic/rhel7-1.9 commit ab77bde
