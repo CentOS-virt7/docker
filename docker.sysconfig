@@ -2,13 +2,15 @@
 
 # Modify these options if you want to change the way the docker daemon runs
 OPTIONS='--selinux-enabled --log-driver=journald'
-DOCKER_CERT_PATH=/etc/docker
+if [ -z "${DOCKER_CERT_PATH}" ]; then
+    DOCKER_CERT_PATH=/etc/docker
+fi
 
 # If you want to add your own registry to be used for docker search and docker
 # pull use the ADD_REGISTRY option to list a set of registries, each prepended
 # with --add-registry flag. The first registry added will be the first registry
 # searched.
-# ADD_REGISTRY='--add-registry'
+ADD_REGISTRY='--add-registry registry.access.redhat.com'
 
 # If you want to block registries from being used, uncomment the BLOCK_REGISTRY
 # option and give it a set of registries, each prepended with --block-registry

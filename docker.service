@@ -3,7 +3,7 @@ Description=Docker Application Container Engine
 Documentation=http://docs.docker.com
 After=network.target docker-containerd.service
 Wants=docker-storage-setup.service
-Requires=docker-containerd.service
+Requires=docker-containerd.service rhel-push-plugin.socket
 
 [Service]
 Type=notify
@@ -14,6 +14,7 @@ Environment=GOTRACEBACK=crash
 ExecStart=/usr/bin/dockerd-current \
           --add-runtime oci=/usr/libexec/docker/docker-runc-current \
           --default-runtime=oci \
+          --authorization-plugin=rhel-push-plugin
           --containerd /run/containerd.sock \
           --exec-opt native.cgroupdriver=systemd \
           --userland-proxy-path=/usr/libexec/docker/docker-proxy-current \

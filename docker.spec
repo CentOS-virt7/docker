@@ -68,6 +68,16 @@
 %global commit7 b818e749726ba18e430bb825396c85408dfaf2a4
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 
+# rhel-push-plugin
+%global git8 https://github.com/projectatomic/rhel-push-plugin
+%global commit8 eb9e6beb8767a4a102e011c2d6e70394629dfa91
+%global shortcommit8 %(c=%{commit5}; echo ${c:0:7})
+
+# docker-lvm-plugin
+%global git9 https://github.com/projectatomic/%{repo}-lvm-plugin
+%global commit9 bc03b5354aaa70ee14c482c4a861be08630bb755
+%global shortcommit9 %(c=%{commit6}; echo ${c:0:7})
+
 # docker-selinux stuff (prefix with ds_ for version/release etc.)
 # Some bits borrowed from the openstack-selinux package
 %global selinuxtype targeted
@@ -94,7 +104,7 @@ Name: %{repo}
 Epoch: 2
 %endif
 Version: 1.12.3
-Release: 20.git%{shortcommit0}%{?dist}
+Release: 21.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -118,6 +128,8 @@ Source14: %{repo}-containerd.service
 Source15: v1.10-migrator-helper
 Source16: %{repo}-common.sh
 Source17: README-%{repo}-common
+Source18: %{git8}/archive/%{commit8}/rhel-push-plugin-%{shortcommit8}.tar.gz
+Source19: %{git9}/archive/%{commit9}/%{repo}-lvm-plugin-%{shortcommit9}.tar.gz
 
 %if 0%{?with_debug}
 # Build with debug
@@ -487,6 +499,28 @@ Provides: %{repo}-io-rhsubscription = %{version}-%{release}
 %description rhsubscription
 In order to work with RHEL containers, the host (RHEL, or other) must export susbcription information to the container.
 
+%package rhel-push-plugin
+License: GPLv2
+Summary: Avoids pushing a RHEL-based image to docker.io registry
+
+%description rhel-push-plugin
+In order to use this plugin you must be running at least Docker 1.10 which
+has support for authorization plugins.
+
+This plugin avoids any RHEL based image to be pushed to the default docker.io
+registry preventing users to violate the RH subscription agreement.
+
+%package lvm-plugin
+License: LGPLv3
+Summary: Docker volume driver for lvm volumes
+Requires: %{name} = %{epoch}:%{version}-%{release}
+
+%description lvm-plugin
+Docker Volume Driver for lvm volumes.
+
+This plugin can be used to create lvm volumes of specified size, which can
+then be bind mounted into the container using `docker run` command.
+
 %prep
 %setup -q -n %{repo}-%{commit0}
 
@@ -517,6 +551,16 @@ cp %{SOURCE16} .
 # common exec README
 cp %{SOURCE17} .
 
+# untar rhel-push-plugin
+tar zxf %{SOURCE18}
+
+# untar lvm-plugin
+tar zxf %{SOURCE19}
+pushd %{repo}-lvm-plugin-%{commit9}/vendor
+mkdir src
+mv g* src/
+popd
+
 %build
 # set up temporary build gopath, and put our directory there
 mkdir _build
@@ -525,12 +569,24 @@ mkdir -p src/%{provider}.%{provider_tld}/{%{repo},projectatomic}
 ln -s $(dirs +1 -l) src/%{import_path}
 ln -s $(dirs +1 -l)/%{repo}-novolume-plugin-%{commit4} src/%{provider}.%{provider_tld}/projectatomic/%{repo}-novolume-plugin
 ln -s $(dirs +1 -l)/containerd-%{commit7} src/%{provider}.%{provider_tld}/docker/containerd
+ln -s $(dirs +1 -l)/rhel-push-plugin-%{commit8} src/%{provider}.%{provider_tld}/projectatomic/rhel-push-plugin
+ln -s $(dirs +1 -l)/%{repo}-lvm-plugin-%{commit9} src/%{provider}.%{provider_tld}/projectatomic/%{repo}-lvm-plugin
 popd
 
 # compile novolume first - otherwise deps in gopath conflict with the others below and this fails
 export GOPATH=$(pwd)/%{repo}-novolume-plugin-%{commit4}/Godeps/_workspace:$(pwd)/_build
 pushd $(pwd)/_build/src
 go build -ldflags "-B 0x$(head -c20 /dev/urandom|od -An -tx1|tr -d ' \n')" github.com/projectatomic/%{repo}-novolume-plugin
+popd
+
+export GOPATH=$(pwd)/rhel-push-plugin-%{commit8}/Godeps/_workspace:$(pwd)/_build
+pushd $(pwd)/_build/src
+go build -ldflags "-B 0x$(head -c20 /dev/urandom|od -An -tx1|tr -d ' \n')" %{provider}.%{provider_tld}/projectatomic/rhel-push-plugin
+popd
+
+export GOPATH=$(pwd)/%{name}-lvm-plugin-%{commit9}/vendor:$(pwd)/_build
+pushd $(pwd)/_build/src
+go build -ldflags "-B 0x$(head -c20 /dev/urandom|od -An -tx1|tr -d ' \n')" %{provider}.%{provider_tld}/projectatomic/%{repo}-lvm-plugin
 popd
 
 export DOCKER_GITCOMMIT="%{shortcommit0}/%{version}"
@@ -544,6 +600,8 @@ cp contrib/syntax/vim/README.md README-vim-syntax.md
 cp %{repo}-novolume-plugin-%{commit4}/LICENSE LICENSE-novolume-plugin
 cp %{repo}-novolume-plugin-%{commit4}/README.md README-novolume-plugin.md
 go-md2man -in %{repo}-novolume-plugin-%{commit4}/man/docker-novolume-plugin.8.md -out docker-novolume-plugin.8
+go-md2man -in rhel-push-plugin-%{commit8}/man/rhel-push-plugin.8.md -out rhel-push-plugin.8
+go-md2man -in %{repo}-lvm-plugin-%{commit9}/man/%{repo}-lvm-plugin.8.md -out %{repo}-lvm-plugin.8
 
 # build container-selinux
 pushd container-selinux-%{commit2}
@@ -716,6 +774,23 @@ mkdir -p %{buildroot}/etc/%{name}/certs.d/redhat.{com,io}
 ln -s %{_sysconfdir}/rhsm/ca/redhat-uep.pem %{buildroot}/%{_sysconfdir}/%{name}/certs.d/redhat.com/redhat-ca.crt
 ln -s %{_sysconfdir}/rhsm/ca/redhat-uep.pem %{buildroot}/%{_sysconfdir}/%{name}/certs.d/redhat.io/redhat-ca.crt
 
+# install rhel-push-plugin executable, unitfile, socket and man
+install -d %{buildroot}%{_libexecdir}/%{repo}
+install -p -m 755 _build/src/rhel-push-plugin %{buildroot}%{_libexecdir}/%{repo}/rhel-push-plugin
+install -p -m 644 rhel-push-plugin-%{commit8}/systemd/rhel-push-plugin.service %{buildroot}%{_unitdir}/rhel-push-plugin.service
+install -p -m 644 rhel-push-plugin-%{commit8}/systemd/rhel-push-plugin.socket %{buildroot}%{_unitdir}/rhel-push-plugin.socket
+install -d %{buildroot}%{_mandir}/man8
+install -p -m 644 rhel-push-plugin.8 %{buildroot}%{_mandir}/man8
+
+# install %%{repo}-lvm-plugin executable, unitfile, socket and man
+install -d %{buildroot}/%{_libexecdir}/%{repo}
+install -p -m 755 _build/src/%{repo}-lvm-plugin %{buildroot}/%{_libexecdir}/%{repo}/%{repo}-lvm-plugin
+install -p -m 644 %{repo}-lvm-plugin-%{commit9}/systemd/%{repo}-lvm-plugin.s* %{buildroot}%{_unitdir}
+install -d %{buildroot}%{_mandir}/man8
+install -p -m 644 %{repo}-lvm-plugin.8 %{buildroot}%{_mandir}/man8
+mkdir -p %{buildroot}%{_sysconfdir}/%{repo}
+install -p -m 644 %{repo}-lvm-plugin-%{commit9}%{_sysconfdir}/%{repo}/%{repo}-lvm-plugin %{buildroot}%{_sysconfdir}/%{repo}/%{repo}-lvm-plugin
+
 %check
 [ ! -w /run/%{repo}.sock ] || {
     mkdir test_dir
@@ -850,7 +925,35 @@ exit 0
 %{_datadir}/rhel/secrets/rhel7.repo
 %{_datadir}/rhel/secrets/rhsm
 
+%files rhel-push-plugin
+%license rhel-push-plugin-%{commit8}/LICENSE
+%doc rhel-push-plugin-%{commit8}/README.md
+%{_mandir}/man8/rhel-push-plugin.8.gz
+%{_libexecdir}/%{repo}/rhel-push-plugin
+%{_unitdir}/rhel-push-plugin.*
+
+%files lvm-plugin
+%license %{repo}-lvm-plugin-%{commit9}/LICENSE
+%doc %{repo}-lvm-plugin-%{commit9}/README.md
+%config(noreplace) %{_sysconfdir}/%{repo}/%{repo}-lvm-plugin
+%{_mandir}/man8/%{repo}-lvm-plugin.8.gz
+%{_libexecdir}/%{repo}/%{repo}-lvm-plugin
+%{_unitdir}/%{repo}-lvm-plugin.*
+
 %changelog
+* Thu Nov 17 2016 Lokesh Mandvekar <lsm5@fedoraproject.org> - 2:1.12.3-21.git47e22f2
+- Resolves: #1384205 - include rhel-push-plugin
+- Resolves: #1384202, #1384190 - add Red Hat's container registry
+- built docker @projectatomic/docker-1.12 commit 47e22f2
+- built docker-selinux commit 51001dd
+- built d-s-s commit c9faba1
+- built docker-novolume-plugin commit c521254
+- built docker-runc @projectatomic/runc-1.12 commit aa86071
+- built docker-containerd commit b818e74
+- built docker-v1.10-migrator commit 994c35c
+- built rhel-push-plugin commit eb9e6be
+- built docker-lvm-plugin commit bc03b53
+
 * Thu Nov 10 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.12.3-20.git47e22f2
 - built docker @projectatomic/docker-1.12 commit 47e22f2
 - built docker-selinux commit 51001dd
