@@ -104,7 +104,7 @@ Name: %{repo}
 Epoch: 2
 %endif
 Version: 1.12.3
-Release: 24.git%{shortcommit0}%{?dist}
+Release: 25.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -160,6 +160,9 @@ Requires: device-mapper-libs >= 1.02.90-1
 
 Requires: skopeo-containers
 Requires: gnupg
+
+# BZ#1399098
+Requires: python-rhsm-certificates
 
 # Resolves: #1379184 - include epoch
 Requires: %{repo}-common = %{epoch}:%{version}-%{release}
@@ -944,6 +947,16 @@ exit 0
 %{_unitdir}/%{repo}-lvm-plugin.*
 
 %changelog
+* Mon Nov 28 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.12.3-25.git7b5044b
+- built docker @projectatomic/docker-1.12 commit 7b5044b
+- built docker-selinux commit 9de0085
+- built d-s-s commit c9faba1
+- built docker-novolume-plugin commit c521254
+- built docker-runc @projectatomic/runc-1.12 commit b8dbc3b
+- built docker-utils commit 
+- built docker-containerd commit 9f45393
+- built docker-v1.10-migrator commit 994c35c
+
 * Sun Nov 27 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.12.3-24.git7b5044b
 - built docker @projectatomic/docker-1.12 commit 7b5044b
 - built docker-selinux commit 9de0085
