@@ -104,7 +104,7 @@ Name: %{repo}
 Epoch: 2
 %endif
 Version: 1.12.4
-Release: 27.git%{shortcommit0}%{?dist}
+Release: 28.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -638,10 +638,10 @@ popd
 install -d %{buildroot}%{_bindir}
 rm bundles/latest/dynbinary-client/*.md5 bundles/latest/dynbinary-client/*.sha256
 rm bundles/latest/dynbinary-daemon/*.md5 bundles/latest/dynbinary-daemon/*.sha256
-install -p -m 755 bundles/latest/dynbinary-client/%{repo}-%{version} %{buildroot}%{_bindir}/%{repo}-current
-install -p -m 755 bundles/latest/dynbinary-daemon/%{repo}d-%{version} %{buildroot}%{_bindir}/%{repo}d-current
+install -p -m 755 bundles/latest/dynbinary-client/%{repo}-%{version}* %{buildroot}%{_bindir}/%{repo}-current
+install -p -m 755 bundles/latest/dynbinary-daemon/%{repo}d-%{version}* %{buildroot}%{_bindir}/%{repo}d-current
 install -d %{buildroot}%{_libexecdir}/%{repo}
-install -p -m 755 bundles/latest/dynbinary-daemon/%{repo}-proxy-%{version} %{buildroot}%{_libexecdir}/%{repo}/%{repo}-proxy-current
+install -p -m 755 bundles/latest/dynbinary-daemon/%{repo}-proxy-%{version}* %{buildroot}%{_libexecdir}/%{repo}/%{repo}-proxy-current
 
 # install manpages
 install -d %{buildroot}%{_mandir}/man1
@@ -947,6 +947,16 @@ exit 0
 %{_unitdir}/%{repo}-lvm-plugin.*
 
 %changelog
+* Thu Dec 08 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.12.4-28.gitfc708cb
+- built docker @projectatomic/docker-1.12 commit fc708cb
+- built docker-selinux commit 9de0085
+- built d-s-s commit c9faba1
+- built docker-novolume-plugin commit c521254
+- built docker-runc @projectatomic/runc-1.12 commit b8dbc3b
+- built docker-utils commit 
+- built docker-containerd commit 471f03c
+- built docker-v1.10-migrator commit 994c35c
+
 * Thu Dec 08 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.12.4-27.gitfc708cb
 - built docker @projectatomic/docker-1.12 commit fc708cb
 - built docker-selinux commit 9de0085
