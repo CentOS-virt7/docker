@@ -104,7 +104,7 @@ Name: %{repo}
 Epoch: 2
 %endif
 Version: 1.12.4
-Release: 30.git%{shortcommit0}%{?dist}
+Release: 31.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -947,6 +947,9 @@ exit 0
 %{_unitdir}/%{repo}-lvm-plugin.*
 
 %changelog
+* Sat Dec 10 2016 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 2:1.12.4-31.git67ed6b8
+- Rebuild for gpgme 1.18
+
 * Sat Dec 10 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.12.4-30.git67ed6b8
 - built docker @projectatomic/docker-1.12 commit 67ed6b8
 - built docker-selinux commit 4f7383f
