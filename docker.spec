@@ -42,7 +42,7 @@
 # docker-selinux
 %global git2 https://github.com/projectatomic/container-selinux
 %if 0%{?fedora}
-%global commit2 9de00853d884e47bae70ea6bc8b87ce1b4a2bab2
+%global commit2 4f7383fe261e9f282e9441918fd705e730485e6c
 %else
 %global commit2 032bcda7b1eb6d9d75d3c0ce64d9d35cdb9c7b85
 %endif
@@ -90,7 +90,7 @@
 %global _format() export %1=""; for x in %{modulenames}; do %1+=%2; %1+=" "; done;
 
 # Relabel files
-%global relabel_files() %{_sbindir}/restorecon -R %{_bindir}/%{repo} %{_localstatedir}/run/containerd.sock %{_localstatedir}/run/%{repo}.sock %{_localstatedir}/run/%{repo}.pid %{_sysconfdir}/%{repo} %{_localstatedir}/log/%{repo} %{_localstatedir}/log/lxc %{_localstatedir}/lock/lxc %{_unitdir}/%{repo}.service %{_unitdir}/%{repo}-containerd.service %{_sysconfdir}/%{repo} &> /dev/null || :
+%global relabel_files() %{_sbindir}/restorecon -R %{_bindir}/%{repo}* %{_localstatedir}/run/containerd.sock %{_localstatedir}/run/%{repo}.sock %{_localstatedir}/run/%{repo}.pid %{_sysconfdir}/%{repo} %{_localstatedir}/log/%{repo} %{_localstatedir}/log/lxc %{_localstatedir}/lock/lxc %{_unitdir}/%{repo}.service %{_unitdir}/%{repo}-containerd.service %{_sysconfdir}/%{repo} %{_libexecdir}/%{repo}* &> /dev/null || :
 
 # Version of SELinux we were using
 %if 0%{?fedora} >= 22
@@ -104,7 +104,7 @@ Name: %{repo}
 Epoch: 2
 %endif
 Version: 1.12.4
-Release: 29.git%{shortcommit0}%{?dist}
+Release: 30.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -947,6 +947,16 @@ exit 0
 %{_unitdir}/%{repo}-lvm-plugin.*
 
 %changelog
+* Sat Dec 10 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.12.4-30.git67ed6b8
+- built docker @projectatomic/docker-1.12 commit 67ed6b8
+- built docker-selinux commit 4f7383f
+- built d-s-s commit c9faba1
+- built docker-novolume-plugin commit c521254
+- built docker-runc @projectatomic/runc-1.12 commit b8dbc3b
+- built docker-utils commit 
+- built docker-containerd commit 471f03c
+- built docker-v1.10-migrator commit 994c35c
+
 * Fri Dec 09 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.12.4-29.git67ed6b8
 - built docker @projectatomic/docker-1.12 commit 67ed6b8
 - built docker-selinux commit 9de0085
