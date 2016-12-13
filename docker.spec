@@ -28,7 +28,7 @@
 
 # docker
 %global git0 https://github.com/projectatomic/%{repo}
-%global commit0 67ed6b85e40dd7b3089ecbeb57fc1b8c1ad690e0
+%global commit0 1b5971af3003488d3fd8add80de5125ee1e096ee
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 # docker_branch used in %%check
 %global docker_branch docker-1.12.4
@@ -947,6 +947,16 @@ exit 0
 %{_unitdir}/%{repo}-lvm-plugin.*
 
 %changelog
+* Tue Dec 13 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.12.4-31.git1b5971a
+- built docker @projectatomic/docker-1.12 commit 1b5971a
+- built docker-selinux commit 4f7383f
+- built d-s-s commit c9faba1
+- built docker-novolume-plugin commit c521254
+- built docker-runc @projectatomic/runc-1.12 commit b8dbc3b
+- built docker-utils commit
+- built docker-containerd commit 471f03c
+- built docker-v1.10-migrator commit 994c35c
+
 * Sat Dec 10 2016 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 2:1.12.4-31.git67ed6b8
 - Rebuild for gpgme 1.18
 
