@@ -104,7 +104,7 @@ Name: %{repo}
 Epoch: 2
 %endif
 Version: 1.12.4
-Release: 32.git%{shortcommit0}%{?dist}
+Release: 33.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -436,6 +436,7 @@ local volumes defined. In particular, the plugin will block `docker run` with:
 The only thing allowed will be just bind mounts.
 
 %package -n container-selinux
+BuildArch: noarch
 URL: %{git2} 
 Summary: SELinux policies for container runtimes
 BuildRequires: selinux-policy
@@ -817,7 +818,10 @@ if [ $1 -eq 1 ]; then
     %{_sbindir}/setsebool -P -N virt_use_nfs=1 virt_sandbox_use_all_caps=1
 fi
 %_format MODULES %{_datadir}/selinux/packages/$x.pp.bz2
-%{_sbindir}/semodule -n -s %{selinuxtype} -i $MODULES -r docker 2>&1 | grep -v %{repo}
+%{_sbindir}/semodule -n -s %{selinuxtype} -r container 2> /dev/null
+%{_sbindir}/semodule -n -s %{selinuxtype} -d %{repo} 2> /dev/null
+%{_sbindir}/semodule -n -s %{selinuxtype} -d gear 2> /dev/null
+%{_sbindir}/semodule -n -X 200 -s %{selinuxtype} -i $MODULES > /dev/null
 if %{_sbindir}/selinuxenabled ; then
     %{_sbindir}/load_policy
     %relabel_files
@@ -947,6 +951,9 @@ exit 0
 %{_unitdir}/%{repo}-lvm-plugin.*
 
 %changelog
+* Tue Dec 13 2016 Dan Walsh <dwalsh@fedoraproject.org> - 2:1.12.4-33.git1b5971a
+- Fix installation of container-selinux policy
+
 * Tue Dec 13 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.12.4-32.git1b5971a
 - built docker @projectatomic/docker-1.12 commit 1b5971a
 - built docker-selinux commit 4f7383f
