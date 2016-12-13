@@ -104,7 +104,7 @@ Name: %{repo}
 Epoch: 2
 %endif
 Version: 1.12.4
-Release: 31.git%{shortcommit0}%{?dist}
+Release: 32.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -947,6 +947,16 @@ exit 0
 %{_unitdir}/%{repo}-lvm-plugin.*
 
 %changelog
+* Tue Dec 13 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.12.4-32.git1b5971a
+- built docker @projectatomic/docker-1.12 commit 1b5971a
+- built docker-selinux commit 4f7383f
+- built d-s-s commit c9faba1
+- built docker-novolume-plugin commit c521254
+- built docker-runc @projectatomic/runc-1.12 commit b8dbc3b
+- built docker-utils commit 
+- built docker-containerd commit 471f03c
+- built docker-v1.10-migrator commit 994c35c
+
 * Tue Dec 13 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.12.4-31.git1b5971a
 - built docker @projectatomic/docker-1.12 commit 1b5971a
 - built docker-selinux commit 4f7383f
