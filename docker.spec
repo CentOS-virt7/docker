@@ -39,10 +39,10 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global dss_libdir %{_exec_prefix}/lib/%{repo}-storage-setup
 
-# docker-selinux
+# container-selinux
 %global git2 https://github.com/projectatomic/container-selinux
 %if 0%{?fedora}
-%global commit2 4f7383fe261e9f282e9441918fd705e730485e6c
+%global commit2 979ba8efa5979c2984da9c1e0f842f9cd10bbc02
 %else
 %global commit2 032bcda7b1eb6d9d75d3c0ce64d9d35cdb9c7b85
 %endif
@@ -78,7 +78,7 @@
 %global commit9 bc03b5354aaa70ee14c482c4a861be08630bb755
 %global shortcommit9 %(c=%{commit6}; echo ${c:0:7})
 
-# docker-selinux stuff (prefix with ds_ for version/release etc.)
+# container-selinux stuff (prefix with ds_ for version/release etc.)
 # Some bits borrowed from the openstack-selinux package
 %global selinuxtype targeted
 %global moduletype services
@@ -104,7 +104,7 @@ Name: %{repo}
 Epoch: 2
 %endif
 Version: 1.12.5
-Release: 10.git%{shortcommit0}%{?dist}
+Release: 11.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -113,7 +113,7 @@ URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
 ExclusiveArch: %{ix86} x86_64 %{arm} aarch64 ppc64le s390x %{mips}
 Source0: %{git0}/archive/%{commit0}/%{repo}-%{shortcommit0}.tar.gz
 Source1: %{git1}/archive/%{commit1}/%{repo}-storage-setup-%{shortcommit1}.tar.gz
-Source2: %{git2}/archive/%{commit2}/%{repo}-selinux-%{shortcommit2}.tar.gz
+Source2: %{git2}/archive/%{commit2}/container-selinux-%{shortcommit2}.tar.gz
 Source4: %{git4}/archive/%{commit4}/%{repo}-novolume-plugin-%{shortcommit4}.tar.gz
 Source5: %{repo}.service
 Source6: %{repo}.sysconfig
@@ -951,6 +951,9 @@ exit 0
 %{_unitdir}/%{repo}-lvm-plugin.*
 
 %changelog
+* Thu Dec 22 2016 Dan Walsh <dwalsh@fedoraproject.org> - 2:1.12.5-11.git6009905
+- Update container-selinux to add labeling for OCID.
+
 * Fri Dec 16 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.12.5-10.git6009905
 - built docker @projectatomic/docker-1.12 commit 6009905
 - built docker-selinux commit 4f7383f
