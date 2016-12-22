@@ -28,7 +28,7 @@
 
 # docker
 %global git0 https://github.com/projectatomic/%{repo}
-%global commit0 e330732b52bf63131cd332ca802c7c75a8fb093d
+%global commit0 079fbe3553dcf3f5edf748b3d630144a507ba800
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 # docker_branch used in %%check
 %global docker_branch docker-1.12.5
@@ -104,7 +104,7 @@ Name: %{repo}
 Epoch: 2
 %endif
 Version: 1.12.5
-Release: 12.git%{shortcommit0}%{?dist}
+Release: 13.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -951,6 +951,16 @@ exit 0
 %{_unitdir}/%{repo}-lvm-plugin.*
 
 %changelog
+* Thu Dec 22 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.12.5-13.git079fbe3
+- built docker @projectatomic/docker-1.12 commit 079fbe3
+- built docker-selinux commit 979ba8e
+- built d-s-s commit c9faba1
+- built docker-novolume-plugin commit c521254
+- built docker-runc @projectatomic/runc-1.12 commit b8dbc3b
+- built docker-utils commit 
+- built docker-containerd commit 471f03c
+- built docker-v1.10-migrator commit 994c35c
+
 * Thu Dec 22 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.12.5-12.gite330732
 - built docker @projectatomic/docker-1.12 commit e330732
 - built docker-selinux commit 979ba8e
