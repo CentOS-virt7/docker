@@ -39,15 +39,6 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global dss_libdir %{_exec_prefix}/lib/%{repo}-storage-setup
 
-# container-selinux
-%global git2 https://github.com/projectatomic/container-selinux
-%if 0%{?fedora}
-%global commit2 979ba8efa5979c2984da9c1e0f842f9cd10bbc02
-%else
-%global commit2 032bcda7b1eb6d9d75d3c0ce64d9d35cdb9c7b85
-%endif
-%global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
-
 # docker-novolume-plugin
 %global git4 https://github.com/projectatomic/%{repo}-novolume-plugin
 %global commit4 c5212546ab01b4b7b62caba888d298ab63f53984
@@ -78,27 +69,6 @@
 %global commit9 bc03b5354aaa70ee14c482c4a861be08630bb755
 %global shortcommit9 %(c=%{commit6}; echo ${c:0:7})
 
-# container-selinux stuff (prefix with ds_ for version/release etc.)
-# Some bits borrowed from the openstack-selinux package
-%global selinuxtype targeted
-%global moduletype services
-%global modulenames container
-
-# Usage: _format var format
-# Expand 'modulenames' into various formats as needed
-# Format must contain '$x' somewhere to do anything useful
-%global _format() export %1=""; for x in %{modulenames}; do %1+=%2; %1+=" "; done;
-
-# Relabel files
-%global relabel_files() %{_sbindir}/restorecon -R %{_bindir}/%{repo}* %{_localstatedir}/run/containerd.sock %{_localstatedir}/run/%{repo}.sock %{_localstatedir}/run/%{repo}.pid %{_sysconfdir}/%{repo} %{_localstatedir}/log/%{repo} %{_localstatedir}/log/lxc %{_localstatedir}/lock/lxc %{_unitdir}/%{repo}.service %{_unitdir}/%{repo}-containerd.service %{_sysconfdir}/%{repo} %{_libexecdir}/%{repo}* &> /dev/null || :
-
-# Version of SELinux we were using
-%if 0%{?fedora} >= 22
-%global selinux_policyver 3.13.1-220
-%else
-%global selinux_policyver 3.13.1-39
-%endif
-
 Name: %{repo}
 %if 0%{?fedora} || 0%{?centos}
 Epoch: 2
@@ -113,7 +83,6 @@ URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
 ExclusiveArch: %{ix86} x86_64 %{arm} aarch64 ppc64le s390x %{mips}
 Source0: %{git0}/archive/%{commit0}/%{repo}-%{shortcommit0}.tar.gz
 Source1: %{git1}/archive/%{commit1}/%{repo}-storage-setup-%{shortcommit1}.tar.gz
-Source2: %{git2}/archive/%{commit2}/container-selinux-%{shortcommit2}.tar.gz
 Source4: %{git4}/archive/%{commit4}/%{repo}-novolume-plugin-%{shortcommit4}.tar.gz
 Source5: %{repo}.service
 Source6: %{repo}.sysconfig
@@ -167,9 +136,7 @@ Requires: python-rhsm-certificates
 # Resolves: #1379184 - include epoch
 Requires: %{repo}-common = %{epoch}:%{version}-%{release}
 
-# RE: rhbz#1195804 - ensure min NVR for selinux-policy
-Requires: selinux-policy >= %{selinux_policyver}
-Requires: container-selinux = %{epoch}:%{version}-%{release}
+Requires: container-selinux >= 2:2.0-1
 
 # BZ#1398860
 Requires: %{name}-rhel-push-plugin = %{epoch}:%{version}-%{release}
@@ -435,27 +402,6 @@ local volumes defined. In particular, the plugin will block `docker run` with:
 
 The only thing allowed will be just bind mounts.
 
-%package -n container-selinux
-BuildArch: noarch
-URL: %{git2} 
-Summary: SELinux policies for container runtimes
-BuildRequires: selinux-policy
-BuildRequires: selinux-policy-devel
-Requires(post): selinux-policy-base >= %{selinux_policyver}
-Requires(post): policycoreutils
-%if 0%{?fedora}
-Requires(post): policycoreutils-python-utils
-%else
-Requires(post): policycoreutils-python
-%endif
-Requires(post): libselinux-utils
-Provides: %{repo}-io-selinux = %{epoch}:%{version}-%{release}
-Obsoletes: %{repo}-selinux <= %{epoch}:%{version}-28
-Provides: %{repo}-selinux = %{epoch}:%{version}-%{release}
-
-%description -n container-selinux
-SELinux policy modules for use with container runtimes.
-
 %package common
 Summary: Common files for docker and docker-latest
 
@@ -537,9 +483,6 @@ cp %{SOURCE9} .
 # untar d-s-s
 tar zxf %{SOURCE1}
 
-# unpack container-selinux
-tar zxf %{SOURCE2}
-
 # untar docker-novolume-plugin
 tar zxf %{SOURCE4}
 
@@ -609,11 +552,6 @@ cp %{repo}-novolume-plugin-%{commit4}/README.md README-novolume-plugin.md
 go-md2man -in %{repo}-novolume-plugin-%{commit4}/man/docker-novolume-plugin.8.md -out docker-novolume-plugin.8
 go-md2man -in rhel-push-plugin-%{commit8}/man/rhel-push-plugin.8.md -out rhel-push-plugin.8
 go-md2man -in %{repo}-lvm-plugin-%{commit9}/man/%{repo}-lvm-plugin.8.md -out %{repo}-lvm-plugin.8
-
-# build container-selinux
-pushd container-selinux-%{commit2}
-make
-popd
 
 # build v1.10-migrator
 pushd v1.10-migrator-%{commit5}
@@ -715,13 +653,6 @@ install -p -m 644 %{SOURCE6} %{buildroot}%{_sysconfdir}/sysconfig/%{repo}
 install -p -m 644 %{SOURCE10} %{buildroot}%{_sysconfdir}/sysconfig/%{repo}-network
 install -p -m 644 %{SOURCE7} %{buildroot}%{_sysconfdir}/sysconfig/%{repo}-storage
 
-# install policy modules
-%_format MODULES $x.pp.bz2
-install -d %{buildroot}%{_datadir}/selinux/packages
-install -d -p %{buildroot}%{_datadir}/selinux/devel/include/services
-install -p -m 644 container-selinux-%{commit2}/container.if %{buildroot}%{_datadir}/selinux/devel/include/services
-install -m 0644 container-selinux-%{commit2}/$MODULES %{buildroot}%{_datadir}/selinux/packages
-
 %if 0%{?with_unit_test}
 install -d -m 0755 %{buildroot}%{_sharedstatedir}/%{repo}-unit-test/
 cp -pav VERSION Dockerfile %{buildroot}%{_sharedstatedir}/%{repo}-unit-test/.
@@ -744,9 +675,6 @@ for file in $(find . -iname "*.go" \! -iname "*_test.go") ; do
     echo "%%{gopath}/src/%%{import_path}/$file" >> devel.file-list
 done
 %endif
-
-# remove %%{repo}-selinux rpm spec file
-rm -rf %{repo}-selinux-%{commit2}/%{repo}-selinux.spec
 
 # install %%{repo} config directory
 install -dp %{buildroot}%{_sysconfdir}/%{repo}
@@ -812,38 +740,11 @@ install -p -m 644 %{repo}-lvm-plugin-%{commit9}%{_sysconfdir}/%{repo}/%{repo}-lv
 %post
 %systemd_post %{repo}
 
-%post -n container-selinux
-# Install all modules in a single transaction
-if [ $1 -eq 1 ]; then
-    %{_sbindir}/setsebool -P -N virt_use_nfs=1 virt_sandbox_use_all_caps=1
-fi
-%_format MODULES %{_datadir}/selinux/packages/$x.pp.bz2
-%{_sbindir}/semodule -n -s %{selinuxtype} -r container 2> /dev/null
-%{_sbindir}/semodule -n -s %{selinuxtype} -d %{repo} 2> /dev/null
-%{_sbindir}/semodule -n -s %{selinuxtype} -d gear 2> /dev/null
-%{_sbindir}/semodule -n -X 200 -s %{selinuxtype} -i $MODULES > /dev/null
-if %{_sbindir}/selinuxenabled ; then
-    %{_sbindir}/load_policy
-    %relabel_files
-    if [ $1 -eq 1 ]; then
-    restorecon -R %{_sharedstatedir}/%{repo} &> /dev/null || :
-    fi
-fi
-
 %preun
 %systemd_preun %{repo}
 
 %postun
 %systemd_postun_with_restart %{repo}
-
-%postun -n container-selinux
-if [ $1 -eq 0 ]; then
-%{_sbindir}/semodule -n -r %{modulenames} %{repo} &> /dev/null || :
-if %{_sbindir}/selinuxenabled ; then
-%{_sbindir}/load_policy
-%relabel_files
-fi
-fi
 
 %triggerin -n %{repo}-v1.10-migrator -- %{repo} < %{version}
 %{_bindir}/v1.10-migrator-local 2>/dev/null
@@ -908,10 +809,6 @@ exit 0
 %{_unitdir}/%{repo}-novolume-plugin.service
 %{_unitdir}/%{repo}-novolume-plugin.socket
 
-%files -n container-selinux
-%doc container-selinux-%{commit2}/README.md
-%{_datadir}/selinux/*
-
 %files common
 %doc README-%{repo}-common
 %{_bindir}/%{repo}
@@ -951,6 +848,10 @@ exit 0
 %{_unitdir}/%{repo}-lvm-plugin.*
 
 %changelog
+* Fri Jan 06 2017 Lokesh Mandvekar <lsm5@fedoraproject.org> - 2:1.12.5-14.git079fbe3
+- Use container-selinux >= 2:2.0-1 (It's a standalone package moving forward
+and no longer a docker subpackage)
+
 * Thu Dec 22 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.12.5-13.git079fbe3
 - built docker @projectatomic/docker-1.12 commit 079fbe3
 - built docker-selinux commit 979ba8e
