@@ -74,7 +74,7 @@ Name: %{repo}
 Epoch: 2
 %endif
 Version: 1.12.5
-Release: 14.git%{shortcommit0}%{?dist}
+Release: 15.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -136,7 +136,7 @@ Requires: python-rhsm-certificates
 # Resolves: #1379184 - include epoch
 Requires: %{repo}-common = %{epoch}:%{version}-%{release}
 
-Requires: container-selinux >= 2:2.0-1
+Requires(pre): container-selinux >= 2:2.2-2
 
 # BZ#1398860
 Requires: %{name}-rhel-push-plugin = %{epoch}:%{version}-%{release}
@@ -848,6 +848,9 @@ exit 0
 %{_unitdir}/%{repo}-lvm-plugin.*
 
 %changelog
+* Sat Jan 07 2017 Lokesh Mandvekar <lsm5@fedoraproject.org> - 2:1.12.5-15.git079fbe3
+- use container-selinux >= 2:2.2-2
+
 * Fri Jan 06 2017 Lokesh Mandvekar <lsm5@fedoraproject.org> - 2:1.12.5-14.git079fbe3
 - Use container-selinux >= 2:2.0-1 (It's a standalone package moving forward
 and no longer a docker subpackage)
