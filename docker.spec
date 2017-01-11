@@ -74,7 +74,7 @@ Name: %{repo}
 Epoch: 2
 %endif
 Version: 1.12.6
-Release: 10.git%{shortcommit0}%{?dist}
+Release: 11.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -99,6 +99,7 @@ Source16: %{repo}-common.sh
 Source17: README-%{repo}-common
 Source18: %{git8}/archive/%{commit8}/rhel-push-plugin-%{shortcommit8}.tar.gz
 Source19: %{git9}/archive/%{commit9}/%{repo}-lvm-plugin-%{shortcommit9}.tar.gz
+Source20: %{repo}.service.centos
 
 %if 0%{?with_debug}
 # Build with debug
@@ -626,7 +627,11 @@ install -d %{buildroot}%{_datadir}/rhel/secrets
 
 # install systemd/init scripts
 install -d %{buildroot}%{_unitdir}
+%if 0%{?fedora}
 install -p -m 644 %{SOURCE5} %{buildroot}%{_unitdir}
+%else
+install -p -m 644 %{SOURCE20} %{buildroot}%{_unitdir}/%{repo}.service
+%endif
 install -p -m 644 %{SOURCE14} %{buildroot}%{_unitdir}
 
 # install novolume-plugin executable, unitfile, socket and man
@@ -848,6 +853,9 @@ exit 0
 %{_unitdir}/%{repo}-lvm-plugin.*
 
 %changelog
+* Wed Jan 11 2017 Lokesh Mandvekar <lsm5@fedoraproject.org> - 2:1.12.6-11.git51ef5a8
+- use centos' version of docker.service on centos 7 (without "TasksMax")
+
 * Wed Jan 11 2017 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.12.6-10.git51ef5a8
 - built docker @projectatomic/docker-1.12 commit 51ef5a8
 - built docker-selinux commit 
