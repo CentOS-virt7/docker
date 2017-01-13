@@ -28,7 +28,7 @@
 
 # docker
 %global git0 https://github.com/projectatomic/%{repo}
-%global commit0 51ef5a8a5c9df036409dc9bdcf84449f8ccb662f
+%global commit0 f499e8bd9c251a9292faec9dd9b1e0cf05ba9606
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 # docker_branch used in %%check
 %global docker_branch docker-1.12.6
@@ -74,7 +74,7 @@ Name: %{repo}
 Epoch: 2
 %endif
 Version: 1.12.6
-Release: 11.git%{shortcommit0}%{?dist}
+Release: 12.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -853,6 +853,16 @@ exit 0
 %{_unitdir}/%{repo}-lvm-plugin.*
 
 %changelog
+* Fri Jan 13 2017 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.12.6-12.gitf499e8b
+- built docker @projectatomic/docker-1.12 commit f499e8b
+- built docker-selinux commit 
+- built d-s-s commit c9faba1
+- built docker-novolume-plugin commit c521254
+- built docker-runc @projectatomic/runc-1.12 commit 3819cd6
+- built docker-utils commit 
+- built docker-containerd commit 471f03c
+- built docker-v1.10-migrator commit 994c35c
+
 * Wed Jan 11 2017 Lokesh Mandvekar <lsm5@fedoraproject.org> - 2:1.12.6-11.git51ef5a8
 - use centos' version of docker.service on centos 7 (without "TasksMax")
 
