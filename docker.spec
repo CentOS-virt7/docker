@@ -74,7 +74,7 @@ Name: %{repo}
 Epoch: 2
 %endif
 Version: 1.12.6
-Release: 13.git%{shortcommit0}%{?dist}
+Release: 14.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -100,6 +100,7 @@ Source17: README-%{repo}-common
 Source18: %{git8}/archive/%{commit8}/rhel-push-plugin-%{shortcommit8}.tar.gz
 Source19: %{git9}/archive/%{commit9}/%{repo}-lvm-plugin-%{shortcommit9}.tar.gz
 Source20: %{repo}.service.centos
+Source21: %{repo}-containerd.service.centos
 
 %if 0%{?with_debug}
 # Build with debug
@@ -629,10 +630,11 @@ install -d %{buildroot}%{_datadir}/rhel/secrets
 install -d %{buildroot}%{_unitdir}
 %if 0%{?fedora}
 install -p -m 644 %{SOURCE5} %{buildroot}%{_unitdir}
+install -p -m 644 %{SOURCE14} %{buildroot}%{_unitdir}
 %else
 install -p -m 644 %{SOURCE20} %{buildroot}%{_unitdir}/%{repo}.service
+install -p -m 644 %{SOURCE21} %{buildroot}%{_unitdir}/%{repo}-containerd.service
 %endif
-install -p -m 644 %{SOURCE14} %{buildroot}%{_unitdir}
 
 # install novolume-plugin executable, unitfile, socket and man
 install -d %{buildroot}%{_libexecdir}/%{repo}
@@ -853,6 +855,9 @@ exit 0
 %{_unitdir}/%{repo}-lvm-plugin.*
 
 %changelog
+* Tue Jan 17 2017 Lokesh Mandvekar <lsm5@fedoraproject.org> - 2:1.12.6-14.gitf499e8b
+- use centos' version of docker-containerd.service on centos7 (without "TasksMax")
+
 * Fri Jan 13 2017 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.12.6-13.gitf499e8b
 - built docker @projectatomic/docker-1.12 commit f499e8b
 - built docker-selinux commit 
