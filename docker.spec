@@ -156,6 +156,9 @@ Requires: tar
 # BZ1327809
 Requires: iptables
 
+# #1416929
+Requires: parted
+
 # permitted by https://fedorahosted.org/fpc/ticket/341#comment:7
 # In F22, the whole package should be renamed to be just "docker" and
 # this changed to "Provides: docker-io".
