@@ -35,7 +35,7 @@
 
 # d-s-s
 %global git1 https://github.com/projectatomic/%{repo}-storage-setup/
-%global commit1 c9faba1908b8e77f7c7c443f26e3b3cb1450d1a0
+%global commit1 5e1f47b4251108c48b32aad22ae9494a7c3ee5fe
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global dss_libdir %{_exec_prefix}/lib/%{repo}-storage-setup
 
@@ -74,7 +74,7 @@ Name: %{repo}
 Epoch: 2
 %endif
 Version: 1.12.6
-Release: 16.git%{shortcommit0}%{?dist}
+Release: 17.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -885,6 +885,10 @@ exit 0
 %systemd_postun_with_restart docker-lvm-plugin.service
 
 %changelog
+* Thu Jan 26 2017 Lokesh Mandvekar <lsm5@fedoraproject.org> - 2:1.12.6-17.git037a2f5
+- Resolves: #1416929 - pull in parted at install time
+- built d-s-s commit 5e1f47b
+
 * Thu Jan 26 2017 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.12.6-16.git037a2f5
 - built docker @projectatomic/docker-1.12 commit 037a2f5
 - built docker-selinux commit 
