@@ -74,7 +74,7 @@ Name: %{repo}
 Epoch: 2
 %endif
 Version: 1.12.6
-Release: 15.git%{shortcommit0}%{?dist}
+Release: 16.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -816,6 +816,15 @@ exit 0
 %{_unitdir}/%{repo}-novolume-plugin.service
 %{_unitdir}/%{repo}-novolume-plugin.socket
 
+%post novolume-plugin
+%systemd_post docker-novolume-plugin.service
+
+%preun novolume-plugin
+%systemd_preun docker-novolume-plugin.service
+
+%postun novolume-plugin
+%systemd_postun_with_restart docker-novolume-plugin.service
+
 %files common
 %doc README-%{repo}-common
 %{_bindir}/%{repo}
@@ -846,6 +855,15 @@ exit 0
 %{_libexecdir}/%{repo}/rhel-push-plugin
 %{_unitdir}/rhel-push-plugin.*
 
+%post rhel-push-plugin
+%systemd_post docker-rhel-push-plugin.service
+
+%preun rhel-push-plugin
+%systemd_preun docker-rhel-push-plugin.service
+
+%postun rhel-push-plugin
+%systemd_postun_with_restart docker-rhel-push-plugin.service
+
 %files lvm-plugin
 %license %{repo}-lvm-plugin-%{commit9}/LICENSE
 %doc %{repo}-lvm-plugin-%{commit9}/README.md
@@ -854,7 +872,26 @@ exit 0
 %{_libexecdir}/%{repo}/%{repo}-lvm-plugin
 %{_unitdir}/%{repo}-lvm-plugin.*
 
+%post lvm-plugin
+%systemd_post docker-lvm-plugin.service
+
+%preun lvm-plugin
+%systemd_preun docker-lvm-plugin.service
+
+%postun lvm-plugin
+%systemd_postun_with_restart docker-lvm-plugin.service
+
 %changelog
+* Thu Jan 26 2017 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.12.6-16.git037a2f5
+- built docker @projectatomic/docker-1.12 commit 037a2f5
+- built docker-selinux commit 
+- built d-s-s commit c9faba1
+- built docker-novolume-plugin commit c521254
+- built docker-runc @projectatomic/runc-1.12 commit 81b2542
+- built docker-utils commit 
+- built docker-containerd commit 471f03c
+- built docker-v1.10-migrator commit 994c35c
+
 * Wed Jan 18 2017 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.12.6-15.git037a2f5
 - built docker @projectatomic/docker-1.12 commit 037a2f5
 - built docker-selinux commit 
