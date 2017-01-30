@@ -28,7 +28,7 @@
 
 # docker
 %global git0 https://github.com/projectatomic/%{repo}
-%global commit0 037a2f5e5b7cf1f7663f1840f7e84328806c08ef
+%global commit0 ae7d637fcad9be396e75af430405446f9e6ab099
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 # docker_branch used in %%check
 %global docker_branch docker-1.12.6
@@ -74,7 +74,7 @@ Name: %{repo}
 Epoch: 2
 %endif
 Version: 1.12.6
-Release: 17.git%{shortcommit0}%{?dist}
+Release: 18.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -885,6 +885,16 @@ exit 0
 %systemd_postun_with_restart docker-lvm-plugin.service
 
 %changelog
+* Mon Jan 30 2017 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.12.6-18.gitae7d637
+- built docker @projectatomic/docker-1.12 commit ae7d637
+- built docker-selinux commit 
+- built d-s-s commit 5e1f47b
+- built docker-novolume-plugin commit c521254
+- built docker-runc @projectatomic/runc-1.12 commit 81b2542
+- built docker-utils commit 
+- built docker-containerd commit 471f03c
+- built docker-v1.10-migrator commit 994c35c
+
 * Thu Jan 26 2017 Lokesh Mandvekar <lsm5@fedoraproject.org> - 2:1.12.6-17.git037a2f5
 - Resolves: #1416929 - pull in parted at install time
 - built d-s-s commit 5e1f47b
