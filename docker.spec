@@ -28,10 +28,10 @@
 
 # docker
 %global git0 https://github.com/projectatomic/%{repo}
-%global commit0 ae7d637fcad9be396e75af430405446f9e6ab099
+%global commit0 5be1549913ee9bdc5c30433345a76b36ac09bc02
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 # docker_branch used in %%check
-%global docker_branch docker-1.12.6
+%global docker_branch docker-1.13.1
 
 # d-s-s
 %global git1 https://github.com/projectatomic/%{repo}-storage-setup/
@@ -51,30 +51,40 @@
 
 # docker-runc
 %global git6 https://github.com/projectatomic/runc/
-%global commit6 81b254244390bc636b20c87c34a3d9e1a8645069
+%global commit6 e18c2ce5191576bab2e301b8ea250bd34dc0fc79
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 
 # docker-containerd
-%global git7 https://github.com/projectatomic/containerd
-%global commit7 471f03c11413d9ab1523de24d3e79ae3a7b8126e
+%global git7 https://github.com/docker/containerd
+%global commit7 aa8187dbd3b7ad67d8e5e3a15115d3eef43a7ed1
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 
 # rhel-push-plugin
 %global git8 https://github.com/projectatomic/rhel-push-plugin
-%global commit8 eb9e6beb8767a4a102e011c2d6e70394629dfa91
-%global shortcommit8 %(c=%{commit5}; echo ${c:0:7})
+%global commit8 70653ed7cbef7623ab850d09f0257a6b670582ce
+%global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 
 # docker-lvm-plugin
 %global git9 https://github.com/projectatomic/%{repo}-lvm-plugin
 %global commit9 bc03b5354aaa70ee14c482c4a861be08630bb755
-%global shortcommit9 %(c=%{commit6}; echo ${c:0:7})
+%global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
+
+# docker-proxy
+%global git10 https://github.com/docker/libnetwork
+%global commit10 0f534354b813003a754606689722fe253101bc4e
+%global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
+
+# tini
+%global git11 https://github.com/krallin/tini
+%global commit11 949e6facb77383876aeff8a6944dde66b3089574
+%global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 
 Name: %{repo}
 %if 0%{?fedora} || 0%{?centos}
 Epoch: 2
 %endif
-Version: 1.12.6
-Release: 18.git%{shortcommit0}%{?dist}
+Version: 1.13.1
+Release: 2.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -101,6 +111,8 @@ Source18: %{git8}/archive/%{commit8}/rhel-push-plugin-%{shortcommit8}.tar.gz
 Source19: %{git9}/archive/%{commit9}/%{repo}-lvm-plugin-%{shortcommit9}.tar.gz
 Source20: %{repo}.service.centos
 Source21: %{repo}-containerd.service.centos
+Source22: %{git10}/archive/%{commit10}/libnetwork-%{shortcommit10}.tar.gz
+Source23: %{git11}/archive/%{commit11}/tini-%{shortcommit11}.tar.gz
 
 %if 0%{?with_debug}
 # Build with debug
@@ -108,6 +120,7 @@ Source21: %{repo}-containerd.service.centos
 %endif
 
 BuildRequires: git
+BuildRequires: cmake
 BuildRequires: glibc-static
 BuildRequires: gpgme-devel
 BuildRequires: libassuan-devel
@@ -131,6 +144,7 @@ Requires: device-mapper-libs >= 1.02.90-1
 
 Requires: skopeo-containers
 Requires: gnupg
+Requires: criu
 
 # BZ#1399098
 Requires: python-rhsm-certificates
@@ -516,6 +530,12 @@ mkdir src
 mv g* src/
 popd
 
+# untar docker-proxy
+tar zxf %{SOURCE22}
+
+# untar tini
+tar zxf %{SOURCE23}
+
 %build
 # set up temporary build gopath, and put our directory there
 mkdir _build
@@ -526,6 +546,13 @@ ln -s $(dirs +1 -l)/%{repo}-novolume-plugin-%{commit4} src/%{provider}.%{provide
 ln -s $(dirs +1 -l)/containerd-%{commit7} src/%{provider}.%{provider_tld}/docker/containerd
 ln -s $(dirs +1 -l)/rhel-push-plugin-%{commit8} src/%{provider}.%{provider_tld}/projectatomic/rhel-push-plugin
 ln -s $(dirs +1 -l)/%{repo}-lvm-plugin-%{commit9} src/%{provider}.%{provider_tld}/projectatomic/%{repo}-lvm-plugin
+popd
+
+pushd libnetwork-%{commit10}
+mkdir -p src/github.com/docker/libnetwork
+ln -s $(pwd)/* src/github.com/docker/libnetwork
+export GOPATH=$(pwd)
+go build -ldflags="-linkmode=external" -o docker-proxy github.com/docker/libnetwork/cmd/proxy
 popd
 
 # compile novolume first - otherwise deps in gopath conflict with the others below and this fails
@@ -569,12 +596,19 @@ popd
 
 # build docker-runc
 pushd runc-%{commit6}
+sed -i 's/go build -i/go build/g' Makefile
 make BUILDTAGS="seccomp selinux"
 popd
 
 # build docker-containerd
 pushd containerd-%{commit7}
 make
+popd
+
+# build tini
+pushd tini-%{commit11}
+cmake .
+make tini-static
 popd
 
 %install
@@ -584,8 +618,10 @@ rm bundles/latest/dynbinary-client/*.md5 bundles/latest/dynbinary-client/*.sha25
 rm bundles/latest/dynbinary-daemon/*.md5 bundles/latest/dynbinary-daemon/*.sha256
 install -p -m 755 bundles/latest/dynbinary-client/%{repo}-%{version}* %{buildroot}%{_bindir}/%{repo}-current
 install -p -m 755 bundles/latest/dynbinary-daemon/%{repo}d-%{version}* %{buildroot}%{_bindir}/%{repo}d-current
+
+# install docker-proxy
 install -d %{buildroot}%{_libexecdir}/%{repo}
-install -p -m 755 bundles/latest/dynbinary-daemon/%{repo}-proxy-%{version}* %{buildroot}%{_libexecdir}/%{repo}/%{repo}-proxy-current
+install -p -m 755 libnetwork-%{commit10}/docker-proxy %{buildroot}%{_libexecdir}/%{repo}/%{repo}-proxy-current
 
 # install manpages
 install -d %{buildroot}%{_mandir}/man1
@@ -656,6 +692,10 @@ install -d %{buildroot}%{_libexecdir}/%{repo}
 install -p -m 755 containerd-%{commit7}/bin/containerd %{buildroot}%{_libexecdir}/%{repo}/%{repo}-containerd-current
 install -p -m 755 containerd-%{commit7}/bin/containerd-shim %{buildroot}%{_libexecdir}/%{repo}/%{repo}-containerd-shim-current
 install -p -m 755 containerd-%{commit7}/bin/ctr %{buildroot}%{_libexecdir}/%{repo}/%{repo}-ctr-current
+
+# install tini
+install -d %{buildroot}%{_libexecdir}/%{repo}
+install -p -m 755 tini-%{commit11}/tini-static %{buildroot}%{_libexecdir}/%{repo}/%{repo}-init-current
 
 # for additional args
 install -d %{buildroot}%{_sysconfdir}/sysconfig/
@@ -792,6 +832,7 @@ exit 0
 %{_libexecdir}/%{repo}/%{repo}-containerd-shim-current
 %{_libexecdir}/%{repo}/%{repo}-ctr-current
 %{_libexecdir}/%{repo}/%{repo}-proxy-current
+%{_libexecdir}/%{repo}/%{repo}-init-current
 
 %if 0%{?with_devel}
 %files devel -f devel.file-list
@@ -885,6 +926,16 @@ exit 0
 %systemd_postun_with_restart docker-lvm-plugin.service
 
 %changelog
+* Thu Feb 09 2017 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.13.1-2.git5be1549
+- built docker @projectatomic/docker-1.13 commit 5be1549
+- built docker-selinux commit 
+- built d-s-s commit 5e1f47b
+- built docker-novolume-plugin commit c521254
+- built docker-runc @projectatomic/runc-1.13 commit e18c2ce
+- built docker-utils commit 
+- built docker-containerd commit aa8187d
+- built docker-v1.10-migrator commit 994c35c
+
 * Mon Jan 30 2017 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.12.6-18.gitae7d637
 - built docker @projectatomic/docker-1.12 commit ae7d637
 - built docker-selinux commit 

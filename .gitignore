@@ -113,3 +113,10 @@
 /docker-037a2f5.tar.gz
 /docker-storage-setup-5e1f47b.tar.gz
 /docker-ae7d637.tar.gz
+/containerd-aa8187d.tar.gz
+/docker-5be1549.tar.gz
+/docker-lvm-plugin-bc03b53.tar.gz
+/libnetwork-0f53435.tar.gz
+/rhel-push-plugin-70653ed.tar.gz
+/runc-e18c2ce.tar.gz
+/tini-949e6fa.tar.gz
