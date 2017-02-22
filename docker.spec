@@ -11,6 +11,13 @@
 # modifying the dockerinit binary breaks the SHA1 sum check by docker
 %global __os_install_post %{_rpmconfigdir}/brp-compress
 
+# default overlay2 storage only on Fedora 26 and later
+%if 0%{?fedora} >= 26
+%global custom_storage 1
+%else
+%global custom_storage 0
+%endif
+
 # docker builds in a checksum of dockerinit into docker,
 # so stripping the binaries breaks docker
 %if 0%{?with_debug}
@@ -38,6 +45,7 @@
 %global commit1 5e1f47b4251108c48b32aad22ae9494a7c3ee5fe
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global dss_libdir %{_exec_prefix}/lib/%{repo}-storage-setup
+%global dss_datadir %{_datadir}/%{repo}-storage-setup
 
 # docker-novolume-plugin
 %global git4 https://github.com/projectatomic/%{repo}-novolume-plugin
@@ -84,7 +92,7 @@ Name: %{repo}
 Epoch: 2
 %endif
 Version: 1.13.1
-Release: 2.git%{shortcommit0}%{?dist}
+Release: 3.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -196,6 +204,13 @@ Recommends: oci-systemd-hook
 Requires: oci-register-machine
 Requires: oci-systemd-hook
 %endif
+
+%if %{custom_storage}
+Provides: variant_config(Atomichost)
+Provides: variant_config(Cloud)
+Provides: variant_config(Server)
+Provides: variant_config(Workstation)
+%endif # custom_storage
 
 %description
 Docker is an open-source engine that automates the deployment of any
@@ -501,6 +516,23 @@ cp %{SOURCE9} .
 
 # untar d-s-s
 tar zxf %{SOURCE1}
+pushd %{repo}-storage-setup-%{commit1}
+%if %{custom_storage}
+# create default override config
+ln -s %{repo}-storage-setup-override.conf %{repo}-storage-setup-default
+# create workstation override config
+cp %{repo}-storage-setup-override.conf %{repo}-storage-setup-workstation
+echo 'STORAGE_DRIVER=overlay2' >> %{repo}-storage-setup-workstation
+# create cloud override config
+ln -s %{repo}-storage-setup-workstation %{repo}-storage-setup-cloud
+# create server override config
+ln -s %{repo}-storage-setup-workstation %{repo}-storage-setup-server
+# create atomic override config
+cp %{repo}-storage-setup-server %{repo}-storage-setup-atomichost
+echo 'CONTAINER_ROOT_LV_NAME=docker-root-lv' >> %{repo}-storage-setup-atomichost
+echo 'CONTAINER_ROOT_LV_MOUNT_PATH=/var/lib/docker' >> %{repo}-storage-setup-atomichost
+%endif # custom_storage
+popd
 
 # untar docker-novolume-plugin
 tar zxf %{SOURCE4}
@@ -732,9 +764,17 @@ install -dp %{buildroot}%{_sysconfdir}/%{repo}
 # install d-s-s
 pushd %{repo}-storage-setup-%{commit1}
 make install DESTDIR=%{buildroot}
+%if %{custom_storage}
+install -dp %{buildroot}%{dss_datadir}
+install -p -m 644 %{repo}-storage-setup-atomichost %{buildroot}%{dss_datadir}
+install -p -m 644 %{repo}-storage-setup-cloud %{buildroot}%{dss_datadir}
+install -p -m 644 %{repo}-storage-setup-server %{buildroot}%{dss_datadir}
+install -p -m 644 %{repo}-storage-setup-workstation %{buildroot}%{dss_datadir}
+install -p -m 644 %{repo}-storage-setup-default %{buildroot}%{dss_datadir}
+%endif # custom_storage
 popd
 
-# install %%{_bindir}/%{name}
+# install %%{_bindir}/%%{name}
 install -d %{buildroot}%{_bindir}
 install -p -m 755 %{SOURCE16} %{buildroot}%{_bindir}/%{repo}
 
@@ -823,6 +863,34 @@ install -p -m 644 %{repo}-lvm-plugin-%{commit9}%{_sysconfdir}/%{repo}/%{repo}-lv
 %postun rhel-push-plugin
 %systemd_postun_with_restart rhel-push-plugin.service
 
+%if %{custom_storage}
+%posttrans
+# If we don't yet have a symlink or existing file for
+# %%{name}-storage-setup.conf, create it.
+if [ ! -e %{_sysconfdir}/sysconfig/%{name}-storage-setup ]; then
+    # Import /etc/os-release to get the variant definition
+    . %{_sysconfdir}/os-release || :
+
+    case "$VARIANT_ID" in
+        atomichost)
+            cp %{dss_datadir}/%{name}-storage-setup-atomichost %{_sysconfdir}/sysconfig/%{name}-storage-setup || :
+            ;;
+        cloud)
+            cp %{dss_datadir}/%{name}-storage-setup-cloud %{_sysconfdir}/sysconfig/%{name}-storage-setup || :
+            ;;
+        server)
+            cp %{dss_datadir}/%{name}-storage-setup-server %{_sysconfdir}/sysconfig/%{name}-storage-setup || :
+            ;;
+        workstation)
+            cp %{dss_datadir}/%{name}-storage-setup-workstation %{_sysconfdir}/sysconfig/%{name}-storage-setup || :
+            ;;
+        *)
+            cp %{dss_datadir}/%{name}-storage-setup-default %{_sysconfdir}/sysconfig/%{name}-storage-setup || :
+            ;;
+        esac
+fi
+%endif # custom_storage
+
 %triggerin -n %{repo}-v1.10-migrator -- %{repo} < %{version}
 %{_bindir}/v1.10-migrator-local 2>/dev/null
 exit 0
@@ -834,7 +902,8 @@ exit 0
 %license LICENSE LICENSE-novolume-plugin LICENSE-vim-syntax
 %doc AUTHORS CHANGELOG.md CONTRIBUTING.md MAINTAINERS NOTICE README.md 
 %doc README-novolume-plugin.md README-vim-syntax.md
-%config(noreplace) %{_sysconfdir}/sysconfig/%{repo}-*
+%config(noreplace) %{_sysconfdir}/sysconfig/%{repo}-network
+%config(noreplace) %{_sysconfdir}/sysconfig/%{repo}-storage
 %{_mandir}/man1/%{repo}*.1.gz
 %{_mandir}/man5/*.5.gz
 %{_mandir}/man8/%{repo}*.8.gz
@@ -848,7 +917,16 @@ exit 0
 %{_udevrulesdir}/80-%{repo}.rules
 %{_sysconfdir}/%{repo}
 # d-s-s specific
-%config(noreplace) %{_sysconfdir}/sysconfig/%{repo}-storage-setup
+%if %{custom_storage}
+%ghost %config(noreplace) %{_sysconfdir}/sysconfig/%{name}-storage-setup
+%config(noreplace) %{dss_datadir}/%{name}-storage-setup-atomichost
+%config(noreplace) %{dss_datadir}/%{name}-storage-setup-cloud
+%config(noreplace) %{dss_datadir}/%{name}-storage-setup-server
+%config(noreplace) %{dss_datadir}/%{name}-storage-setup-workstation
+%config(noreplace) %{dss_datadir}/%{name}-storage-setup-default
+%else # custom_storage
+%config(noreplace) %{_sysconfdir}/sysconfig/%{name}-storage-setup
+%endif # custom_storage
 %{_unitdir}/%{repo}-storage-setup.service
 %{_bindir}/%{repo}-storage-setup
 %dir %{dss_libdir}
@@ -926,6 +1004,10 @@ exit 0
 %{_unitdir}/%{repo}-lvm-plugin.*
 
 %changelog
+* Wed Feb 22 2017 Lokesh Mandvekar <lsm5@fedoraproject.org> - 2:1.13.1-3.git5be1549
+- Resolves: #1419514 - F26: Default overlay2 storage
+- https://fedoraproject.org/wiki/Changes/DockerOverlay2
+
 * Thu Feb 09 2017 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.13.1-2.git5be1549
 - built docker @projectatomic/docker-1.13 commit 5be1549
 - built docker-selinux commit 
