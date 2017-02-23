@@ -900,13 +900,13 @@ exit 0
 %{_unitdir}/rhel-push-plugin.*
 
 %post rhel-push-plugin
-%systemd_post docker-rhel-push-plugin.service
+%systemd_post rhel-push-plugin.service
 
 %preun rhel-push-plugin
-%systemd_preun docker-rhel-push-plugin.service
+%systemd_preun rhel-push-plugin.service
 
 %postun rhel-push-plugin
-%systemd_postun_with_restart docker-rhel-push-plugin.service
+%systemd_postun_with_restart rhel-push-plugin.service
 
 %files lvm-plugin
 %license %{repo}-lvm-plugin-%{commit9}/LICENSE
