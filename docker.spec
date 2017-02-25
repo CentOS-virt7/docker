@@ -796,6 +796,33 @@ install -p -m 644 %{repo}-lvm-plugin-%{commit9}%{_sysconfdir}/%{repo}/%{repo}-lv
 %postun
 %systemd_postun_with_restart %{repo}
 
+%post lvm-plugin
+%systemd_post docker-lvm-plugin.service
+
+%preun lvm-plugin
+%systemd_preun docker-lvm-plugin.service
+
+%postun lvm-plugin
+%systemd_postun_with_restart docker-lvm-plugin.service
+
+%post novolume-plugin
+%systemd_post docker-novolume-plugin.service
+
+%preun novolume-plugin
+%systemd_preun docker-novolume-plugin.service
+
+%postun novolume-plugin
+%systemd_postun_with_restart docker-novolume-plugin.service
+
+%post rhel-push-plugin
+%systemd_post rhel-push-plugin.service
+
+%preun rhel-push-plugin
+%systemd_preun rhel-push-plugin.service
+
+%postun rhel-push-plugin
+%systemd_postun_with_restart rhel-push-plugin.service
+
 %triggerin -n %{repo}-v1.10-migrator -- %{repo} < %{version}
 %{_bindir}/v1.10-migrator-local 2>/dev/null
 exit 0
@@ -860,15 +887,6 @@ exit 0
 %{_unitdir}/%{repo}-novolume-plugin.service
 %{_unitdir}/%{repo}-novolume-plugin.socket
 
-%post novolume-plugin
-%systemd_post docker-novolume-plugin.service
-
-%preun novolume-plugin
-%systemd_preun docker-novolume-plugin.service
-
-%postun novolume-plugin
-%systemd_postun_with_restart docker-novolume-plugin.service
-
 %files common
 %doc README-%{repo}-common
 %{_bindir}/%{repo}
@@ -899,15 +917,6 @@ exit 0
 %{_libexecdir}/%{repo}/rhel-push-plugin
 %{_unitdir}/rhel-push-plugin.*
 
-%post rhel-push-plugin
-%systemd_post rhel-push-plugin.service
-
-%preun rhel-push-plugin
-%systemd_preun rhel-push-plugin.service
-
-%postun rhel-push-plugin
-%systemd_postun_with_restart rhel-push-plugin.service
-
 %files lvm-plugin
 %license %{repo}-lvm-plugin-%{commit9}/LICENSE
 %doc %{repo}-lvm-plugin-%{commit9}/README.md
@@ -915,15 +924,6 @@ exit 0
 %{_mandir}/man8/%{repo}-lvm-plugin.8.gz
 %{_libexecdir}/%{repo}/%{repo}-lvm-plugin
 %{_unitdir}/%{repo}-lvm-plugin.*
-
-%post lvm-plugin
-%systemd_post docker-lvm-plugin.service
-
-%preun lvm-plugin
-%systemd_preun docker-lvm-plugin.service
-
-%postun lvm-plugin
-%systemd_postun_with_restart docker-lvm-plugin.service
 
 %changelog
 * Thu Feb 09 2017 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.13.1-2.git5be1549
