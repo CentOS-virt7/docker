@@ -41,10 +41,9 @@
 %global docker_branch docker-1.13.1
 
 # d-s-s
-%global git1 https://github.com/projectatomic/%{repo}-storage-setup/
-%global commit1 5e1f47b4251108c48b32aad22ae9494a7c3ee5fe
+%global git1 https://github.com/projectatomic/container-storage-setup/
+%global commit1 1c1cb9016c7406520865741441234377ab98fd11
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
-%global dss_libdir %{_exec_prefix}/lib/%{repo}-storage-setup
 %global dss_datadir %{_datadir}/%{repo}-storage-setup
 
 # docker-novolume-plugin
@@ -92,7 +91,7 @@ Name: %{repo}
 Epoch: 2
 %endif
 Version: 1.13.1
-Release: 3.git%{shortcommit0}%{?dist}
+Release: 4.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -100,7 +99,7 @@ URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
 #ExclusiveArch: %%{go_arches}
 ExclusiveArch: %{ix86} x86_64 %{arm} aarch64 ppc64le s390x %{mips}
 Source0: %{git0}/archive/%{commit0}/%{repo}-%{shortcommit0}.tar.gz
-Source1: %{git1}/archive/%{commit1}/%{repo}-storage-setup-%{shortcommit1}.tar.gz
+Source1: %{git1}/archive/%{commit1}/container-storage-setup-%{shortcommit1}.tar.gz
 Source4: %{git4}/archive/%{commit4}/%{repo}-novolume-plugin-%{shortcommit4}.tar.gz
 Source5: %{repo}.service
 Source6: %{repo}.sysconfig
@@ -180,6 +179,8 @@ Requires: iptables
 
 # #1416929
 Requires: parted
+
+Requires: container-storage-setup
 
 # permitted by https://fedorahosted.org/fpc/ticket/341#comment:7
 # In F22, the whole package should be renamed to be just "docker" and
@@ -516,7 +517,7 @@ cp %{SOURCE9} .
 
 # untar d-s-s
 tar zxf %{SOURCE1}
-pushd %{repo}-storage-setup-%{commit1}
+pushd container-storage-setup-%{commit1}
 %if %{custom_storage}
 # create default override config
 ln -s %{repo}-storage-setup-override.conf %{repo}-storage-setup-default
@@ -762,8 +763,8 @@ done
 install -dp %{buildroot}%{_sysconfdir}/%{repo}
 
 # install d-s-s
-pushd %{repo}-storage-setup-%{commit1}
-make install DESTDIR=%{buildroot}
+pushd container-storage-setup-%{commit1}
+make install-docker DESTDIR=%{buildroot}
 %if %{custom_storage}
 install -dp %{buildroot}%{dss_datadir}
 install -p -m 644 %{repo}-storage-setup-atomichost %{buildroot}%{dss_datadir}
@@ -929,8 +930,6 @@ exit 0
 %endif # custom_storage
 %{_unitdir}/%{repo}-storage-setup.service
 %{_bindir}/%{repo}-storage-setup
-%dir %{dss_libdir}
-%{dss_libdir}/*
 # >= 1.11 specific
 %{_libexecdir}/%{repo}/%{repo}-runc-current
 %{_libexecdir}/%{repo}/%{repo}-containerd-current
