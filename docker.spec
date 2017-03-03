@@ -1003,6 +1003,9 @@ exit 0
 %{_unitdir}/%{repo}-lvm-plugin.*
 
 %changelog
+* Fri Mar 03 2017 Lokesh Mandvekar <lsm5@fedoraproject.org> - 2:1.13.1-4.git5be1549
+- switch to using container-storage-setup
+
 * Wed Feb 22 2017 Lokesh Mandvekar <lsm5@fedoraproject.org> - 2:1.13.1-3.git5be1549
 - Resolves: #1419514 - F26: Default overlay2 storage
 - https://fedoraproject.org/wiki/Changes/DockerOverlay2
