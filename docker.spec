@@ -91,7 +91,7 @@ Name: %{repo}
 Epoch: 2
 %endif
 Version: 1.13.1
-Release: 4.git%{shortcommit0}%{?dist}
+Release: 5.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -151,7 +151,6 @@ Requires: device-mapper-libs >= 1.02.90-1
 
 Requires: skopeo-containers
 Requires: gnupg
-Requires: criu
 
 # BZ#1399098
 Requires: python-rhsm-certificates
@@ -205,6 +204,8 @@ Recommends: oci-systemd-hook
 Requires: oci-register-machine
 Requires: oci-systemd-hook
 %endif
+
+Recommends: criu
 
 %if %{custom_storage}
 Provides: variant_config(Atomichost)
@@ -1003,6 +1004,16 @@ exit 0
 %{_unitdir}/%{repo}-lvm-plugin.*
 
 %changelog
+* Mon Mar 20 2017 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.13.1-5.git5be1549
+- built docker @projectatomic/docker-1.13 commit 5be1549
+- built docker-selinux commit 
+- built d-s-s commit 1c1cb90
+- built docker-novolume-plugin commit c521254
+- built docker-runc @projectatomic/runc-1.13 commit e18c2ce
+- built docker-utils commit 
+- built docker-containerd commit aa8187d
+- built docker-v1.10-migrator commit 994c35c
+
 * Fri Mar 03 2017 Lokesh Mandvekar <lsm5@fedoraproject.org> - 2:1.13.1-4.git5be1549
 - switch to using container-storage-setup
 
