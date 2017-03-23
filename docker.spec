@@ -126,6 +126,7 @@ Source23: %{git11}/archive/%{commit11}/tini-%{shortcommit11}.tar.gz
 #Patch0:      build-with-debug-info.patch
 %endif
 
+BuildRequires: sed
 BuildRequires: git
 BuildRequires: cmake
 BuildRequires: glibc-static
@@ -573,6 +574,11 @@ tar zxf %{SOURCE23}
 %build
 # set up temporary build gopath, and put our directory there
 mkdir _build
+
+%global version_tag %{name}-%{version}-%{release}.%{_arch}
+%{__sed} -r -i 's/^([\t ]*PkgVersion:[\t ]*)"<unknown>",$/\1"%{version_tag}",/' daemon/info.go
+%{__sed} -r -i 's/^([\t ]*PkgVersion:[\t ]*)"<unknown>",$/\1"%{version_tag}",/' api/client/system/version.go
+
 pushd _build
 mkdir -p src/%{provider}.%{provider_tld}/{%{repo},projectatomic}
 ln -s $(dirs +1 -l) src/%{import_path}
