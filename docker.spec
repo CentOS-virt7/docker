@@ -35,7 +35,7 @@
 
 # docker
 %global git0 https://github.com/projectatomic/%{repo}
-%global commit0 5be1549913ee9bdc5c30433345a76b36ac09bc02
+%global commit0 cd4c02a50ca7158ba9d7d31a9469b8aa6f1e86cb
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 # docker_branch used in %%check
 %global docker_branch docker-1.13.1
@@ -91,7 +91,7 @@ Name: %{repo}
 Epoch: 2
 %endif
 Version: 1.13.1
-Release: 5.git%{shortcommit0}%{?dist}
+Release: 6.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -577,7 +577,7 @@ mkdir _build
 
 %global version_tag %{name}-%{version}-%{release}.%{_arch}
 %{__sed} -r -i 's/^([\t ]*PkgVersion:[\t ]*)"<unknown>",$/\1"%{version_tag}",/' daemon/info.go
-%{__sed} -r -i 's/^([\t ]*PkgVersion:[\t ]*)"<unknown>",$/\1"%{version_tag}",/' api/client/system/version.go
+%{__sed} -r -i 's/^([\t ]*PkgVersion:[\t ]*)"<unknown>",$/\1"%{version_tag}",/' cli/command/system/version.go
 
 pushd _build
 mkdir -p src/%{provider}.%{provider_tld}/{%{repo},projectatomic}
@@ -1010,6 +1010,9 @@ exit 0
 %{_unitdir}/%{repo}-lvm-plugin.*
 
 %changelog
+* Thu Mar 23 2017 Lokesh Mandvekar <lsm5@fedoraproject.org> - 2:1.13.1-6.gitcd4c02a
+- built docker @projectatomic/docker-1.13.1 commit cd4c02a
+
 * Mon Mar 20 2017 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.13.1-5.git5be1549
 - built docker @projectatomic/docker-1.13 commit 5be1549
 - built docker-selinux commit 
