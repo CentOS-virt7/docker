@@ -209,7 +209,7 @@ Requires: oci-systemd-hook
 Recommends: criu
 
 %if %{custom_storage}
-Provides: variant_config(Atomichost)
+Provides: variant_config(Atomic.host)
 Provides: variant_config(Cloud)
 Provides: variant_config(Server)
 Provides: variant_config(Workstation)
@@ -880,7 +880,7 @@ if [ ! -e %{_sysconfdir}/sysconfig/%{name}-storage-setup ]; then
     . %{_sysconfdir}/os-release || :
 
     case "$VARIANT_ID" in
-        atomichost)
+        atomic.host)
             cp %{dss_datadir}/%{name}-storage-setup-atomichost %{_sysconfdir}/sysconfig/%{name}-storage-setup || :
             ;;
         cloud)
