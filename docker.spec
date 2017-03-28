@@ -34,92 +34,92 @@
 %global import_path %{provider}.%{provider_tld}/%{project}/%{repo}
 
 # docker
-%global git0 https://github.com/projectatomic/%{repo}
-%global commit0 cd4c02a50ca7158ba9d7d31a9469b8aa6f1e86cb
-%global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
+%global git_docker https://github.com/projectatomic/%{repo}
+%global commit_docker cd4c02a50ca7158ba9d7d31a9469b8aa6f1e86cb
+%global shortcommit_docker %(c=%{commit_docker}; echo ${c:0:7})
 # docker_branch used in %%check
 %global docker_branch docker-1.13.1
 
 # d-s-s
-%global git1 https://github.com/projectatomic/container-storage-setup/
-%global commit1 1c1cb9016c7406520865741441234377ab98fd11
-%global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
+%global git_dss https://github.com/projectatomic/container-storage-setup/
+%global commit_dss 1c1cb9016c7406520865741441234377ab98fd11
+%global shortcommit_dss %(c=%{commit_dss}; echo ${c:0:7})
 %global dss_datadir %{_datadir}/%{repo}-storage-setup
 
 # docker-novolume-plugin
-%global git4 https://github.com/projectatomic/%{repo}-novolume-plugin
-%global commit4 c5212546ab01b4b7b62caba888d298ab63f53984
-%global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
+%global git_novolume https://github.com/projectatomic/%{repo}-novolume-plugin
+%global commit_novolume c5212546ab01b4b7b62caba888d298ab63f53984
+%global shortcommit_novolume %(c=%{commit_novolume}; echo ${c:0:7})
 
 # v1.10-migrator
-%global git5 https://github.com/%{repo}/v1.10-migrator
-%global commit5 994c35cbf7ae094d4cb1230b85631ecedd77b0d8
-%global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
+%global git_migrator https://github.com/%{repo}/v1.10-migrator
+%global commit_migrator 994c35cbf7ae094d4cb1230b85631ecedd77b0d8
+%global shortcommit_migrator %(c=%{commit_migrator}; echo ${c:0:7})
 
 # docker-runc
-%global git6 https://github.com/projectatomic/runc/
-%global commit6 e18c2ce5191576bab2e301b8ea250bd34dc0fc79
-%global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
+%global git_runc https://github.com/projectatomic/runc/
+%global commit_runc e18c2ce5191576bab2e301b8ea250bd34dc0fc79
+%global shortcommit_runc %(c=%{commit_runc}; echo ${c:0:7})
 
 # docker-containerd
-%global git7 https://github.com/docker/containerd
-%global commit7 aa8187dbd3b7ad67d8e5e3a15115d3eef43a7ed1
-%global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
+%global git_containerd https://github.com/docker/containerd
+%global commit_containerd aa8187dbd3b7ad67d8e5e3a15115d3eef43a7ed1
+%global shortcommit_containerd %(c=%{commit_containerd}; echo ${c:0:7})
 
 # rhel-push-plugin
-%global git8 https://github.com/projectatomic/rhel-push-plugin
-%global commit8 70653ed7cbef7623ab850d09f0257a6b670582ce
-%global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
+%global git_rhel_push https://github.com/projectatomic/rhel-push-plugin
+%global commit_rhel_push 70653ed7cbef7623ab850d09f0257a6b670582ce
+%global shortcommit_rhel_push %(c=%{commit_rhel_push}; echo ${c:0:7})
 
 # docker-lvm-plugin
-%global git9 https://github.com/projectatomic/%{repo}-lvm-plugin
-%global commit9 bc03b5354aaa70ee14c482c4a861be08630bb755
-%global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
+%global git_lvm https://github.com/projectatomic/%{repo}-lvm-plugin
+%global commit_lvm bc03b5354aaa70ee14c482c4a861be08630bb755
+%global shortcommit_lvm %(c=%{commit_lvm}; echo ${c:0:7})
 
 # docker-proxy
-%global git10 https://github.com/docker/libnetwork
-%global commit10 0f534354b813003a754606689722fe253101bc4e
-%global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
+%global git_libnetwork https://github.com/docker/libnetwork
+%global commit_libnetwork 0f534354b813003a754606689722fe253101bc4e
+%global shortcommit_libnetwork %(c=%{commit_libnetwork}; echo ${c:0:7})
 
 # tini
-%global git11 https://github.com/krallin/tini
-%global commit11 949e6facb77383876aeff8a6944dde66b3089574
-%global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
+%global git_tini https://github.com/krallin/tini
+%global commit_tini 949e6facb77383876aeff8a6944dde66b3089574
+%global shortcommit_tini %(c=%{commit_tini}; echo ${c:0:7})
 
 Name: %{repo}
 %if 0%{?fedora} || 0%{?centos}
 Epoch: 2
 %endif
 Version: 1.13.1
-Release: 6.git%{shortcommit0}%{?dist}
+Release: 6.git%{shortcommit_docker}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
 # Temp fix for rhbz#1315903
 #ExclusiveArch: %%{go_arches}
 ExclusiveArch: %{ix86} x86_64 %{arm} aarch64 ppc64le s390x %{mips}
-Source0: %{git0}/archive/%{commit0}/%{repo}-%{shortcommit0}.tar.gz
-Source1: %{git1}/archive/%{commit1}/container-storage-setup-%{shortcommit1}.tar.gz
-Source4: %{git4}/archive/%{commit4}/%{repo}-novolume-plugin-%{shortcommit4}.tar.gz
+Source0: %{git_docker}/archive/%{commit_docker}/%{repo}-%{shortcommit_docker}.tar.gz
+Source1: %{git_dss}/archive/%{commit_dss}/container-storage-setup-%{shortcommit_dss}.tar.gz
+Source4: %{git_novolume}/archive/%{commit_novolume}/%{repo}-novolume-plugin-%{shortcommit_novolume}.tar.gz
 Source5: %{repo}.service
 Source6: %{repo}.sysconfig
 Source7: %{repo}-storage.sysconfig
 Source8: %{repo}-logrotate.sh
 Source9: README.%{repo}-logrotate
 Source10: %{repo}-network.sysconfig
-Source11: %{git5}/archive/%{commit5}/v1.10-migrator-%{shortcommit5}.tar.gz
-Source12: %{git6}/archive/%{commit6}/runc-%{shortcommit6}.tar.gz
-Source13: %{git7}/archive/%{commit7}/containerd-%{shortcommit7}.tar.gz
+Source11: %{git_migrator}/archive/%{commit_migrator}/v1.10-migrator-%{shortcommit_migrator}.tar.gz
+Source12: %{git_runc}/archive/%{commit_runc}/runc-%{shortcommit_runc}.tar.gz
+Source13: %{git_containerd}/archive/%{commit_containerd}/containerd-%{shortcommit_containerd}.tar.gz
 Source14: %{repo}-containerd.service
 Source15: v1.10-migrator-helper
 Source16: %{repo}-common.sh
 Source17: README-%{repo}-common
-Source18: %{git8}/archive/%{commit8}/rhel-push-plugin-%{shortcommit8}.tar.gz
-Source19: %{git9}/archive/%{commit9}/%{repo}-lvm-plugin-%{shortcommit9}.tar.gz
+Source18: %{git_rhel_push}/archive/%{commit_rhel_push}/rhel-push-plugin-%{shortcommit_rhel_push}.tar.gz
+Source19: %{git_lvm}/archive/%{commit_lvm}/%{repo}-lvm-plugin-%{shortcommit_lvm}.tar.gz
 Source20: %{repo}.service.centos
 Source21: %{repo}-containerd.service.centos
-Source22: %{git10}/archive/%{commit10}/libnetwork-%{shortcommit10}.tar.gz
-Source23: %{git11}/archive/%{commit11}/tini-%{shortcommit11}.tar.gz
+Source22: %{git_libnetwork}/archive/%{commit_libnetwork}/libnetwork-%{shortcommit_libnetwork}.tar.gz
+Source23: %{git_tini}/archive/%{commit_tini}/tini-%{shortcommit_tini}.tar.gz
 
 %if 0%{?with_debug}
 # Build with debug
@@ -415,7 +415,7 @@ This package installs %{summary}. logrotate is assumed to be installed on
 containers for this to work, failures are silently ignored.
 
 %package novolume-plugin
-URL: %{git4}
+URL: %{git_novolume}
 License: MIT
 Summary: Block container starts with local volumes defined
 Requires: %{repo} = %{epoch}:%{version}-%{release}
@@ -512,14 +512,14 @@ This plugin can be used to create lvm volumes of specified size, which can
 then be bind mounted into the container using `docker run` command.
 
 %prep
-%setup -q -n %{repo}-%{commit0}
+%setup -q -n %{repo}-%{commit_docker}
 
 # here keep the new line above otherwise autosetup fails when applying patch
 cp %{SOURCE9} .
 
 # untar d-s-s
 tar zxf %{SOURCE1}
-pushd container-storage-setup-%{commit1}
+pushd container-storage-setup-%{commit_dss}
 %if %{custom_storage}
 # create default override config
 ln -s %{repo}-storage-setup-override.conf %{repo}-storage-setup-default
@@ -560,7 +560,7 @@ tar zxf %{SOURCE18}
 
 # untar lvm-plugin
 tar zxf %{SOURCE19}
-pushd %{repo}-lvm-plugin-%{commit9}/vendor
+pushd %{repo}-lvm-plugin-%{commit_lvm}/vendor
 mkdir src
 mv g* src/
 popd
@@ -582,13 +582,13 @@ mkdir _build
 pushd _build
 mkdir -p src/%{provider}.%{provider_tld}/{%{repo},projectatomic}
 ln -s $(dirs +1 -l) src/%{import_path}
-ln -s $(dirs +1 -l)/%{repo}-novolume-plugin-%{commit4} src/%{provider}.%{provider_tld}/projectatomic/%{repo}-novolume-plugin
-ln -s $(dirs +1 -l)/containerd-%{commit7} src/%{provider}.%{provider_tld}/docker/containerd
-ln -s $(dirs +1 -l)/rhel-push-plugin-%{commit8} src/%{provider}.%{provider_tld}/projectatomic/rhel-push-plugin
-ln -s $(dirs +1 -l)/%{repo}-lvm-plugin-%{commit9} src/%{provider}.%{provider_tld}/projectatomic/%{repo}-lvm-plugin
+ln -s $(dirs +1 -l)/%{repo}-novolume-plugin-%{commit_novolume} src/%{provider}.%{provider_tld}/projectatomic/%{repo}-novolume-plugin
+ln -s $(dirs +1 -l)/containerd-%{commit_containerd} src/%{provider}.%{provider_tld}/docker/containerd
+ln -s $(dirs +1 -l)/rhel-push-plugin-%{commit_rhel_push} src/%{provider}.%{provider_tld}/projectatomic/rhel-push-plugin
+ln -s $(dirs +1 -l)/%{repo}-lvm-plugin-%{commit_lvm} src/%{provider}.%{provider_tld}/projectatomic/%{repo}-lvm-plugin
 popd
 
-pushd libnetwork-%{commit10}
+pushd libnetwork-%{commit_libnetwork}
 mkdir -p src/github.com/docker/libnetwork
 ln -s $(pwd)/* src/github.com/docker/libnetwork
 export GOPATH=$(pwd)
@@ -596,37 +596,37 @@ go build -ldflags="-linkmode=external" -o docker-proxy github.com/docker/libnetw
 popd
 
 # compile novolume first - otherwise deps in gopath conflict with the others below and this fails
-export GOPATH=$(pwd)/%{repo}-novolume-plugin-%{commit4}/Godeps/_workspace:$(pwd)/_build
+export GOPATH=$(pwd)/%{repo}-novolume-plugin-%{commit_novolume}/Godeps/_workspace:$(pwd)/_build
 pushd $(pwd)/_build/src
 go build -ldflags "-B 0x$(head -c20 /dev/urandom|od -An -tx1|tr -d ' \n')" github.com/projectatomic/%{repo}-novolume-plugin
 popd
 
-export GOPATH=$(pwd)/rhel-push-plugin-%{commit8}/Godeps/_workspace:$(pwd)/_build
+export GOPATH=$(pwd)/rhel-push-plugin-%{commit_rhel_push}/Godeps/_workspace:$(pwd)/_build
 pushd $(pwd)/_build/src
 go build -ldflags "-B 0x$(head -c20 /dev/urandom|od -An -tx1|tr -d ' \n')" %{provider}.%{provider_tld}/projectatomic/rhel-push-plugin
 popd
 
-export GOPATH=$(pwd)/%{name}-lvm-plugin-%{commit9}/vendor:$(pwd)/_build
+export GOPATH=$(pwd)/%{name}-lvm-plugin-%{commit_lvm}/vendor:$(pwd)/_build
 pushd $(pwd)/_build/src
 go build -ldflags "-B 0x$(head -c20 /dev/urandom|od -An -tx1|tr -d ' \n')" %{provider}.%{provider_tld}/projectatomic/%{repo}-lvm-plugin
 popd
 
-export DOCKER_GITCOMMIT="%{shortcommit0}/%{version}"
+export DOCKER_GITCOMMIT="%{shortcommit_docker}/%{version}"
 export DOCKER_BUILDTAGS="selinux seccomp"
-export GOPATH=$(pwd)/_build:$(pwd)/vendor:%{gopath}:$(pwd)/containerd-%{commit7}/vendor
+export GOPATH=$(pwd)/_build:$(pwd)/vendor:%{gopath}:$(pwd)/containerd-%{commit_containerd}/vendor
 
 DOCKER_DEBUG=1 bash -x hack/make.sh dynbinary
 man/md2man-all.sh
 cp contrib/syntax/vim/LICENSE LICENSE-vim-syntax
 cp contrib/syntax/vim/README.md README-vim-syntax.md
-cp %{repo}-novolume-plugin-%{commit4}/LICENSE LICENSE-novolume-plugin
-cp %{repo}-novolume-plugin-%{commit4}/README.md README-novolume-plugin.md
-go-md2man -in %{repo}-novolume-plugin-%{commit4}/man/docker-novolume-plugin.8.md -out docker-novolume-plugin.8
-go-md2man -in rhel-push-plugin-%{commit8}/man/rhel-push-plugin.8.md -out rhel-push-plugin.8
-go-md2man -in %{repo}-lvm-plugin-%{commit9}/man/%{repo}-lvm-plugin.8.md -out %{repo}-lvm-plugin.8
+cp %{repo}-novolume-plugin-%{commit_novolume}/LICENSE LICENSE-novolume-plugin
+cp %{repo}-novolume-plugin-%{commit_novolume}/README.md README-novolume-plugin.md
+go-md2man -in %{repo}-novolume-plugin-%{commit_novolume}/man/docker-novolume-plugin.8.md -out docker-novolume-plugin.8
+go-md2man -in rhel-push-plugin-%{commit_rhel_push}/man/rhel-push-plugin.8.md -out rhel-push-plugin.8
+go-md2man -in %{repo}-lvm-plugin-%{commit_lvm}/man/%{repo}-lvm-plugin.8.md -out %{repo}-lvm-plugin.8
 
 # build v1.10-migrator
-pushd v1.10-migrator-%{commit5}
+pushd v1.10-migrator-%{commit_migrator}
 %if 0%{?fedora}
 make v1.10-migrator-local
 %else
@@ -635,18 +635,18 @@ go build -o v1.10-migrator-local .
 popd
 
 # build docker-runc
-pushd runc-%{commit6}
+pushd runc-%{commit_runc}
 sed -i 's/go build -i/go build/g' Makefile
 make BUILDTAGS="seccomp selinux"
 popd
 
 # build docker-containerd
-pushd containerd-%{commit7}
+pushd containerd-%{commit_containerd}
 make
 popd
 
 # build tini
-pushd tini-%{commit11}
+pushd tini-%{commit_tini}
 cmake .
 make tini-static
 popd
@@ -661,7 +661,7 @@ install -p -m 755 bundles/latest/dynbinary-daemon/%{repo}d-%{version}* %{buildro
 
 # install docker-proxy
 install -d %{buildroot}%{_libexecdir}/%{repo}
-install -p -m 755 libnetwork-%{commit10}/docker-proxy %{buildroot}%{_libexecdir}/%{repo}/%{repo}-proxy-current
+install -p -m 755 libnetwork-%{commit_libnetwork}/docker-proxy %{buildroot}%{_libexecdir}/%{repo}/%{repo}-proxy-current
 
 # install manpages
 install -d %{buildroot}%{_mandir}/man1
@@ -718,24 +718,24 @@ install -p -m 644 %{SOURCE21} %{buildroot}%{_unitdir}/%{repo}-containerd.service
 # install novolume-plugin executable, unitfile, socket and man
 install -d %{buildroot}%{_libexecdir}/%{repo}
 install -p -m 755 _build/src/%{repo}-novolume-plugin %{buildroot}%{_libexecdir}/%{repo}
-install -p -m 644 %{repo}-novolume-plugin-%{commit4}/systemd/%{repo}-novolume-plugin.service %{buildroot}%{_unitdir}
-install -p -m 644 %{repo}-novolume-plugin-%{commit4}/systemd/%{repo}-novolume-plugin.socket %{buildroot}%{_unitdir}
+install -p -m 644 %{repo}-novolume-plugin-%{commit_novolume}/systemd/%{repo}-novolume-plugin.service %{buildroot}%{_unitdir}
+install -p -m 644 %{repo}-novolume-plugin-%{commit_novolume}/systemd/%{repo}-novolume-plugin.socket %{buildroot}%{_unitdir}
 install -d %{buildroot}%{_mandir}/man8
 install -p -m 644 %{repo}-novolume-plugin.8 %{buildroot}%{_mandir}/man8
 
 # install docker-runc
 install -d %{buildroot}%{_libexecdir}/%{repo}
-install -p -m 755 runc-%{commit6}/runc %{buildroot}%{_libexecdir}/%{repo}/%{repo}-runc-current
+install -p -m 755 runc-%{commit_runc}/runc %{buildroot}%{_libexecdir}/%{repo}/%{repo}-runc-current
 
 #install docker-containerd-current
 install -d %{buildroot}%{_libexecdir}/%{repo}
-install -p -m 755 containerd-%{commit7}/bin/containerd %{buildroot}%{_libexecdir}/%{repo}/%{repo}-containerd-current
-install -p -m 755 containerd-%{commit7}/bin/containerd-shim %{buildroot}%{_libexecdir}/%{repo}/%{repo}-containerd-shim-current
-install -p -m 755 containerd-%{commit7}/bin/ctr %{buildroot}%{_libexecdir}/%{repo}/%{repo}-ctr-current
+install -p -m 755 containerd-%{commit_containerd}/bin/containerd %{buildroot}%{_libexecdir}/%{repo}/%{repo}-containerd-current
+install -p -m 755 containerd-%{commit_containerd}/bin/containerd-shim %{buildroot}%{_libexecdir}/%{repo}/%{repo}-containerd-shim-current
+install -p -m 755 containerd-%{commit_containerd}/bin/ctr %{buildroot}%{_libexecdir}/%{repo}/%{repo}-ctr-current
 
 # install tini
 install -d %{buildroot}%{_libexecdir}/%{repo}
-install -p -m 755 tini-%{commit11}/tini-static %{buildroot}%{_libexecdir}/%{repo}/%{repo}-init-current
+install -p -m 755 tini-%{commit_tini}/tini-static %{buildroot}%{_libexecdir}/%{repo}/%{repo}-init-current
 
 # for additional args
 install -d %{buildroot}%{_sysconfdir}/sysconfig/
@@ -770,7 +770,7 @@ done
 install -dp %{buildroot}%{_sysconfdir}/%{repo}
 
 # install d-s-s
-pushd container-storage-setup-%{commit1}
+pushd container-storage-setup-%{commit_dss}
 make install-docker DESTDIR=%{buildroot}
 %if %{custom_storage}
 install -dp %{buildroot}%{dss_datadir}
@@ -788,11 +788,11 @@ install -p -m 755 %{SOURCE16} %{buildroot}%{_bindir}/%{repo}
 
 # install v1.10-migrator
 install -d %{buildroot}%{_bindir}
-install -p -m 700 v1.10-migrator-%{commit5}/v1.10-migrator-local %{buildroot}%{_bindir}
-cp v1.10-migrator-%{commit5}/CONTRIBUTING.md CONTRIBUTING-v1.10-migrator.md
-cp v1.10-migrator-%{commit5}/README.md README-v1.10-migrator.md
-cp v1.10-migrator-%{commit5}/LICENSE.code LICENSE-v1.10-migrator.code
-cp v1.10-migrator-%{commit5}/LICENSE.docs LICENSE-v1.10-migrator.docs
+install -p -m 700 v1.10-migrator-%{commit_migrator}/v1.10-migrator-local %{buildroot}%{_bindir}
+cp v1.10-migrator-%{commit_migrator}/CONTRIBUTING.md CONTRIBUTING-v1.10-migrator.md
+cp v1.10-migrator-%{commit_migrator}/README.md README-v1.10-migrator.md
+cp v1.10-migrator-%{commit_migrator}/LICENSE.code LICENSE-v1.10-migrator.code
+cp v1.10-migrator-%{commit_migrator}/LICENSE.docs LICENSE-v1.10-migrator.docs
 
 # install v1.10-migrator-helper
 install -p -m 700 %{SOURCE15} %{buildroot}%{_bindir}
@@ -810,19 +810,19 @@ ln -s %{_sysconfdir}/rhsm/ca/redhat-uep.pem %{buildroot}/%{_sysconfdir}/%{name}/
 # install rhel-push-plugin executable, unitfile, socket and man
 install -d %{buildroot}%{_libexecdir}/%{repo}
 install -p -m 755 _build/src/rhel-push-plugin %{buildroot}%{_libexecdir}/%{repo}/rhel-push-plugin
-install -p -m 644 rhel-push-plugin-%{commit8}/systemd/rhel-push-plugin.service %{buildroot}%{_unitdir}/rhel-push-plugin.service
-install -p -m 644 rhel-push-plugin-%{commit8}/systemd/rhel-push-plugin.socket %{buildroot}%{_unitdir}/rhel-push-plugin.socket
+install -p -m 644 rhel-push-plugin-%{commit_rhel_push}/systemd/rhel-push-plugin.service %{buildroot}%{_unitdir}/rhel-push-plugin.service
+install -p -m 644 rhel-push-plugin-%{commit_rhel_push}/systemd/rhel-push-plugin.socket %{buildroot}%{_unitdir}/rhel-push-plugin.socket
 install -d %{buildroot}%{_mandir}/man8
 install -p -m 644 rhel-push-plugin.8 %{buildroot}%{_mandir}/man8
 
 # install %%{repo}-lvm-plugin executable, unitfile, socket and man
 install -d %{buildroot}/%{_libexecdir}/%{repo}
 install -p -m 755 _build/src/%{repo}-lvm-plugin %{buildroot}/%{_libexecdir}/%{repo}/%{repo}-lvm-plugin
-install -p -m 644 %{repo}-lvm-plugin-%{commit9}/systemd/%{repo}-lvm-plugin.s* %{buildroot}%{_unitdir}
+install -p -m 644 %{repo}-lvm-plugin-%{commit_lvm}/systemd/%{repo}-lvm-plugin.s* %{buildroot}%{_unitdir}
 install -d %{buildroot}%{_mandir}/man8
 install -p -m 644 %{repo}-lvm-plugin.8 %{buildroot}%{_mandir}/man8
 mkdir -p %{buildroot}%{_sysconfdir}/%{repo}
-install -p -m 644 %{repo}-lvm-plugin-%{commit9}%{_sysconfdir}/%{repo}/%{repo}-lvm-plugin %{buildroot}%{_sysconfdir}/%{repo}/%{repo}-lvm-plugin
+install -p -m 644 %{repo}-lvm-plugin-%{commit_lvm}%{_sysconfdir}/%{repo}/%{repo}-lvm-plugin %{buildroot}%{_sysconfdir}/%{repo}/%{repo}-lvm-plugin
 
 %check
 [ ! -w /run/%{repo}.sock ] || {
@@ -995,15 +995,15 @@ exit 0
 %{_datadir}/rhel/secrets/rhsm
 
 %files rhel-push-plugin
-%license rhel-push-plugin-%{commit8}/LICENSE
-%doc rhel-push-plugin-%{commit8}/README.md
+%license rhel-push-plugin-%{commit_rhel_push}/LICENSE
+%doc rhel-push-plugin-%{commit_rhel_push}/README.md
 %{_mandir}/man8/rhel-push-plugin.8.gz
 %{_libexecdir}/%{repo}/rhel-push-plugin
 %{_unitdir}/rhel-push-plugin.*
 
 %files lvm-plugin
-%license %{repo}-lvm-plugin-%{commit9}/LICENSE
-%doc %{repo}-lvm-plugin-%{commit9}/README.md
+%license %{repo}-lvm-plugin-%{commit_lvm}/LICENSE
+%doc %{repo}-lvm-plugin-%{commit_lvm}/README.md
 %config(noreplace) %{_sysconfdir}/%{repo}/%{repo}-lvm-plugin
 %{_mandir}/man8/%{repo}-lvm-plugin.8.gz
 %{_libexecdir}/%{repo}/%{repo}-lvm-plugin
