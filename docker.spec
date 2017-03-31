@@ -91,7 +91,7 @@ Name: %{repo}
 Epoch: 2
 %endif
 Version: 1.13.1
-Release: 6.git%{shortcommit_docker}%{?dist}
+Release: 7.git%{shortcommit_docker}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -1010,6 +1010,9 @@ exit 0
 %{_unitdir}/%{repo}-lvm-plugin.*
 
 %changelog
+* Fri Mar 30 2017 Lokesh Mandvekar <lsm5@fedoraproject.org> - 2:1.13.1-7.gitcd4c02a
+- Resolves: #1434897, #1436777
+
 * Thu Mar 23 2017 Lokesh Mandvekar <lsm5@fedoraproject.org> - 2:1.13.1-6.gitcd4c02a
 - built docker @projectatomic/docker-1.13.1 commit cd4c02a
 
