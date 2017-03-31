@@ -1010,7 +1010,7 @@ exit 0
 %{_unitdir}/%{repo}-lvm-plugin.*
 
 %changelog
-* Fri Mar 30 2017 Lokesh Mandvekar <lsm5@fedoraproject.org> - 2:1.13.1-7.gitcd4c02a
+* Fri Mar 31 2017 Lokesh Mandvekar <lsm5@fedoraproject.org> - 2:1.13.1-7.gitcd4c02a
 - Resolves: #1434897, #1436777
 
 * Thu Mar 23 2017 Lokesh Mandvekar <lsm5@fedoraproject.org> - 2:1.13.1-6.gitcd4c02a
