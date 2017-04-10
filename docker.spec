@@ -35,7 +35,7 @@
 
 # docker
 %global git_docker https://github.com/projectatomic/%{repo}
-%global commit_docker cd4c02a50ca7158ba9d7d31a9469b8aa6f1e86cb
+%global commit_docker d97e39673ec652aeb58a32ee977a593018e04700
 %global shortcommit_docker %(c=%{commit_docker}; echo ${c:0:7})
 # docker_branch used in %%check
 %global docker_branch docker-1.13.1
@@ -91,7 +91,7 @@ Name: %{repo}
 Epoch: 2
 %endif
 Version: 1.13.1
-Release: 7.git%{shortcommit_docker}%{?dist}
+Release: 8.git%{shortcommit_docker}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -1010,6 +1010,9 @@ exit 0
 %{_unitdir}/%{repo}-lvm-plugin.*
 
 %changelog
+* Mon Apr 10 2017 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.13.1-8.gitd97e396
+- Resolves #1439577
+
 * Fri Mar 31 2017 Lokesh Mandvekar <lsm5@fedoraproject.org> - 2:1.13.1-7.gitcd4c02a
 - Resolves: #1434897, #1436777
 
