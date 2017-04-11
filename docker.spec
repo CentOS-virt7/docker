@@ -912,9 +912,9 @@ exit 0
 %doc README-novolume-plugin.md README-vim-syntax.md
 %config(noreplace) %{_sysconfdir}/sysconfig/%{repo}-network
 %config(noreplace) %{_sysconfdir}/sysconfig/%{repo}-storage
-%{_mandir}/man1/%{repo}*.1.gz
-%{_mandir}/man5/*.5.gz
-%{_mandir}/man8/%{repo}*.8.gz
+%{_mandir}/man1/*
+%{_mandir}/man5/*
+%{_mandir}/man8/*
 %{_bindir}/%{repo}-current
 %{_bindir}/%{repo}d-current
 %{_unitdir}/%{repo}.service
