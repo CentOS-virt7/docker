@@ -34,8 +34,8 @@
 %global import_path %{provider}.%{provider_tld}/%{project}/%{repo}
 
 # docker
-%global git_docker https://github.com/projectatomic/%{repo}
-%global commit_docker d97e39673ec652aeb58a32ee977a593018e04700
+%global git_docker https://github.com/runcom/docker
+%global commit_docker 14cc629fbd6c4bac205e675134d0e8235633e6a3
 %global shortcommit_docker %(c=%{commit_docker}; echo ${c:0:7})
 # docker_branch used in %%check
 %global docker_branch docker-1.13.1
@@ -91,7 +91,7 @@ Name: %{repo}
 Epoch: 2
 %endif
 Version: 1.13.1
-Release: 8.git%{shortcommit_docker}%{?dist}
+Release: 9.git%{shortcommit_docker}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -1010,6 +1010,10 @@ exit 0
 %{_unitdir}/%{repo}-lvm-plugin.*
 
 %changelog
+* Wed Apr 12 2017 Lokesh Mandvekar <lsm5@fedoraproject.org> - 2:1.13.1-9.git14cc629
+- Resolves: #1440389
+- built docker @runcom/secrets-rewrite commit 14cc629
+
 * Mon Apr 10 2017 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.13.1-8.gitd97e396
 - Resolves #1439577
 
