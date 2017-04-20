@@ -18,6 +18,10 @@
 %global custom_storage 0
 %endif
 
+%if 0%{?centos}
+%global with_migrator 0
+%endif
+
 # docker builds in a checksum of dockerinit into docker,
 # so stripping the binaries breaks docker
 %if 0%{?with_debug}
@@ -51,10 +55,12 @@
 %global commit_novolume c5212546ab01b4b7b62caba888d298ab63f53984
 %global shortcommit_novolume %(c=%{commit_novolume}; echo ${c:0:7})
 
+%if 0%{?with_migrator}
 # v1.10-migrator
 %global git_migrator https://github.com/%{repo}/v1.10-migrator
 %global commit_migrator 994c35cbf7ae094d4cb1230b85631ecedd77b0d8
 %global shortcommit_migrator %(c=%{commit_migrator}; echo ${c:0:7})
+%endif # with_migrator
 
 # docker-runc
 %global git_runc https://github.com/projectatomic/runc/
@@ -107,11 +113,15 @@ Source7: %{repo}-storage.sysconfig
 Source8: %{repo}-logrotate.sh
 Source9: README.%{repo}-logrotate
 Source10: %{repo}-network.sysconfig
+%if 0%{?with_migrator}
 Source11: %{git_migrator}/archive/%{commit_migrator}/v1.10-migrator-%{shortcommit_migrator}.tar.gz
+%endif # with_migrator
 Source12: %{git_runc}/archive/%{commit_runc}/runc-%{shortcommit_runc}.tar.gz
 Source13: %{git_containerd}/archive/%{commit_containerd}/containerd-%{shortcommit_containerd}.tar.gz
 Source14: %{repo}-containerd.service
+%if 0%{?with_migrator}
 Source15: v1.10-migrator-helper
+%endif # with_migrator
 Source16: %{repo}-common.sh
 Source17: README-%{repo}-common
 Source18: %{git_rhel_push}/archive/%{commit_rhel_push}/rhel-push-plugin-%{shortcommit_rhel_push}.tar.gz
@@ -466,6 +476,7 @@ Provides: %{repo}-io-zsh-completion = %{epoch}:%{version}-%{release}
 %description zsh-completion
 This package installs %{summary}.
 
+%if 0%{?with_migrator}
 %package v1.10-migrator
 Summary: Calculates SHA256 checksums for docker layer content
 License: ASL 2.0 and CC-BY-SA
@@ -480,6 +491,7 @@ The migration usually runs on daemon startup but it can be quite slow(usually
 100-200MB/s) and daemon will not be able to accept requests during
 that time. You can run this tool instead while the old daemon is still
 running and skip checksum calculation on startup.
+%endif #with_migrator
 
 %package rhsubscription
 Summary: Red Hat subscription management files needed on the host to enable RHEL containers
@@ -541,8 +553,10 @@ popd
 # untar docker-novolume-plugin
 tar zxf %{SOURCE4}
 
+%if 0%{?with_migrator}
 # untar v1.10-migrator
 tar zxf %{SOURCE11}
+%endif
 
 # untar docker-runc
 tar zxf %{SOURCE12}
@@ -626,6 +640,7 @@ go-md2man -in %{repo}-novolume-plugin-%{commit_novolume}/man/docker-novolume-plu
 go-md2man -in rhel-push-plugin-%{commit_rhel_push}/man/rhel-push-plugin.8.md -out rhel-push-plugin.8
 go-md2man -in %{repo}-lvm-plugin-%{commit_lvm}/man/%{repo}-lvm-plugin.8.md -out %{repo}-lvm-plugin.8
 
+%if 0%{?with_migrator}
 # build v1.10-migrator
 pushd v1.10-migrator-%{commit_migrator}
 %if 0%{?fedora}
@@ -634,6 +649,7 @@ make v1.10-migrator-local
 go build -o v1.10-migrator-local .
 %endif
 popd
+%endif # with_migrator
 
 # build docker-runc
 pushd runc-%{commit_runc}
@@ -787,6 +803,7 @@ popd
 install -d %{buildroot}%{_bindir}
 install -p -m 755 %{SOURCE16} %{buildroot}%{_bindir}/%{repo}
 
+%if 0%{?with_migrator}
 # install v1.10-migrator
 install -d %{buildroot}%{_bindir}
 install -p -m 700 v1.10-migrator-%{commit_migrator}/v1.10-migrator-local %{buildroot}%{_bindir}
@@ -797,6 +814,7 @@ cp v1.10-migrator-%{commit_migrator}/LICENSE.docs LICENSE-v1.10-migrator.docs
 
 # install v1.10-migrator-helper
 install -p -m 700 %{SOURCE15} %{buildroot}%{_bindir}
+%endif # with_migrator
 
 # install secrets patch directory
 install -d -p -m 750 %{buildroot}/%{_datadir}/rhel/secrets
@@ -900,9 +918,11 @@ if [ ! -e %{_sysconfdir}/sysconfig/%{name}-storage-setup ]; then
 fi
 %endif # custom_storage
 
+%if 0%{?with_migrator}
 %triggerin -n %{repo}-v1.10-migrator -- %{repo} < %{version}
 %{_bindir}/v1.10-migrator-local 2>/dev/null
 exit 0
+%endif # with_migrator
 
 #define license tag if not already defined
 %{!?_licensedir:%global license %doc}
@@ -985,10 +1005,12 @@ exit 0
 %files zsh-completion
 %{_datadir}/zsh/site-functions/_%{repo}
 
+%if 0%{?with_migrator}
 %files v1.10-migrator
 %license LICENSE-v1.10-migrator.{code,docs}
 %doc CONTRIBUTING-v1.10-migrator.md README-v1.10-migrator.md
 %{_bindir}/v1.10-migrator-*
+%endif # with_migrator
 
 %files rhsubscription
 %{_datadir}/rhel/secrets/etc-pki-entitlement
