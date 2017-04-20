@@ -201,12 +201,13 @@ Requires: libseccomp >= 2.3.0
 %if 0%{?fedora}
 Recommends: oci-register-machine
 Recommends: oci-systemd-hook
+Recommends: criu
 %else
 Requires: oci-register-machine
 Requires: oci-systemd-hook
+Requires: criu
 %endif
 
-Recommends: criu
 
 %if %{custom_storage}
 Provides: variant_config(Atomic.host)
