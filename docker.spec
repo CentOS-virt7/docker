@@ -68,8 +68,8 @@
 %global shortcommit_runc %(c=%{commit_runc}; echo ${c:0:7})
 
 # docker-containerd
-%global git_containerd https://github.com/docker/containerd
-%global commit_containerd aa8187dbd3b7ad67d8e5e3a15115d3eef43a7ed1
+%global git_containerd https://github.com/projectatomic/containerd
+%global commit_containerd 03e5862ec0d8d3b3f750e19fca3ee367e13c090e
 %global shortcommit_containerd %(c=%{commit_containerd}; echo ${c:0:7})
 
 # rhel-push-plugin
