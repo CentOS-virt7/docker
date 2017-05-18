@@ -97,7 +97,7 @@ Name: %{repo}
 Epoch: 2
 %endif
 Version: 1.13.1
-Release: 9.git%{shortcommit_docker}%{?dist}
+Release: 10.git%{shortcommit_docker}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -162,6 +162,7 @@ Requires: device-mapper-libs >= 1.02.90-1
 
 Requires: skopeo-containers
 Requires: gnupg
+Requires: atomic-registries
 
 # BZ#1399098
 Requires: python-rhsm-certificates
@@ -1033,6 +1034,9 @@ exit 0
 %{_unitdir}/%{repo}-lvm-plugin.*
 
 %changelog
+* Thu May 18 2017 bbaude <bbaude@redhat.com> - 2:1.13.1-10.git14cc629
+- Depend on atomic-registries
+
 * Wed Apr 12 2017 Lokesh Mandvekar <lsm5@fedoraproject.org> - 2:1.13.1-9.git14cc629
 - Resolves: #1440389
 - built docker @runcom/secrets-rewrite commit 14cc629
