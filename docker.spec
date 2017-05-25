@@ -92,6 +92,11 @@
 %global commit_tini 949e6facb77383876aeff8a6944dde66b3089574
 %global shortcommit_tini %(c=%{commit_tini}; echo ${c:0:7})
 
+#oci-umount
+%global git_umount https://github.com/projectatomic/oci-umount
+%global commit_umount 7623f6adb2fa458b4b83a739ac0dd067e09175d9
+%global shortcommit_umount %(c=%{commit_umount}; echo ${c:0:7})
+
 Name: %{repo}
 %if 0%{?fedora} || 0%{?centos}
 Epoch: 2
@@ -130,6 +135,7 @@ Source20: %{repo}.service.centos
 Source21: %{repo}-containerd.service.centos
 Source22: %{git_libnetwork}/archive/%{commit_libnetwork}/libnetwork-%{shortcommit_libnetwork}.tar.gz
 Source23: %{git_tini}/archive/%{commit_tini}/tini-%{shortcommit_tini}.tar.gz
+Source24: %{git_umount}/archive/%{commit_umount}/oci-umount-%{shortcommit_umount}.tar.gz
 
 %if 0%{?with_debug}
 # Build with debug
@@ -156,6 +162,14 @@ BuildRequires: btrfs-progs-devel
 BuildRequires: sqlite-devel
 BuildRequires: pkgconfig(systemd)
 %if 0%{?fedora} >= 21
+
+#oci-umount
+BuildRequires:  autoconf
+BuildRequires:  automake
+BuildRequires:  pkgconfig(yajl)
+BuildRequires:  pkgconfig(libselinux)
+BuildRequires:  pkgconfig(mount)
+
 # Resolves: rhbz#1165615
 Requires: device-mapper-libs >= 1.02.90-1
 %endif
@@ -525,6 +539,16 @@ Docker Volume Driver for lvm volumes.
 This plugin can be used to create lvm volumes of specified size, which can
 then be bind mounted into the container using `docker run` command.
 
+%package oci-umount
+License: GPLv3+
+Summary: OCI umount hook for docker
+Requires: %{name} = %{epoch}:%{version}-%{release}
+
+%description oci-umount
+OCI umount hooks unmount potential leaked mount points in a containers
+mount namespaces.
+
+
 %prep
 %setup -q -n %{repo}-%{commit_docker}
 
@@ -586,6 +610,10 @@ tar zxf %{SOURCE22}
 
 # untar tini
 tar zxf %{SOURCE23}
+
+# untar oci-hook
+tar zxf %{SOURCE24}
+
 
 %build
 # set up temporary build gopath, and put our directory there
@@ -668,6 +696,14 @@ pushd tini-%{commit_tini}
 cmake .
 make tini-static
 popd
+
+# build oci-umount
+pushd oci-umount-%{commit_umount}
+autoreconf -i
+%configure --libexecdir=/usr/libexec/oci/hooks.d/
+make %{?_smp_mflags}
+popd
+
 
 %install
 # install binary
@@ -754,6 +790,11 @@ install -p -m 755 containerd-%{commit_containerd}/bin/ctr %{buildroot}%{_libexec
 # install tini
 install -d %{buildroot}%{_libexecdir}/%{repo}
 install -p -m 755 tini-%{commit_tini}/tini-static %{buildroot}%{_libexecdir}/%{repo}/%{repo}-init-current
+
+# install oci-umount
+pushd oci-umount-%{commit_umount}
+%make_install
+popd
 
 # for additional args
 install -d %{buildroot}%{_sysconfdir}/sysconfig/
@@ -1033,7 +1074,19 @@ exit 0
 %{_libexecdir}/%{repo}/%{repo}-lvm-plugin
 %{_unitdir}/%{repo}-lvm-plugin.*
 
+%files oci-umount
+%{_libexecdir}/oci/hooks.d/oci-umount
+%{_mandir}/man1/oci-umount.1*
+%doc  oci-umount-%{commit_umount}/README.md
+%license  oci-umount-%{commit_umount}/LICENSE
+%dir %{_libexecdir}/oci
+%dir %{_libexecdir}/oci/hooks.d
+%{_sysconfdir}/oci-umount.conf
+
 %changelog
+* Thu May 25 2017 Frantisek Kluknavsky <fkluknav@redhat.com> - 2:1.13.1-11.git14cc629
+- added oci-umount subpackage
+
 * Thu May 18 2017 bbaude <bbaude@redhat.com> - 2:1.13.1-10.git14cc629
 - Depend on atomic-registries
 
