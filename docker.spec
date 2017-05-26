@@ -102,7 +102,7 @@ Name: %{repo}
 Epoch: 2
 %endif
 Version: 1.13.1
-Release: 11.git%{shortcommit_docker}%{?dist}
+Release: 12.git%{shortcommit_docker}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -1081,9 +1081,12 @@ exit 0
 %license  oci-umount-%{commit_umount}/LICENSE
 %dir %{_libexecdir}/oci
 %dir %{_libexecdir}/oci/hooks.d
-%{_sysconfdir}/oci-umount.conf
+%config(noreplace) %{_sysconfdir}/oci-umount.conf
 
 %changelog
+* Fri May 26 2017 Frantisek Kluknavsky <fkluknav@redhat.com> - 2:1.13.1-12.git14cc629
+- mark /etc/oci-umount.conf as config(noreplace)
+
 * Thu May 25 2017 Frantisek Kluknavsky <fkluknav@redhat.com> - 2:1.13.1-11.git14cc629
 - added oci-umount subpackage
 
