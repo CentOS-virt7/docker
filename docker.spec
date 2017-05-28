@@ -39,7 +39,7 @@
 
 # docker
 %global git_docker https://github.com/runcom/docker
-%global commit_docker 14cc629fbd6c4bac205e675134d0e8235633e6a3
+%global commit_docker 51eb16eb1622a03a7a3c3394f6b8f71549be8bf9
 %global shortcommit_docker %(c=%{commit_docker}; echo ${c:0:7})
 # docker_branch used in %%check
 %global docker_branch docker-1.13.1
@@ -102,7 +102,7 @@ Name: %{repo}
 Epoch: 2
 %endif
 Version: 1.13.1
-Release: 12.git%{shortcommit_docker}%{?dist}
+Release: 13.git%{shortcommit_docker}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -233,6 +233,8 @@ Requires: oci-systemd-hook
 Requires: criu
 %endif
 
+#oci-umount should probably be a hard dependency, not soft
+Requires: oci-umount
 
 %if %{custom_storage}
 Provides: variant_config(Atomic.host)
@@ -539,12 +541,12 @@ Docker Volume Driver for lvm volumes.
 This plugin can be used to create lvm volumes of specified size, which can
 then be bind mounted into the container using `docker run` command.
 
-%package oci-umount
+%package -n oci-umount
 License: GPLv3+
 Summary: OCI umount hook for docker
-Requires: %{name} = %{epoch}:%{version}-%{release}
+Obsoletes: docker-oci-umount < 1.13.1-13
 
-%description oci-umount
+%description -n oci-umount
 OCI umount hooks unmount potential leaked mount points in a containers
 mount namespaces.
 
@@ -1074,7 +1076,7 @@ exit 0
 %{_libexecdir}/%{repo}/%{repo}-lvm-plugin
 %{_unitdir}/%{repo}-lvm-plugin.*
 
-%files oci-umount
+%files -n oci-umount
 %{_libexecdir}/oci/hooks.d/oci-umount
 %{_mandir}/man1/oci-umount.1*
 %doc  oci-umount-%{commit_umount}/README.md
@@ -1084,6 +1086,11 @@ exit 0
 %config(noreplace) %{_sysconfdir}/oci-umount.conf
 
 %changelog
+* Sun May 28 2017 Frantisek Kluknavsky <fkluknav@redhat.com> - 2:1.13.1-13.git51eb16e
+- rebase to latest upstream
+- docker-oci-umount renamed to oci-umount
+- docker depends on oci-umount, not vice-versa
+
 * Fri May 26 2017 Frantisek Kluknavsky <fkluknav@redhat.com> - 2:1.13.1-12.git14cc629
 - mark /etc/oci-umount.conf as config(noreplace)
 
