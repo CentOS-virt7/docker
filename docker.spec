@@ -102,7 +102,7 @@ Name: %{repo}
 Epoch: 2
 %endif
 Version: 1.13.1
-Release: 13.git%{shortcommit_docker}%{?dist}
+Release: 15.git%{shortcommit_docker}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -1086,6 +1086,9 @@ exit 0
 %config(noreplace) %{_sysconfdir}/oci-umount.conf
 
 %changelog
+* Mon Jun 05 2017 bbaude <bbaude@redhat.com> - 2:1.13.1-15.git51eb16e
+- version bump to align future builds of f26 to -15
+
 * Sun May 28 2017 Frantisek Kluknavsky <fkluknav@redhat.com> - 2:1.13.1-13.git51eb16e
 - rebase to latest upstream
 - docker-oci-umount renamed to oci-umount
