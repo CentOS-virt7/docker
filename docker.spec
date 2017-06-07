@@ -46,7 +46,7 @@
 
 # d-s-s
 %global git_dss https://github.com/projectatomic/container-storage-setup/
-%global commit_dss 1c1cb9016c7406520865741441234377ab98fd11
+%global commit_dss 9b77bcb2cba8e272799fa21e2d484e9f6e7c34d0
 %global shortcommit_dss %(c=%{commit_dss}; echo ${c:0:7})
 %global dss_datadir %{_datadir}/%{repo}-storage-setup
 
@@ -102,7 +102,7 @@ Name: %{repo}
 Epoch: 2
 %endif
 Version: 1.13.1
-Release: 15.git%{shortcommit_docker}%{?dist}
+Release: 16.git%{shortcommit_docker}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -1086,6 +1086,9 @@ exit 0
 %config(noreplace) %{_sysconfdir}/oci-umount.conf
 
 %changelog
+* Wed Jun 07 2017 Frantisek Kluknavsky <fkluknav@redhat.com> - 2:1.13.1-16.git14cc629
+- rebased container-storage-setup
+
 * Mon Jun 05 2017 bbaude <bbaude@redhat.com> - 2:1.13.1-15.git51eb16e
 - version bump to align future builds of f26 to -15
 
