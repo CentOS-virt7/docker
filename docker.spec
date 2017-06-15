@@ -39,7 +39,7 @@
 
 # docker
 %global git_docker https://github.com/runcom/docker
-%global commit_docker 51eb16eb1622a03a7a3c3394f6b8f71549be8bf9
+%global commit_docker 27e468e0954bba26b1176cee25a03560114fcb82
 %global shortcommit_docker %(c=%{commit_docker}; echo ${c:0:7})
 # docker_branch used in %%check
 %global docker_branch docker-1.13.1
@@ -102,7 +102,7 @@ Name: %{repo}
 Epoch: 2
 %endif
 Version: 1.13.1
-Release: 16.git%{shortcommit_docker}%{?dist}
+Release: 17.git%{shortcommit_docker}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -1086,6 +1086,9 @@ exit 0
 %config(noreplace) %{_sysconfdir}/oci-umount.conf
 
 %changelog
+* Thu Jun 15 2017 Frantisek Kluknavsky <fkluknav@redhat.com> - 2:1.13.1-17.git27e468e
+- rebase
+
 * Wed Jun 07 2017 Frantisek Kluknavsky <fkluknav@redhat.com> - 2:1.13.1-16.git14cc629
 - rebased container-storage-setup
 
