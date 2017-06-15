@@ -544,6 +544,7 @@ then be bind mounted into the container using `docker run` command.
 %package -n oci-umount
 License: GPLv3+
 Summary: OCI umount hook for docker
+BuildRequires: autoconf
 Obsoletes: docker-oci-umount < 1.13.1-13
 
 %description -n oci-umount
