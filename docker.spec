@@ -163,13 +163,6 @@ BuildRequires: sqlite-devel
 BuildRequires: pkgconfig(systemd)
 %if 0%{?fedora} >= 21
 
-#oci-umount
-BuildRequires:  autoconf
-BuildRequires:  automake
-BuildRequires:  pkgconfig(yajl)
-BuildRequires:  pkgconfig(libselinux)
-BuildRequires:  pkgconfig(mount)
-
 # Resolves: rhbz#1165615
 Requires: device-mapper-libs >= 1.02.90-1
 %endif
@@ -546,6 +539,10 @@ License: GPLv3+
 Summary: OCI umount hook for docker
 BuildRequires: autoconf
 BuildRequires: automake
+BuildRequires: pkgconfig(yajl)
+BuildRequires: pkgconfig(libselinux)
+BuildRequires: pkgconfig(mount)
+
 Obsoletes: docker-oci-umount < 1.13.1-13
 
 %description -n oci-umount
